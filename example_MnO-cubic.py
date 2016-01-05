@@ -16,3 +16,8 @@ rmax=30.0
 aXYZ=generateAtomsXYZ(MnOStructure,rmax,magIdxs)
 
 
+### create spins using propagation vector
+astar,bstar,cstar=getRlat(cell[0],cell[1],cell[2])
+Q=0.0*astar+1.0*bstar+1.0*cstar
+signs=np.cos(np.dot(atoms-atoms[0],Q))
+spins=S*svec*signs.reshape(-1,1)
