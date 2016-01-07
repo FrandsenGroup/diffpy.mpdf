@@ -55,20 +55,23 @@ def costransform(q,fq,rmin=0.0,rmax=50.0,rstep=0.1): # does not require even q-g
     return r,fr
 
 	
-def getDiffData(fileNames,fmt='pdfgui'):
-	for name in fileNames:
-		if fmt=='pdfgui':
-			allcols = np.loadtxt(name,unpack=True,comments='#',skiprows=14)
-			r,grcalc,diff=allcols1[0],allcols1[1],allcols1[4]
-			grexp = grcalc+diff
-			np.savetxt(name[:-4]+'.diff',np.transpose((r,diff)))
-		else:
-			print 'This format is not currently supported.'
+def getDiffData(fileNames,fmt='pdfgui',writedata=False):
+    for name in fileNames:
+        if fmt=='pdfgui':
+            allcols = np.loadtxt(name,unpack=True,comments='#',skiprows=14)
+            r,grcalc,diff=allcols1[0],allcols1[1],allcols1[4]
+            grexp = grcalc+diff
+            if writedata:
+                np.savetxt(name[:-4]+'.diff',np.transpose((r,diff)))
+            else:
+                return r,diff
+        else:
+            print 'This format is not currently supported.'
 	
-def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20, psigma=0.1,qmin=-1,qmax=-1,dampRate=0.0,dampPower=2.0):
+def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20, psigma=0.1,qmin=-1,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
     
     # calculate s1, s2
-    r = np.arange(rmin+rstep, rmax, rstep)
+    r = np.arange(rmin+rstep, rmax+maxextension, rstep)
     rbin =  np.concatenate([r-rstep/2, [r[-1]+rstep/2]])
     
     s1 = np.zeros(len(r))
@@ -129,7 +132,7 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20
     else:
         rcv,frcv=r,fr
     #fr[0] = 0
-    return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=r[-1]+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=r[-1]+0.5*rstep)]
+    return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
     
 
 def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
@@ -215,6 +218,58 @@ def generateSpinsXYZ(struc,atoms=np.array([]),origin=np.array([0,0,0]),kvec=np.a
     # plt.plot(r,gr)
     # plt.show()
     # return
+
+
+class mPDFcalculator:
+    ''' mPDFcalculator class.
+
+    '''
+    def __init__(self,struc=[],atoms=np.array([]),rmaxAtoms=30.0,spins=np.array([]),svec=np.array([0,0,1]),kvec=np.array([0,0,0]),spinOrigin=np.array([0,0,0]),ffqgrid=np.array([]),ff=np.array([]),magIdxs=[0],calcList=np.array([0]),maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
+        self.struc=struc        
+        self.atoms=atoms
+        self.rmaxAtoms=rmaxAtoms
+        self.spins=spins
+        self.svec=svec
+        self.kvec=kvec
+        self.spinOrigin=spinOrigin
+        self.ffqgrid=ffqgrid
+        self.ff=ff
+        self.magIdxs=magIdxs
+        self.calcList=calcList
+        self.maxextension=maxextension
+        self.gaussPeakWidth=gaussPeakWidth
+        self.dampRate=dampRate
+        self.dampPower=dampPower
+        self.qmin=qmin
+        self.qmax=qmax
+        self.rmin=rmin
+        self.rmax=rmax
+        self.rstep=rstep
+        self.ordScale=ordScale
+        self.paraScale=paraScale
+        self.rmintr=rmintr
+        self.rmaxtr=rmaxtr
+        self.drtr=drtr  
+
+    def makeAtoms(self):
+        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
+
+    def makeSpins(self):
+        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.spinOrigin,self.kvec,self.svec)
+
+    def calc(self,normalized=True,both=False):
+        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        if normalized and not both: 
+            return rcalc,frcalc
+        elif not normalized and not both:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)
+            return rcalc,Drcalc
+        else:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)            
+            return rcalc,frcalc,Drcalc
+
+    def copy(self):
+        return self
 
 def calculateIQ(xyz, sxyz, uclist, qgrid, rstep, rmax, f):
     #qgrid = np.arange(qmin, qmax, qstep)
@@ -392,56 +447,6 @@ def calculateIQPBCold(xyz, sxyz, uclist, qgrid, rstep, rmax, f, a):  ### a is la
     rv+=len(uclist)*2.*S*(S+1)*(f**2)/3.
     return [qgrid, rv]
 
-class mPDFcalculator:
-    ''' mPDFcalculator class.
-
-    '''
-    def __init__(self,struc=[],atoms=np.array([]),rmaxAtoms=30.0,spins=np.array([]),svec=np.array([0,0,1]),kvec=np.array([0,0,0]),spinOrigin=np.array([0,0,0]),ffqgrid=np.array([]),ff=np.array([]),magIdxs=[0],calcList=np.array([0]),maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
-        self.struc=struc        
-        self.atoms=atoms
-        self.rmaxAtoms=rmaxAtoms
-        self.spins=spins
-        self.svec=svec
-        self.kvec=kvec
-        self.spinOrigin=spinOrigin
-        self.ffqgrid=ffqgrid
-        self.ff=ff
-        self.magIdxs=magIdxs
-        self.calcList=calcList
-        self.maxextension=maxextension
-        self.gaussPeakWidth=gaussPeakWidth
-        self.dampRate=dampRate
-        self.dampPower=dampPower
-        self.qmin=qmin
-        self.qmax=qmax
-        self.rmin=rmin
-        self.rmax=rmax
-        self.rstep=rstep
-        self.ordScale=ordScale
-        self.paraScale=paraScale
-        self.rmintr=rmintr
-        self.rmaxtr=rmaxtr
-        self.drtr=drtr  
-
-    def makeAtoms(self):
-        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
-
-    def makeSpins(self):
-        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.spinOrigin,self.kvec,self.svec)
-
-    def calc(self,normalized=True,both=False):
-        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower)
-        if normalized and not both: 
-            return rcalc,frcalc
-        elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)
-            return rcalc,Drcalc
-        else:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)            
-            return rcalc,frcalc,Drcalc
-
-    def copy(self):
-        return self
 
 def test():
     print 'This is not a rigorous test.'
