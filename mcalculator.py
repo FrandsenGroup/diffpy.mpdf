@@ -3,6 +3,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve, convolve
+import diffpy as dp
 
 '''
 xyz: 2d array (3*n), position of spins
@@ -64,7 +65,7 @@ def getDiffData(fileNames,fmt='pdfgui'):
 		else:
 			print 'This format is not currently supported.'
 	
-def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20, psigma=0.05,qmin=-1,qmax=-1):
+def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20, psigma=0.1,qmin=-1,qmax=-1,dampRate=0.0,dampPower=2.0):
     
     # calculate s1, s2
     r = np.arange(rmin+rstep, rmax, rstep)
@@ -120,8 +121,9 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20
     fr = s1 / r + r * (ss2[-1] - ss2)
     fr /= len(calcList)
 
+    fr *= np.exp(-1.0*(dampRate*r)**dampPower)
     # Do the convolution with the termination function if qmin/qmax have been given
-    if qmin != -1 and qmax != -1:
+    if qmin >= 0 and qmax > qmin:
         th=(np.sin(qmax*r)-np.sin(qmin*r))/np.pi/r
         rcv,frcv=cv(r,fr,r,th)
     else:
@@ -130,7 +132,7 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20
     return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=r[-1]+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=r[-1]+0.5*rstep)]
     
 
-def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01,):
+def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
     rsr,sr=costransform(q,ff,rmintr,rmaxtr,drtr)
     sr=np.sqrt(np.pi/2.0)*sr
     rSr,Sr=cv(rsr,sr,rsr,sr)
@@ -394,60 +396,53 @@ class mPDFcalculator:
     ''' mPDFcalculator class.
 
     '''
-    #rstep=0.01, rmin=0, rmax=20, psigma=0.05,qmin=-1,qmax=-1    
-    def __init__(self,struc=[],atoms=np.array([]),spins=np.array([]),rmin=0.0,rmax=20.0,calcList=np.array([0]),ff=np.array([])):
+    def __init__(self,struc=[],atoms=np.array([]),rmaxAtoms=30.0,spins=np.array([]),svec=np.array([0,0,1]),kvec=np.array([0,0,0]),spinOrigin=np.array([0,0,0]),ffqgrid=np.array([]),ff=np.array([]),magIdxs=[0],calcList=np.array([0]),maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
         self.struc=struc        
         self.atoms=atoms
+        self.rmaxAtoms=rmaxAtoms
         self.spins=spins
+        self.svec=svec
+        self.kvec=kvec
+        self.spinOrigin=spinOrigin
+        self.ffqgrid=ffqgrid
+        self.ff=ff
+        self.magIdxs=magIdxs
+        self.calcList=calcList
+        self.maxextension=maxextension
+        self.gaussPeakWidth=gaussPeakWidth
+        self.dampRate=dampRate
+        self.dampPower=dampPower
+        self.qmin=qmin
+        self.qmax=qmax
         self.rmin=rmin
         self.rmax=rmax
-        self.ff=ff
-        self.calcList=calcList
+        self.rstep=rstep
+        self.ordScale=ordScale
+        self.paraScale=paraScale
+        self.rmintr=rmintr
+        self.rmaxtr=rmaxtr
+        self.drtr=drtr  
 
-    def getStruc(self):
-        return self.struc
+    def makeAtoms(self):
+        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
 
-    def setStruc(self, val):
-        self.struc=val
+    def makeSpins(self):
+        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.spinOrigin,self.kvec,self.svec)
 
-    def getRmin(self):
-        return self.rmin
+    def calc(self,normalized=True,both=False):
+        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower)
+        if normalized and not both: 
+            return rcalc,frcalc
+        elif not normalized and not both:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)
+            return rcalc,Drcalc
+        else:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)            
+            return rcalc,frcalc,Drcalc
 
-    def setRmin(self, val):
-        self.rmin=val
+    def copy(self):
+        return self
 
-    def getRmax(self):
-        return self.rmax
-
-    def setRmax(self,val):
-        self.rmax=val
-
-    def getAtoms(self):
-        return self.atoms
-
-    def setAtoms(self,val):
-        self.atoms=val
-    
-    def getSpins(self):
-        return self.spins
-
-    def setSpins(self,val):
-        self.spins=val
-
-    def getFF(self):
-        return self.ff
-
-    def setFF(self,val):
-        self.ff=val
-
-    def getCalcList(self):
-        return self.calcList
-
-    def setCalcList(self,val):
-        self.calcList=val
-
-
-    
 def test():
     print 'This is not a rigorous test.'
     return
