@@ -35,7 +35,6 @@ def cv(x1,y1,x2,y2):
     dx=x1[1]-x1[0]
     ycv = dx*np.convolve(y1,y2,'full')
     xcv=np.linspace(x1[0]+x2[0],x1[-1]+x2[-1],len(ycv))
-
     return xcv,ycv
     
 def costransform(q,fq,rmin=0.0,rmax=50.0,rstep=0.1): # does not require even q-grid
@@ -68,10 +67,10 @@ def getDiffData(fileNames,fmt='pdfgui',writedata=False):
         else:
             print 'This format is not currently supported.'
 	
-def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20, psigma=0.1,qmin=-1,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
+def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=-1,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
     
     # calculate s1, s2
-    r = np.arange(rmin+rstep, rmax+maxextension, rstep)
+    r = np.arange(rmin, rmax+maxextension+rstep, rstep)
     rbin =  np.concatenate([r-rstep/2, [r[-1]+rstep/2]])
     
     s1 = np.zeros(len(r))
@@ -121,17 +120,24 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0, rmax=20
         s2 = s2[len(x)/2: -len(x)/2+1]
         
     ss2 = np.cumsum(s2)
+
+    if rmin==0:
+        r[0]=1e-4*rstep # avoid infinities at r=0
     fr = s1 / r + r * (ss2[-1] - ss2)
+    r[0]=rmin
     fr /= len(calcList)
 
     fr *= np.exp(-1.0*(dampRate*r)**dampPower)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:
-        th=(np.sin(qmax*r)-np.sin(qmin*r))/np.pi/r
-        rcv,frcv=cv(r,fr,r,th)
+        rth=np.arange(0.0,rmax+maxextension+rstep,rstep)
+        rth[0]=1e-4*rstep # avoid infinities at r=0
+        th=(np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
+        rth[0]=0.0
+        rcv,frcv=cv(r,fr,rth,th)
     else:
         rcv,frcv=r,fr
-    #fr[0] = 0
+
     return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
     
 
@@ -267,6 +273,9 @@ class mPDFcalculator:
         else:
             Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)            
             return rcalc,frcalc,Drcalc
+
+    def rgrid(self):
+        return np.arange(self.rmin,self.rmax+self.rstep,self.rstep)
 
     def copy(self):
         return self

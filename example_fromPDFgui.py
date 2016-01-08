@@ -27,6 +27,8 @@ mc.calcList=np.arange(1)
 # Load the data
 PDFfitFile='mPDF_exampleFiles/MnOfit_PDFgui.fgr'
 rexp,Drexp=getDiffData([PDFfitFile])
+mc.rmin=rexp.min()
+mc.rmax=rexp.max()
 
 # Do the refinement
 def residual(p,yexp,mcalc):
