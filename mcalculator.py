@@ -141,14 +141,24 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
     return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
     
 
-def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
+def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01,qmin=-1,qmax=-1):
     rsr,sr=costransform(q,ff,rmintr,rmaxtr,drtr)
     sr=np.sqrt(np.pi/2.0)*sr
     rSr,Sr=cv(rsr,sr,rsr,sr)
     para=-1.0*np.sqrt(2.0*np.pi)*np.gradient(Sr,rSr[1]-rSr[0]) ### paramagnetic term in d(r)
     rDr,Dr=cv(r,fr,rSr,Sr)
     Dr*=orderedScale
-    Dr[:len(para)]+=para*paraScale
+    if qmin >= 0 and qmax > qmin:
+        rstep=r[1]-r[0]        
+        rth=np.arange(0.0,r.max()+rstep,rstep)
+        rth[0]=1e-4*rstep # avoid infinities at r=0
+        th=(np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
+        rth[0]=0.0
+        rpara,para=cv(rSr,para,rth,th)
+    else:
+        rpara,para=rSr,para
+
+    Dr[:np.min((len(para),len(Dr)))]+=para[:np.min((len(para),len(Dr)))]*paraScale
     dr=r[1]-r[0]
     return Dr[np.logical_and(rDr>=np.min(r)-0.5*dr,rDr<=np.max(r)+0.5*dr)]
     
@@ -268,10 +278,10 @@ class mPDFcalculator:
         if normalized and not both: 
             return rcalc,frcalc
         elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
             return rcalc,Drcalc
         else:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr)            
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             return rcalc,frcalc,Drcalc
 
     def rgrid(self):
