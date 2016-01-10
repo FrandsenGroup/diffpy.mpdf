@@ -324,7 +324,6 @@ class mPDFcalculator:
         return np.arange(self.rmin,self.rmax+self.rstep,self.rstep)
 
     def copy(self):
-        """Return a deep copy of the mPDFcalculator object."""
         temp=[self]        
         return copy.deepcopy(temp)[0]
 
