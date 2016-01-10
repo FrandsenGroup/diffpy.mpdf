@@ -199,19 +199,27 @@ def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr
     return Dr[np.logical_and(rDr>=np.min(r)-0.5*dr,rDr<=np.max(r)+0.5*dr)]
     
 def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0]):
-    '''
-    Module to spit out the xyz Cartesian coordinates of magnetic atoms in a structure.
+    """Generate array of atomic Cartesian coordinates from a given structure.
 
-    struc = diffpy.structure object
-    rmax = float, largest distance from central spin that should be included
-    magIdxs = list of integers giving indices of magnetic atoms in the structure
+    Args:
+        struc (diffpy.Structure object): provides lattice parameters and unit
+            cell of the desired structure
+        rmax (float): largest distance from central atom that should be
+            included
+        magIdxs (python list): list of integers giving indices of magnetic
+            atoms in the unit cell
 
-    Note: This will only work well for structures that can be expressed with a unit cell that is close to at least orthorhombic.
-    '''
+    Returns:
+        numpy array of triples giving the Cartesian coordinates of all the
+            magnetic atoms. Atom closest to the origin placed first in array.
+    
+    Note: This will only work well for structures that can be expressed with a
+        unit cell that is close to orthorhombic or higher symmetry.
+    """
     lat=struc.lattice
     unitcell=lat.stdbase
     cellwithatoms=struc.xyz_cartn[np.array(magIdxs)]
-    radius=1.5*rmax
+    radius=rmax+15.0
     dim1=np.round(radius/np.linalg.norm(unitcell[0]))
     dim2=np.round(radius/np.linalg.norm(unitcell[1]))
     dim3=np.round(radius/np.linalg.norm(unitcell[2]))
