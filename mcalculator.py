@@ -104,6 +104,39 @@ def getDiffData(fileNames=[],fmt='pdfgui',writedata=False):
             print 'This format is not currently supported.'
 	
 def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
+    """Calculate the normalized mPDF.
+    
+    At minimum, this module requires input lists of atomic positions and spins.
+    
+    Args:
+        xyz (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure.
+        sxyz (numpy array): triplets giving the spin vectors of all the 
+            atoms, in the same order as the xyz array provided as input.
+        calcList (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF.
+        rstep (float): step size for r-grid of calculated mPDF.
+        rmin (float): minimum value of r for which mPDF should be calculated.
+        rmax (float): maximum value of r for which mPDF should be calculated.
+        psigma(float): std deviation (in Angstroms) of Gaussian peak
+            to be convoluted with the calculated mPDF to simulate thermal
+            motion.
+        qmin (float): minimum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+        qmax (float): maximum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+        dampRate (float): generalized ("stretched") exponential damping rate
+                of the mPDF.
+        dampPower (float): power of the generalized exponential function.
+        maxextension (float): extension of the r-grid on which the mPDF is
+            calculated to properly account for contribution of pairs just
+            outside the boundary.
+
+    Returns: numpy arrays for r and the mPDF fr.
+        """
     
     # calculate s1, s2
     r = np.arange(rmin, rmax+maxextension+rstep, rstep)
@@ -178,6 +211,37 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
     
 
 def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01,qmin=0,qmax=-1):
+    """Calculate the unnormalized mPDF quantity D(r).
+    
+    This module requires a normalized mPDF as an input, as well as a magnetic
+    form factor and associated q grid.
+
+    Args:
+        r (numpy array): r grid for the properly normalized mPDF.
+        fr (numpy array): the properly normalized mPDF.
+        q (numpy array): grid of momentum transfer values used for calculating
+            the magnetic form factor.
+        ff (numpy array): magnetic form factor. Same shape as ffqgrid.
+        paraScale (float): scale factor for the paramagnetic part of the
+            unnormalized mPDF function D(r).
+        ordScale (float): scale factor for the ordered part of the
+            unnormalized mPDF function D(r).
+        rmintr (float): minimum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        rmaxtr (float): maximum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        drtr (float): step size for r-grid used for calculating Fourier
+            transform of magnetic form mactor.
+        qmin (float): minimum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+        qmax (float): maximum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+
+    Returns: numpy array for the unnormalized mPDF Dr.
+    """
+
     rsr,sr=costransform(q,ff,rmintr,rmaxtr,drtr)
     sr=np.sqrt(np.pi/2.0)*sr
     rSr,Sr=cv(rsr,sr,rsr,sr)
@@ -274,22 +338,6 @@ def generateSpinsXYZ(struc,atoms=np.array([]),spinOrigin=np.array([0,0,0]),kvec=
     spins=svec*mags.reshape(-1,1)
     return spins
 
-# def test():
-    # strufile = 'cif/ni_sc.cif'
-    # from mstructure import MStruAdapter
-    # stru = MStruAdapter(stru = strufile, name='mstru', periodic = True, rmax = 30)
-    # stru.extend2Rmax(50)
-    # xyz = stru.xyz_cartn
-    # sxyz = stru.sxyz
-    # uclist = stru.uclist
-    # r, gr = calculateMPDF(xyz, sxyz, uclist, 0.01, 30, psigma=0.1)
-    
-    # plt.figure(1)
-    # plt.plot(r,gr)
-    # plt.show()
-    # return
-
-
 class mPDFcalculator:
     """Create an mPDFcalculator object to help calculate mPDF functions.
     
@@ -380,12 +428,28 @@ class mPDFcalculator:
         self.drtr=drtr  
 
     def makeAtoms(self):
+        """Generate the Cartesian coordinates of the atoms in the structure."""
         self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
 
     def makeSpins(self):
+        """Generate the Cartesian coordinates of the spin vectors in the
+               structure. Must have a propagation vector, spin origin, and
+               starting spin vector.
+        """
         self.spins=generateSpinsXYZ(self.struc,self.atoms,self.spinOrigin,self.kvec,self.svec)
 
     def calc(self,normalized=True,both=False):
+        """Calculate the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be returned.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be returned.
+
+        Returns: numpy array giving the r grid of the calculation, as well as
+            one or both the mPDF quantities.
+        """
         rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
         if normalized and not both: 
             return rcalc,frcalc
@@ -397,12 +461,34 @@ class mPDFcalculator:
             return rcalc,frcalc,Drcalc
 
     def rgrid(self):
+        """Return the current r grid of the mPDF calculator."""
         return np.arange(self.rmin,self.rmax+self.rstep,self.rstep)
 
     def copy(self):
         """Return a deep copy of the mPDFcalculator object."""
         temp=[self]        
         return copy.deepcopy(temp)[0]
+
+
+
+"""
+A bunch of old stuff that may be worth pursuing at some point.
+"""
+
+# def test():
+    # strufile = 'cif/ni_sc.cif'
+    # from mstructure import MStruAdapter
+    # stru = MStruAdapter(stru = strufile, name='mstru', periodic = True, rmax = 30)
+    # stru.extend2Rmax(50)
+    # xyz = stru.xyz_cartn
+    # sxyz = stru.sxyz
+    # uclist = stru.uclist
+    # r, gr = calculateMPDF(xyz, sxyz, uclist, 0.01, 30, psigma=0.1)
+    
+    # plt.figure(1)
+    # plt.plot(r,gr)
+    # plt.show()
+    # return
 
 def calculateIQ(xyz, sxyz, uclist, qgrid, rstep, rmax, f):
     #qgrid = np.arange(qmin, qmax, qstep)
