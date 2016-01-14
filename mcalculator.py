@@ -460,6 +460,35 @@ class mPDFcalculator:
             Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             return rcalc,frcalc,Drcalc
 
+    def plot(self,normalized=True,both=False):
+        """Plot the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be plotted.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be plotted.
+        """
+        fig=plt.figure()
+        ax=fig.add_subplot(111)
+        ax.set_xlabel('r ($\AA$)')
+        ax.set_xlim(xmin=self.rmin,xmax=self.rmax)        
+        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        if normalized and not both: 
+            ax.plot(rcalc,frcalc)
+            ax.set_ylabel('f ($\AA^{-2}$)')
+        elif not normalized and not both:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
+            ax.plot(rcalc,Drcalc)            
+            ax.set_ylabel('D ($\AA^{-2}$)')
+        else:
+            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
+            ax.plot(rcalc,frcalc,'b-',label='f(r)')
+            ax.plot(rcalc,Drcalc,'r-',label='D(r)')
+            ax.set_ylabel('f, D ($\AA^{-2}$)')
+            plt.legend(loc='best')
+        plt.show()
+
     def rgrid(self):
         """Return the current r grid of the mPDF calculator."""
         return np.arange(self.rmin,self.rmax+self.rstep,self.rstep)
@@ -542,7 +571,7 @@ def calculateIQ(xyz, sxyz, uclist, qgrid, rstep, rmax, f):
             rv += s2[i] * (np.sin(qxr)/qxr**3-np.cos(qxr)/qxr**2)
     rv=rv*(f**2)
     rv+=len(uclist)*2.*S*(S+1)*(f**2)/3.
-    return [qgrid, rv]
+    return qgrid, rv
 
 def calculateIQPBC(xyz, sxyz, uclist, qgrid, rstep, f, latparams):
     S=np.linalg.norm(sxyz[0])
@@ -607,7 +636,7 @@ def calculateIQPBC(xyz, sxyz, uclist, qgrid, rstep, f, latparams):
             rv += s2[i] * (np.sin(qxr)/qxr**3-np.cos(qxr)/qxr**2)
     rv=rv*(f**2)
     rv+=len(uclist)*2.*S*(S+1)*(f**2)/3.
-    return [qgrid, rv]
+    return qgrid, rv
 
     
 def calculateIQPBCold(xyz, sxyz, uclist, qgrid, rstep, rmax, f, a):  ### a is lattice parameter of unit cell
