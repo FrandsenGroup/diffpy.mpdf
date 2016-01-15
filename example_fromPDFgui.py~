@@ -16,7 +16,7 @@ MnOStructure.lattice=lat
 mc=mPDFcalculator(struc=MnOStructure,magIdxs=[0,1,2],rmax=20.0,gaussPeakWidth=0.2)
 
 mc.makeAtoms()
-mc.svec=2.5*np.array([1,0,0])
+mc.svec=2.5*np.array([0,0,1])/np.sqrt(2)
 mc.kvec=np.array([0,0,1.5])
 mc.spinOrigin=mc.atoms[0]
 mc.makeSpins()

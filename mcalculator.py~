@@ -272,9 +272,6 @@ def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0],square=False):
             included
         magIdxs (python list): list of integers giving indices of magnetic
             atoms in the unit cell
-        square (boolean): if not True, atoms within a given radius from the
-            origin will be returned; if True, then the full grid will be
-            returned rather than just a spherical selection.
 
     Returns:
         numpy array of triples giving the Cartesian coordinates of all the

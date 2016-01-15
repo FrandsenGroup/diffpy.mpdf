@@ -20,7 +20,7 @@ k=np.array([0.5,0.5,0.5])
 sXYZ=generateSpinsXYZ(MnOStructure,aXYZ,aXYZ[0],k,svec)
 
 # Calculate the mPDF
-r,fr=calculatemPDF(aXYZ,sXYZ,rmax=30,psigma=0.15,qmin=0.1,qmax=30.)
+r,fr=calculatemPDF(aXYZ,sXYZ,rmax=30,psigma=0.05,qmin=0.1,qmax=30.)
 
 # Calculate the unnormalized mPDF D(r)
 q=np.arange(0,10,0.01)
