@@ -346,6 +346,18 @@ def generateSpinsXYZ(struc,atoms=np.array([]),spinOrigin=np.array([0,0,0]),kvec=
     spins=svec*mags.reshape(-1,1)
     return spins
 
+def getFFparams(name):
+    data=open('formfactor_j0.txt','r').readlines()
+    done=0
+    for line in data:
+        entries=line.split()
+        if entries[0]==name:
+            [A,a,B,b,C,c,D]=[float(i) for i in entries[1:]]
+            done=1            
+            return [A,a,B,b,C,c,D]
+    if not done:
+        print 'No magnetic form factor found for that element/ion.'
+
 class mPDFcalculator:
     """Create an mPDFcalculator object to help calculate mPDF functions.
     
