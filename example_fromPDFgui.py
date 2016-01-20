@@ -21,7 +21,7 @@ mc.kvec=np.array([0,0,1.5])
 mc.spinOrigin=mc.atoms[0]
 mc.makeSpins()
 mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=j0calc(mc.ffqgrid,getFFparams('Mn2'))
+mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
 mc.calcList=np.arange(1)
 
 # Load the data

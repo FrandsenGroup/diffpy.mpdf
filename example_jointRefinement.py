@@ -43,7 +43,7 @@ mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
 mc.kvec=np.array([0,0,1.5])
 mc.spinOrigin=np.array([0,0,0])
 mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=j0calc(mc.ffqgrid,[0.422,17.684,0.5948,6.005,0.0043,-0.609,-0.0219])
+mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
 mc.calcList=np.arange(1)
 
 # The FitRecipe does the work of calculating the PDF with the fit variable

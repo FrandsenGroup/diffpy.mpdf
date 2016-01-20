@@ -24,7 +24,7 @@ r,fr=calculatemPDF(aXYZ,sXYZ,rmax=30,psigma=0.15,qmin=0.1,qmax=30.)
 
 # Calculate the unnormalized mPDF D(r)
 q=np.arange(0,10,0.01)
-ff=j0calc(q,[0.422,17.684,0.5948,6.005,0.0043,-0.609,-0.0219])
+ff=jCalc(q,getFFparams('Mn2'))
 Dr=calculateDr(r,fr,q,ff)
 
 # Plot the mPDF
@@ -38,7 +38,7 @@ plt.show()
 
 
 # Now an alternative way to do it using the mPDFcalculator class:
-mc=mPDFcalculator(struc=MnOStructure,magIdxs=[0,1,2,3],rmax=30.0,svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2),kvec=np.array([0.5,0.5,0.5]),ffqgrid=np.arange(0,10,0.01),ff=j0calc(q,[0.422,17.684,0.5948,6.005,0.0043,-0.609,-0.0219]),gaussPeakWidth=0.15)
+mc=mPDFcalculator(struc=MnOStructure,magIdxs=[0,1,2,3],rmax=30.0,svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2),kvec=np.array([0.5,0.5,0.5]),ffqgrid=np.arange(0,10,0.01),ff=jCalc(q,getFFparams('Mn2')),gaussPeakWidth=0.15)
 mc.makeAtoms()
 mc.spinOrigin=mc.atoms[0]
 mc.makeSpins()
