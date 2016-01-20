@@ -12,14 +12,14 @@ structureFile = "mPDF_exampleFiles/MnO_cubic.cif"
 # Create the structure from our cif file
 MnOStructure = loadStructure(structureFile)
 magIdxs=[0,1,2,3]
-rmax=30.0
+rmax=25.0
 
 svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
 kvec=np.array([0.5,0.5,0.5])
 
 # Calculate the unnormalized mPDF D(r)
 q=np.arange(0,10,0.01)
-ff=j0calc(q,[0.422,17.684,0.5948,6.005,0.0043,-0.609,-0.0219])
+ff=jCalc(q,getFFparams('Mn2'))
 
 # Now an alternative way to do it using the mPDFcalculator class:
 mc=mPDFcalculator(struc=MnOStructure,magIdxs=magIdxs,rmax=rmax,svec=svec,kvec=kvec,ffqgrid=q,ff=ff,gaussPeakWidth=0.15)

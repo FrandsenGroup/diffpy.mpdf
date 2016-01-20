@@ -843,7 +843,7 @@ def calculateIQinFold(xyz, sxyz, uclist, qgrid,f,xmin,xmax,ymin,ymax,zmin,zmax,r
     xyzOrig=xyz.copy()
     
     for i in range(len(uclist)):
-       # print 'Working on: '+str(i+1)+'/'+str(len(uclist))
+        print 'Working on: '+str(i+1)+'/'+str(len(uclist))
         uu = uclist[i]
         
         xyz=inFold(xyz-xyz[uu],xmin,xmax,ymin,ymax,zmin,zmax)
