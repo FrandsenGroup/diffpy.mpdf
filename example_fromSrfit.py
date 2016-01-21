@@ -22,7 +22,7 @@ from mcalculator import *
 # Files containing our experimental data and structure file
 dataFile = "mPDF_exampleFiles/npdf_07334.gr"
 structureFile = "mPDF_exampleFiles/MnO_R-3m.cif"
-spaceGroup = "R-3m"
+spaceGroup = "H-3m"
 
 # The first thing to construct is a contribution. Since this is a simple
 # example, the contribution will simply contain our PDF data and an associated
