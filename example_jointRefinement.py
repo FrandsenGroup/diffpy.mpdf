@@ -26,7 +26,7 @@ structureFile = "mPDF_exampleFiles/MnO_R-3m.cif"
 
 # load structure and space group from the CIF file
 pcif = getParser('cif')
-mno2 = pcif.parseFile(structureFile)
+mno = pcif.parseFile(structureFile)
 
 # prepare profile object with experimental data
 profile = Profile()
@@ -44,14 +44,14 @@ profile.setCalculationRange(xmin=rmin, xmax=rmax, dx=rstep)
 
 # prepare nucpdf function that simulates the nuclear PDF
 nucpdf = PDFGenerator("nucpdf")
-nucpdf.setStructure(mno2)
+nucpdf.setStructure(mno)
 # apply metadata from dataFile such as neutron/x-ray type of the PDF
 nucpdf.setProfile(profile)
 
 # prepare magpdf function that simulates the magnetic PDF
 
 # Set up the mPDF calculator.  This is calculation engine for magpdf.
-mc=mPDFcalculator(mno2, magIdxs=[0,1,2],
+mc=mPDFcalculator(mno, magIdxs=[0,1,2],
         rmin=rmin, rmax=rmax, rstep=rstep, gaussPeakWidth=0.2)
 mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
 mc.kvec=np.array([0,0,1.5])
@@ -153,15 +153,16 @@ magfit=mc.calc(both=True)[2]
 ax=plt.figure().add_subplot(111)
 ax.plot(r, gobs, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
 ax.plot(r, gcalc, 'r-', lw=1.5, label="G(r) fit")
-ax.plot(r, gnuc, 'k-', lw=1.5, label="G(r) nuclear")
-ax.plot(r, gmag, 'g-', lw=1.5, label="G(r) magnetic")
+#ax.plot(r, gnuc, 'k-', lw=1.5, label="G(r) nuclear")
+#ax.plot(r, gmag, 'g-', lw=1.5, label="G(r) magnetic")
 
-#ax.plot(r, gdiff + baseline,mfc='none',mec='b',marker='o')
+ax.plot(r, gdiff + baseline,'g-')
 #ax.plot(r, gmag+baseline,'r-',lw=1.5)
 #ax.plot(r,gdiff-magfit+baseline2,'g-')
-#ax.plot(r, np.zeros_like(r) + baseline2, 'k:')
+ax.plot(r, np.zeros_like(r) + baseline, 'k:')
 ax.set_xlabel(r"r ($\AA$)")
 ax.set_ylabel(r"G ($\AA^{-2}$)")
+ax.set_xlim(xmax=mc.rmax)
 plt.legend()
 
 plt.show()
