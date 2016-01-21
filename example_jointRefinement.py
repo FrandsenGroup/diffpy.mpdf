@@ -77,10 +77,9 @@ totpdf.setProfile(profile)
 totpdf.setEquation("nucscale * nucpdf + magpdf(parascale, ordscale)")
 
 # Make magnetic PDF depend on any changes to the atomic structure.
-# Cover your eyes, but a structure change will now behave as ordscale
-# modification and will forget cached values of magpdf.
-for o in totpdf.ordscale._observers:
-    nucpdf.phase.addObserver(o)
+# Cover your eyes, but a structure change will now trigger the same
+# reevaluations as if ordscale were modified.
+nucpdf.phase.addObserver(totpdf.ordscale.notify)
 
 # The FitRecipe does the work of calculating the PDF with the fit variable
 # that we give it.
