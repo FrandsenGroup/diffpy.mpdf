@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-# We'll need numpy and pylab for plotting our results
+# Import necessary functions
 import numpy as np
-#import pylab
 import matplotlib.pyplot as plt
-
-# A least squares fitting algorithm from scipy
 from scipy.optimize.minpack import leastsq
 
-# DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure.Parsers import getParser
 from diffpy.srfit.pdf import PDFGenerator, PDFParser
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 from diffpy.srfit.fitbase import Profile, FitContribution
 
-# Load the mPDF calculator modules
 from mcalculator import *
 
 
@@ -45,47 +39,20 @@ profile.setCalculationRange(xmin=rmin, xmax=rmax, dx=rstep)
 # prepare nucpdf function that simulates the nuclear PDF
 nucpdf = PDFGenerator("nucpdf")
 nucpdf.setStructure(mno)
-# apply metadata from dataFile such as neutron/x-ray type of the PDF
 nucpdf.setProfile(profile)
 
-# prepare magpdf function that simulates the magnetic PDF
 
-# Set up the mPDF calculator.  This is calculation engine for magpdf.
-mc=mPDFcalculator(mno, magIdxs=[0,1,2],
-        rmin=rmin, rmax=rmax, rstep=rstep, gaussPeakWidth=0.2)
-mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
-mc.kvec=np.array([0,0,1.5])
-mc.spinOrigin=np.array([0,0,0])
-mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
-mc.calcList=np.arange(1)
-mc.makeAtoms()
-mc.makeSpins()
-
-def magpdf(parascale, ordscale):
-    mc.paraScale = parascale
-    mc.ordScale = ordscale
-    mc.makeAtoms()
-    mc.makeSpins()
-    rv = mc.calc(both=True)[2]
-    return rv
-
-totpdf = FitContribution('totpdf')
+### DO AN INITIAL FIT TO THE STRUCTURAL PDF
+totpdf=FitContribution('totpdf')
 totpdf.addProfileGenerator(nucpdf)
-totpdf.registerFunction(magpdf)
 totpdf.setProfile(profile)
-totpdf.setEquation("nucscale * nucpdf + magpdf(parascale, ordscale)")
+totpdf.setEquation("nucscale*nucpdf")
 
-# Make magnetic PDF depend on any changes to the atomic structure.
-# Cover your eyes, but a structure change will now trigger the same
-# reevaluations as if ordscale were modified.
-nucpdf.phase.addObserver(totpdf.ordscale.notify)
-
-# The FitRecipe does the work of calculating the PDF with the fit variable
+# The FitRecipe does the work of calculating the PDF with the fit variables
 # that we give it.
 mnofit = FitRecipe()
 
-# give the PDFContribution to the FitRecipe
+# give the FitContribution to the FitRecipe
 mnofit.addContribution(totpdf)
 
 # Configure the fit variables and give them to the recipe.  We can use the
@@ -103,7 +70,7 @@ for par in sgpars.latpars:
     mnofit.addVar(par)
 # Set initial value for the ADP parameters, because CIF had no ADP data.
 for par in sgpars.adppars:
-    mnofit.addVar(par, value=0.003, fixed=True)
+    mnofit.addVar(par,value=0.003)
 
 # As usual, we add variables for the overall scale of the PDF and a delta2
 # parameter for correlated motion of neighboring atoms.
@@ -111,11 +78,7 @@ mnofit.addVar(totpdf.nucscale, 1)
 mnofit.addVar(nucpdf.delta2, 1.5)
 
 # We fix Qdamp based on prior information about our beamline.
-mnofit.addVar(nucpdf.qdamp, 0.03, fixed=True)
-
-# variables for magnetic scattering
-mnofit.addVar(totpdf.parascale, 4)
-mnofit.addVar(totpdf.ordscale, 1.5)
+mnofit.addVar(nucpdf.qdamp, 0.03)
 
 # Turn off printout of iteration number.
 mnofit.clearFitHooks()
@@ -132,11 +95,102 @@ mnoresults = FitResults(mnofit)
 print "FIT RESULTS\n"
 print mnoresults
 
-# Plot the observed and refined PDF.
-
 # Get the experimental data from the recipe
 r = mnofit.totpdf.profile.x
 gobs = mnofit.totpdf.profile.y
+
+# Get the calculated PDF and compute the difference between the calculated and
+# measured PDF
+gcalc = mnofit.totpdf.evaluate()
+baseline = 1.1 * gobs.min()
+gdiff = gobs - gcalc
+
+# Plot the structural refinement
+ax=plt.figure().add_subplot(111)
+ax.plot(r, gobs, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
+ax.plot(r, gcalc, 'r-', lw=1.5, label="G(r) fit")
+ax.plot(r, gdiff + baseline,'g-')
+ax.plot(r, np.zeros_like(r) + baseline, 'k:')
+
+ax.set_xlabel(r"r ($\AA$)")
+ax.set_ylabel(r"G ($\AA^{-2}$)")
+plt.legend()
+
+plt.show()
+
+### NOW DO THE INITIAL MAGNETIC REFINEMENT
+
+# Set up the mPDF calculator.
+mc=mPDFcalculator(mno, magIdxs=[0,1,2],
+        rmin=rmin, rmax=rmax, rstep=rstep, gaussPeakWidth=0.2)
+
+mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
+mc.kvec=np.array([0,0,1.5])
+mc.spinOrigin=np.array([0,0,0])
+mc.ffqgrid=np.arange(0,10,0.01)
+mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
+mc.calcList=np.arange(1)
+mc.makeAtoms()
+mc.makeSpins()
+
+# Do the refinement
+def magresidual(p,yexp,mcalc):
+    mcalc.paraScale,mcalc.ordScale=p
+    return yexp-mcalc.calc(both=True)[2]
+
+p0=[5.0,3.0]
+pOpt=leastsq(magresidual,p0,args=(gdiff,mc))
+print pOpt
+
+magfit=mc.calc(both=True)[2]
+magdiff=gdiff-magfit
+magbaseline=1.1*gdiff.min()
+
+# Plot!
+ax=plt.figure().add_subplot(111)
+ax.plot(r, gdiff, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
+ax.plot(r, magfit, 'r-', lw=1.5, label="G(r) fit")
+ax.plot(r, magdiff + magbaseline,'g-')
+ax.plot(r, np.zeros_like(r) + magbaseline, 'k:')
+ax.set_xlabel(r"r ($\AA$)")
+ax.set_ylabel(r"G ($\AA^{-2}$)")
+plt.legend()
+
+plt.show()
+
+
+### NOW DO THE CO-REFINEMENT OF STRUCTURAL AND MAGNETIC PDF
+def magpdf(parascale, ordscale):
+    mc.paraScale = parascale
+    mc.ordScale = ordscale
+    mc.makeAtoms()
+    mc.makeSpins()
+    rv = mc.calc(both=True)[2]
+    return rv
+
+# Add the mPDF to the totpdf FitContribution
+totpdf.registerFunction(magpdf)
+totpdf.setEquation("nucscale * nucpdf + magpdf(parascale, ordscale)")
+
+# Make magnetic PDF depend on any changes to the atomic structure.
+# Cover your eyes, but a structure change will now trigger the same
+# reevaluations as if ordscale were modified.
+nucpdf.phase.addObserver(totpdf.ordscale.notify)
+
+# add the mPDF variables
+mnofit.addVar(totpdf.parascale,value=mc.paraScale)
+mnofit.addVar(totpdf.ordscale,value=mc.ordScale)
+
+# do the co-refinement
+print "Refine PDF using scipy's least-squares optimizer:"
+print "  variables:", mnofit.names
+print "  initial values:", mnofit.values
+leastsq(mnofit.residual, mnofit.values)
+print "  final values:", mnofit.values
+print
+mnoresults=FitResults(mnofit)
+print "FIT RESULTS\n"
+print mnoresults
 
 # Get the calculated PDF and compute the difference between the calculated and
 # measured PDF
@@ -149,16 +203,11 @@ gdiff = gobs - gcalc
 baseline2 = 1.1 * (gdiff+baseline).min()
 magfit=mc.calc(both=True)[2]
 
-# Plot!
+# Plot the observed and refined total PDF.
 ax=plt.figure().add_subplot(111)
 ax.plot(r, gobs, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
-ax.plot(r, gcalc, 'r-', lw=1.5, label="G(r) fit")
-#ax.plot(r, gnuc, 'k-', lw=1.5, label="G(r) nuclear")
-#ax.plot(r, gmag, 'g-', lw=1.5, label="G(r) magnetic")
-
+ax.plot(r, gcalc, 'r-', lw=2.5, label="G(r) fit")
 ax.plot(r, gdiff + baseline,'g-')
-#ax.plot(r, gmag+baseline,'r-',lw=1.5)
-#ax.plot(r,gdiff-magfit+baseline2,'g-')
 ax.plot(r, np.zeros_like(r) + baseline, 'k:')
 ax.set_xlabel(r"r ($\AA$)")
 ax.set_ylabel(r"G ($\AA^{-2}$)")
@@ -166,3 +215,4 @@ ax.set_xlim(xmax=mc.rmax)
 plt.legend()
 
 plt.show()
+
