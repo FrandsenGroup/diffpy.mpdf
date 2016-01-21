@@ -4,6 +4,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve, convolve
 import diffpy as dp
+from diffpy.srreal.bondcalculator import BondCalculator
 import copy
 
 def jCalc(q,params=[0.2394,26.038,0.4727,12.1375,0.3065,3.0939,-0.01906],j2=False):
@@ -286,39 +287,39 @@ def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0],square=False):
         numpy array of triples giving the Cartesian coordinates of all the
             magnetic atoms. Atom closest to the origin placed first in array.
     
-    Note: This will only work well for structures that can be expressed with a
-        unit cell that is close to orthorhombic or higher symmetry.
+    Note: If square=True, this may have problems for structures that have
+        a several distorted unit cell (i.e. highly non-orthorhombic).
     """
-    lat=struc.lattice
-    unitcell=lat.stdbase
-    cellwithatoms=struc.xyz_cartn[np.array(magIdxs)]
-    radius=rmax+15.0
-
-    ### generate the coordinates of each unit cell 
     if not square:    
-        dim1=np.round(radius/np.linalg.norm(unitcell[0]))
-        dim2=np.round(radius/np.linalg.norm(unitcell[1]))
-        dim3=np.round(radius/np.linalg.norm(unitcell[2]))
-        latos=np.dot(np.mgrid[-dim1:dim1+1,-dim2:dim2+1,-dim3:dim3+1].transpose().ravel().reshape((2*dim1+1)*(2*dim2+1)*(2*dim3+1),3),unitcell)
-        ### select points within a desired radius from origin
-        latos=latos[np.where(np.apply_along_axis(np.linalg.norm,1,latos)<=(rmax+np.linalg.norm(unitcell.sum(axis=1))))]
+        magAtoms=struc[magIdxs]
+        bc=BondCalculator(rmax=rmax+np.linalg.norm(struc.lattice.stdbase.sum(axis=1)))
+        bc.setPairMask(0,'all',True,others=False)
+        bc(magAtoms)
+        atoms=np.vstack([struc.xyz_cartn[magIdxs[0]],bc.directions[bc.sites0==0]])        
+
     else:
+        # generate the coordinates of each unit cell
+        lat=struc.lattice
+        unitcell=lat.stdbase
+        cellwithatoms=struc.xyz_cartn[np.array(magIdxs)]
+        radius=rmax+15.0
+
         dim1=np.round(rmax/np.linalg.norm(unitcell[0]))
         dim2=np.round(rmax/np.linalg.norm(unitcell[1]))
         dim3=np.round(rmax/np.linalg.norm(unitcell[2]))
         latos=np.dot(np.mgrid[-dim1:dim1+1,-dim2:dim2+1,-dim3:dim3+1].transpose().ravel().reshape((2*dim1+1)*(2*dim2+1)*(2*dim3+1),3),unitcell)
 
-    ## rearrange latos array so that [0,0,0] is the first one (for convenience)
-    latos[np.where(np.all(latos==[0,0,0],axis=1))]=latos[0]
-    latos[0]=np.array([0,0,0])
+        ## rearrange latos array so that [0,0,0] is the first one (for convenience)
+        latos[np.where(np.all(latos==[0,0,0],axis=1))]=latos[0]
+        latos[0]=np.array([0,0,0])
 
-    ### create list of all atomic positions
-    atoms=np.empty([len(latos)*len(cellwithatoms),3])
-    index=0
-    for i in range(len(latos)):
-        for j in range(len(cellwithatoms)):
-            atoms[index]=latos[i]+cellwithatoms[j]
-            index+=1
+        ### create list of all atomic positions
+        atoms=np.empty([len(latos)*len(cellwithatoms),3])
+        index=0
+        for i in range(len(latos)):
+            for j in range(len(cellwithatoms)):
+                atoms[index]=latos[i]+cellwithatoms[j]
+                index+=1
 
     return atoms
 
