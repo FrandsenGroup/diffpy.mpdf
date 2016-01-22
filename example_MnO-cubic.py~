@@ -10,7 +10,6 @@ from diffpy.Structure import loadStructure
 structureFile = "mPDF_exampleFiles/MnO_cubic.cif"
 
 # Create the structure from our cif file
-#
 MnOStructure = loadStructure(structureFile)
 magIdxs=[0,1,2,3]
 rmax=30.0
