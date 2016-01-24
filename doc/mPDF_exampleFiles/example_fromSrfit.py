@@ -16,12 +16,14 @@ from diffpy.srfit.pdf import PDFContribution
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 
 # Load the mPDF calculator modules
+import sys
+sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
 from mcalculator import *
 
 
 # Files containing our experimental data and structure file
-dataFile = "mPDF_exampleFiles/npdf_07334.gr"
-structureFile = "mPDF_exampleFiles/MnO_R-3m.cif"
+dataFile = "npdf_07334.gr"
+structureFile = "MnO_R-3m.cif"
 spaceGroup = "H-3m"
 
 # The first thing to construct is a contribution. Since this is a simple

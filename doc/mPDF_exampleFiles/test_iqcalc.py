@@ -46,4 +46,3 @@ ax.set_xlabel('q ($\AA^{-1}$)')
 ax.set_ylabel('I ($\AA^{-2}$)')
 
 plt.show()
-

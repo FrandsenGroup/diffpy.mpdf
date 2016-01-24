@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
-from mcalculator import *
 import diffpy as dp
 from diffpy.Structure import loadStructure
 
+import sys
+sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
+from mcalculator import *
+
 # Create the structure from our cif file, update the lattice params
-structureFile = "mPDF_exampleFiles/MnO_R-3m.cif"
+structureFile = "MnO_R-3m.cif"
 MnOStructure = loadStructure(structureFile)
 lat=MnOStructure.lattice
 lat.a,lat.b,lat.c=3.1505626,3.1505626,7.5936979
@@ -25,7 +28,7 @@ mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
 mc.calcList=np.arange(1)
 
 # Load the data
-PDFfitFile='mPDF_exampleFiles/MnOfit_PDFgui.fgr'
+PDFfitFile='MnOfit_PDFgui.fgr'
 rexp,Drexp=getDiffData([PDFfitFile])
 mc.rmin=rexp.min()
 mc.rmax=rexp.max()
