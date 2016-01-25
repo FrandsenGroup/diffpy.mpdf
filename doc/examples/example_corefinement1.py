@@ -45,23 +45,24 @@ nucpdf.setProfile(profile)
 
 # prepare magpdf function that simulates the magnetic PDF
 
+# Create the Mn2+ magnetic species
+mn2p=magSpecies(struc=mno,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),ffparamkey='Mn2')
+
+# Create and prep the magnetic structure
+magstruc=magStructure()
+magstruc.loadSpecies(mn2p)
+magstruc.makeAll()
+
 # Set up the mPDF calculator.
-mc=mPDFcalculator(mno, magIdxs=[0,1,2],
+
+mc=mPDFcalculator(magstruc=magstruc,
         rmin=rmin, rmax=rmax, rstep=rstep, gaussPeakWidth=0.2)
-mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
-mc.kvec=np.array([0,0,1.5])
-mc.spinOrigin=np.array([0,0,0])
-mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
-mc.calcList=np.arange(1)
-mc.makeAtoms()
-mc.makeSpins()
 
 def magpdf(parascale, ordscale):
     mc.paraScale = parascale
     mc.ordScale = ordscale
-    mc.makeAtoms()
-    mc.makeSpins()
+    mc.magstruc.makeAtoms()
+    mc.magstruc.makeSpins()
     rv = mc.calc(both=True)[2]
     return rv
 

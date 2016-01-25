@@ -10,22 +10,25 @@ from mcalculator import *
 
 # Create the structure from our cif file, update the lattice params
 structureFile = "MnO_R-3m.cif"
-MnOStructure = loadStructure(structureFile)
-lat=MnOStructure.lattice
+mnostructure = loadStructure(structureFile)
+lat=mnostructure.lattice
 lat.a,lat.b,lat.c=3.1505626,3.1505626,7.5936979
-MnOStructure.lattice=lat
+mnostructure.lattice=lat
 
+# Create the Mn2+ magnetic species
+mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),ffparamkey='Mn2')
+
+# Create and prep the magnetic structure
+magstruc=magStructure()
+magstruc.loadSpecies(mn2p)
+magstruc.makeAtoms()
+magstruc.makeSpins()
+magstruc.makeFF()
+
+# 
 # Set up the mPDF calculator
-mc=mPDFcalculator(struc=MnOStructure,magIdxs=[0,1,2],rmax=20.0,gaussPeakWidth=0.2)
+mc=mPDFcalculator(magstruc=magstruc,rmax=20.0,gaussPeakWidth=0.2)
 
-mc.makeAtoms()
-mc.svec=2.5*np.array([1,0,0])
-mc.kvec=np.array([0,0,1.5])
-mc.spinOrigin=mc.atoms[0]
-mc.makeSpins()
-mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
-mc.calcList=np.arange(1)
 
 # Load the data
 PDFfitFile='MnOfit_PDFgui.fgr'

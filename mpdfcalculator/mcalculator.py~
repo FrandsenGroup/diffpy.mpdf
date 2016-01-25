@@ -110,7 +110,7 @@ def getDiffData(fileNames=[],fmt='pdfgui',writedata=False):
         else:
             print 'This format is not currently supported.'
 	
-def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
+def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
     """Calculate the normalized mPDF.
     
     At minimum, this module requires input lists of atomic positions and spins.
@@ -120,6 +120,8 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
             atoms in the structure.
         sxyz (numpy array): triplets giving the spin vectors of all the 
             atoms, in the same order as the xyz array provided as input.
+        gfactors (numpy array): Lande g-factors of spins in same order as
+            spin array.
         calcList (python list): list giving the indices of the atoms array
             specifying the atoms to be used as the origin when calculating
             the mPDF.
@@ -144,7 +146,10 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
 
     Returns: numpy arrays for r and the mPDF fr.
         """
-    
+    # check if g-factors have been provided
+    if sxyz.shape[0]!=gfactors.shape[0]:
+        gfactors=2.0*np.ones(sxyz.shape[0])
+
     # calculate s1, s2
     r = np.arange(rmin, rmax+maxextension+rstep, rstep)
     rbin =  np.concatenate([r-rstep/2, [r[-1]+rstep/2]])
@@ -159,6 +164,8 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
         rj = xyz
         si = sxyz0 = sxyz[uu]
         sj = sxyz
+        gi = gfactors[uu]
+        gj = gfactors
         
         dxyz = rj-ri
         d2xyz = np.sum((dxyz)**2, axis=1).reshape(dxyz.shape[0], 1)
@@ -180,8 +187,8 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
         w2 = bij / d1xyzr**3
         w2[uu] = 0
         
-        s1 += np.histogram(d1xyzr, bins=rbin, weights=aij)[0]
-        s2 += np.histogram(d1xyzr, bins=rbin, weights=w2)[0]
+        s1 += np.histogram(d1xyzr, bins=rbin, weights=gi*gj*aij)[0]
+        s2 += np.histogram(d1xyzr, bins=rbin, weights=gi*gj*w2)[0]
     
     # apply Gaussian shape function
     if psigma != None:
@@ -201,7 +208,7 @@ def calculatemPDF(xyz, sxyz, calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=
         r[0]=1e-4*rstep # avoid infinities at r=0
     fr = s1 / r + r * (ss2[-1] - ss2)
     r[0]=rmin
-    fr /= len(calcList)
+    fr /= len(calcList)*np.mean(gfactors)**2
 
     fr *= np.exp(-1.0*(dampRate*r)**dampPower)
     # Do the convolution with the termination function if qmin/qmax have been given
@@ -478,6 +485,7 @@ def getFFparams(name,j2=False):
             return j0dict[name]
         except KeyError:
             print 'No magnetic form factor found for that element/ion.'
+            return ['none']
     else:
         j2dict={'Am2': [0.4743, 21.7761, 1.58, 5.6902, -1.0779, 4.1451, 0.0218],
  'Am3': [0.4239, 19.5739, 1.4573, 5.8722, -0.9052, 3.9682, 0.0238],
@@ -579,24 +587,43 @@ def getFFparams(name,j2=False):
             return j2dict[name]
         except KeyError:
             print 'No magnetic form factor found for that element/ion.'
+            return ['none']
 
 class magSpecies:
     """Store information for a single species of magnetic atom.
     """
-    def __init__(self,struc=[],label='',magIdxs=[0],atoms=np.array([]),spins=np.array([]),rmaxAtoms=30.0,basisvecs=np.array([[0,0,1]]),kvecs=np.array([[0,0,0]]),gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.array([0]),ff=np.array([])):
-        self.struc=struc
+    def __init__(self,struc=None,label='',magIdxs=[0],atoms=None,spins=None,rmaxAtoms=30.0,basisvecs=None,kvecs=None,gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.arange(0,10.0,0.01),ff=None):
         self.label=label
-        self.magIdxs=magIdxs
-        self.atoms=atoms
-        self.spins=spins
-        self.rmaxAtoms=rmaxAtoms
-        self.basisvecs=basisvecs
-        self.kvecs=kvecs
+        self.magIdxs=magIdxs or [0]
+        self.rmaxAtoms=30.0
         self.gS=gS
         self.gL=gL
         self.ffparamkey=ffparamkey
         self.ffqgrid=ffqgrid
-        self.ff=ff
+        if struc==None:
+            self.struc=[]
+        else:
+            self.struc=struc        
+        if atoms==None:
+            self.atoms=np.array([])
+        else:
+            self.atoms=atoms
+        if spins==None:
+            self.spins=np.array([])
+        else:
+            self.spins=spins
+        if basisvecs==None:
+            self.basisvecs=np.array([[0,0,1]])
+        else:
+            self.basisvecs=basisvecs
+        if kvecs==None:
+            self.kvecs=np.array([[0,0,0]])
+        else:
+            self.kvecs=kvecs
+        if ff==None:
+            self.ff=np.array([])
+        else:
+            self.ff=ff
 
     def makeAtoms(self):
         """Generate the Cartesian coordinates of the atoms for this species.
@@ -612,9 +639,10 @@ class magSpecies:
     
     def makeFF(self):    
         g=self.gS+self.gL
-        if 0*getFFparams(self.ffparamkey) == []:
+        if getFFparams(self.ffparamkey) != ['none']:
             self.ff=self.gS/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey))+self.gL/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey),j2=True)
         else:
+            print 'Using generic magnetic form factor.'
             self.ff=jCalc(self.ffqgrid)
 
     def copy(self):
@@ -626,27 +654,52 @@ class magStructure:
     """Extend the diffpy.Structure class to include magnetic attributes.
     """
 
-    def __init__(self,struc=[],species={},atoms=np.array([]),spins=np.array([]),rmaxAtoms=30.0):
-        self.struc=struc        
-        self.species=species
-        self.atoms=atoms
-        self.spins=spins
+    def __init__(self,struc=None,species=None,atoms=None,spins=None,gfactors=None,rmaxAtoms=30.0,ffqgrid=np.arange(0,10,0.01),ff=None):
         self.rmaxAtoms=rmaxAtoms
+        self.ffqgrid=ffqgrid
 
-    def makeSpecies(self,label='mag1',magIdxs=[0],atoms=np.array([]),spins=np.array([]),basisvecs=np.array([[0,0,1]]),kvecs=np.array([[0,0,0]]),gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.array([0]),ff=np.array([])):
+        if struc==None:
+            self.struc=[]
+        else:
+            self.struc=struc        
+        if atoms==None:
+            self.atoms=np.array([])
+        else:
+            self.atoms=atoms
+        if spins==None:
+            self.spins=np.array([])
+        else:
+            self.spins=spins
+        if gfactors==None:
+            self.gfactors=np.array([2.0])
+        else:
+            self.gfactors=gfactors
+        if species==None:
+            self.species={}
+        else:
+            self.species=species
+        if ff==None:
+            self.ff=np.array([])
+        else:
+            self.ff=ff
+
+    def makeSpecies(self,label='mag1',magIdxs=None,atoms=None,spins=None,basisvecs=None,kvecs=None,gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.arange(0,10.0,0.01),ff=None):
         self.species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
 
-    def addSpecies(self,magSpec):
-        """Add an already-existing magSpecies object
+    def loadSpecies(self,magSpec):
+        """Add a copy of an already-existing magSpecies object
         """
         self.species[magSpec.label]=magSpec
+
+    def removeSpecies(self,label):
+        del self.species[label]
 
     def makeAtoms(self):
         """Generate the Cartesian coordinates of the atoms in the structure."""
         temp=np.array([[0,0,0]])
         for key in self.species:
             self.species[key].makeAtoms()
-            np.concatenate((temp,self.species[key].atoms))
+            temp=np.concatenate((temp,self.species[key].atoms))
         self.atoms=temp[1:]
     
     def makeSpins(self):
@@ -657,8 +710,28 @@ class magStructure:
         temp=np.array([[0,0,0]])
         for key in self.species:
             self.species[key].makeSpins()
-            np.concatenate((temp,self.species[key].spins))
+            temp=np.concatenate((temp,self.species[key].spins))
         self.spins=temp[1:]
+
+    def makeGfactors(self):
+        temp=np.array([2.0])
+        for key in self.species:
+            temp=np.concatenate((temp,(self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
+        self.gfactors=temp[1:]
+    
+    def makeFF(self):
+        try:
+            self.ffqgrid=self.species.values()[0].ffqgrid
+            self.ff=np.zeros_like(self.ffqgrid)
+            totatoms=0.0
+            for key in self.species:
+                totatoms+=self.species[key].atoms.shape[0]
+            for key in self.species:
+                frac=float(self.species[key].atoms.shape[0])/totatoms
+                self.species[key].makeFF()
+                self.ff+=frac*self.species[key].ff
+        except:
+            print 'Check that all mag species have same q-grid.'
 
     def copy(self):
         """Return a deep copy of the mPDFcalculator object."""
@@ -727,17 +800,11 @@ class mPDFcalculator:
             transform of magnetic form mactor.
 
         """
-    def __init__(self,struc=[],atoms=np.array([]),rmaxAtoms=30.0,spins=np.array([]),svec=np.array([0,0,1]),kvec=np.array([0,0,0]),spinOrigin=np.array([0,0,0]),ffqgrid=np.array([]),ff=np.array([]),magIdxs=[0],calcList=np.array([0]),maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
-        self.struc=struc        
-        self.atoms=atoms
-        self.rmaxAtoms=rmaxAtoms
-        self.spins=spins
-        self.svec=svec
-        self.kvec=kvec
-        self.spinOrigin=spinOrigin
-        self.ffqgrid=ffqgrid
-        self.ff=ff
-        self.magIdxs=magIdxs
+    def __init__(self,magstruc=None,calcList=[0],maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
+        if magstruc==None:
+            self.magstruc=[]
+        else:
+            self.magstruc=magstruc
         self.calcList=calcList
         self.maxextension=maxextension
         self.gaussPeakWidth=gaussPeakWidth
@@ -754,17 +821,6 @@ class mPDFcalculator:
         self.rmaxtr=rmaxtr
         self.drtr=drtr  
 
-    def makeAtoms(self):
-        """Generate the Cartesian coordinates of the atoms in the structure."""
-        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
-
-    def makeSpins(self):
-        """Generate the Cartesian coordinates of the spin vectors in the
-               structure. Must have a propagation vector, spin origin, and
-               starting spin vector.
-        """
-        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.spinOrigin,self.kvec,self.svec)
-
     def calc(self,normalized=True,both=False):
         """Calculate the magnetic PDF.
 
@@ -777,14 +833,14 @@ class mPDFcalculator:
         Returns: numpy array giving the r grid of the calculation, as well as
             one or both the mPDF quantities.
         """
-        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
         if normalized and not both: 
             return rcalc,frcalc
         elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
             return rcalc,Drcalc
         else:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             return rcalc,frcalc,Drcalc
 
     def plot(self,normalized=True,both=False):
@@ -800,16 +856,16 @@ class mPDFcalculator:
         ax=fig.add_subplot(111)
         ax.set_xlabel('r ($\AA$)')
         ax.set_xlim(xmin=self.rmin,xmax=self.rmax)        
-        rcalc,frcalc=calculatemPDF(self.atoms,self.spins,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,self.magstruc.gfactors,np.array([2.0]),self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
         if normalized and not both: 
             ax.plot(rcalc,frcalc)
             ax.set_ylabel('f ($\AA^{-2}$)')
         elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
             ax.plot(rcalc,Drcalc)            
             ax.set_ylabel('D ($\AA^{-2}$)')
         else:
-            Drcalc=calculateDr(rcalc,frcalc,self.ffqgrid,self.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             ax.plot(rcalc,frcalc,'b-',label='f(r)')
             ax.plot(rcalc,Drcalc,'r-',label='D(r)')
             ax.set_ylabel('f, D ($\AA^{-2}$)')

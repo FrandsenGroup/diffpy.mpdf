@@ -36,8 +36,8 @@ MnOPDF.loadData(dataFile)
 MnOPDF.setCalculationRange(xmin=0.01, xmax=20, dx=0.01)
 
 # Add the structure from our cif file to the contribution
-MnOStructure = loadStructure(structureFile)
-MnOPDF.addStructure("MnO", MnOStructure)
+mnostructure = loadStructure(structureFile)
+MnOPDF.addStructure("MnO", mnostructure)
 
 # The FitRecipe does the work of calculating the PDF with the fit variable
 # that we give it.
@@ -102,17 +102,17 @@ baseline2 = 1.1 * (gdiff+baseline).min()
 
 # Do the mPDF fit
 
-# Set up the mPDF calculator
-mc=mPDFcalculator(struc=MnOStructure,magIdxs=[0,1,2],rmin=0.01,rmax=20.0,gaussPeakWidth=0.2)
+# Create the Mn2+ magnetic species
+mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),ffparamkey='Mn2')
 
-mc.makeAtoms()
-mc.svec=2.5*np.array([1.0,-1.0,0])/np.sqrt(2)
-mc.kvec=np.array([0,0,1.5])
-mc.spinOrigin=mc.atoms[0]
-mc.makeSpins()
-mc.ffqgrid=np.arange(0,10,0.01)
-mc.ff=jCalc(mc.ffqgrid,getFFparams('Mn2'))
-mc.calcList=np.arange(1)
+# Create and prep the magnetic structure
+magstruc=magStructure()
+magstruc.loadSpecies(mn2p)
+magstruc.makeAll()
+
+# 
+# Set up the mPDF calculator
+mc=mPDFcalculator(magstruc=magstruc,rmax=20.0,gaussPeakWidth=0.2)
 
 # Do the refinement
 mc.rmin=r.min()
