@@ -269,7 +269,7 @@ def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr
     dr=r[1]-r[0]
     return Dr[np.logical_and(rDr>=np.min(r)-0.5*dr,rDr<=np.max(r)+0.5*dr)]
     
-def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0],square=False):
+def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[[0]],square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
 
     Args:
@@ -323,7 +323,7 @@ def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0],square=False):
 
     return atoms
 
-def generateSpinsXYZ(struc,atoms=np.array([]),spinOrigin=np.array([0,0,0]),kvec=np.array([0,0,0]),svec=np.array([0,0,1])):
+def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),basisvecs=np.array([[0,0,1]])):
     """Generate array of 3-vectors representing the spins in a structure.
 
     Args:
@@ -348,9 +348,21 @@ def generateSpinsXYZ(struc,atoms=np.array([]),spinOrigin=np.array([0,0,0]),kvec=
     lat=struc.lattice
     rlat=lat.reciprocal()
     astar,bstar,cstar=rlat.cartesian((1,0,0)),rlat.cartesian((0,1,0)),rlat.cartesian((0,0,1))
-    kcart=kvec[0]*astar+kvec[1]*bstar+kvec[2]*cstar
-    mags=np.cos(2*3.141593*np.dot(atoms-spinOrigin,kcart))
-    spins=svec*mags.reshape(-1,1)
+    i=1j
+ 
+    spins=0*atoms
+    for idx in range(len(kvecs)):
+        kvec=kvecs[idx]
+        kcart=kvec[0]*astar+kvec[1]*bstar+kvec[2]*cstar
+        phasefac=np.exp(-2.0*3.14159265359*i*np.dot(atoms,kcart))
+        cspins=basisvecs[idx]*phasefac[:,np.newaxis]
+        spins+=np.real(cspins)
+
+    if np.abs(np.imag(cspins)).max()>0.0001:
+        print np.abs(np.imag(cspins)).max()
+        print 'Warning: basis vectors resulted in complex spins.'
+        print 'Imaginary parts have been discarded'    
+
     return spins
 
 def getFFparams(name,j2=False):
@@ -567,6 +579,82 @@ def getFFparams(name,j2=False):
             return j2dict[name]
         except KeyError:
             print 'No magnetic form factor found for that element/ion.'
+
+class magSpecies:
+    """Store information for a single species of magnetic atom.
+    """
+    def __init__(self,struc=[],label='',magIdxs=[0],atoms=np.array([]),spins=np.array([]),rmaxAtoms=30.0,basisvecs=np.array([[0,0,1]]),kvecs=np.array([[0,0,0]]),gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.array([0]),ff=np.array([])):
+        self.struc=struc
+        self.label=label
+        self.magIdxs=magIdxs
+        self.atoms=atoms
+        self.spins=spins
+        self.rmaxAtoms=rmaxAtoms
+        self.basisvecs=basisvecs
+        self.kvecs=kvecs
+        self.gS=gS
+        self.gL=gL
+        self.ffparamkey=ffparamkey
+        self.ffqgrid=ffqgrid
+        self.ff=ff
+
+    def makeAtoms(self):
+        """Generate the Cartesian coordinates of the atoms for this species.
+        """
+        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
+
+    def makeSpins(self):
+        """Generate the Cartesian coordinates of the spin vectors in the
+               structure. Must have a propagation vector, spin origin, and
+               starting spin vector.
+        """
+        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.kvecs,self.basisvecs)
+    
+    def makeFF(self):    
+        g=self.gS+self.gL
+        if 0*getFFparams(self.ffparamkey) == []:
+            self.ff=self.gS/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey))+self.gL/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey),j2=True)
+        else:
+            self.ff=jCalc(self.ffqgrid)
+
+class magStructure:
+    """Extend the diffpy.Structure class to include magnetic attributes.
+    """
+
+    def __init__(self,struc=[],species={},atoms=np.array([]),spins=np.array([]),rmaxAtoms=30.0):
+        self.struc=struc        
+        self.species=species
+        self.atoms=atoms
+        self.spins=spins
+        self.rmaxAtoms=rmaxAtoms
+
+    def makeSpecies(self,label='mag1',magIdxs=[0],atoms=np.array([]),spins=np.array([]),basisvecs=np.array([[0,0,1]]),kvecs=np.array([[0,0,0]]),gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.array([0]),ff=np.array([])):
+        species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
+
+    def addSpecies(self,magSpec):
+        """Add an already-existing magSpecies object
+        """
+        species[magSpec.label]=magSpec
+
+    def makeAtoms(self):
+        """Generate the Cartesian coordinates of the atoms in the structure."""
+        temp=np.array([0,0,0])
+        for key in species:
+            species[key].makeAtoms()
+            np.concatenate((temp,species[key].atoms))
+        self.atoms=temp[1:]
+    
+    def makeSpins(self):
+        """Generate the Cartesian coordinates of the spin vectors in the
+               structure. Must have a propagation vector, spin origin, and
+               starting spin vector.
+        """
+        temp=np.array([0,0,0])
+        for key in species:
+            species[key].makeSpins()
+            np.concatenate((temp,species[key].spins))
+        self.spins=temp[1:]
+
 
 class mPDFcalculator:
     """Create an mPDFcalculator object to help calculate mPDF functions.
@@ -1013,9 +1101,3 @@ def calculateIQPBCold(xyz, sxyz, uclist, qgrid, rstep, rmax, f, a):  ### a is la
     rv+=len(uclist)*2.*S*(S+1)*(f**2)/3.
     return [qgrid, rv]
 
-def test():
-    print 'This is not a rigorous test.'
-    return
-    
-if __name__=='__main__':
-    test()
