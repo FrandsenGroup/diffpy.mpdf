@@ -617,6 +617,11 @@ class magSpecies:
         else:
             self.ff=jCalc(self.ffqgrid)
 
+    def copy(self):
+        """Return a deep copy of the mPDFcalculator object."""
+        temp=[self]        
+        return copy.deepcopy(temp)[0]
+
 class magStructure:
     """Extend the diffpy.Structure class to include magnetic attributes.
     """
@@ -629,19 +634,19 @@ class magStructure:
         self.rmaxAtoms=rmaxAtoms
 
     def makeSpecies(self,label='mag1',magIdxs=[0],atoms=np.array([]),spins=np.array([]),basisvecs=np.array([[0,0,1]]),kvecs=np.array([[0,0,0]]),gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.array([0]),ff=np.array([])):
-        species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
+        self.species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
 
     def addSpecies(self,magSpec):
         """Add an already-existing magSpecies object
         """
-        species[magSpec.label]=magSpec
+        self.species[magSpec.label]=magSpec
 
     def makeAtoms(self):
         """Generate the Cartesian coordinates of the atoms in the structure."""
-        temp=np.array([0,0,0])
-        for key in species:
-            species[key].makeAtoms()
-            np.concatenate((temp,species[key].atoms))
+        temp=np.array([[0,0,0]])
+        for key in self.species:
+            self.species[key].makeAtoms()
+            temp=np.concatenate((temp,self.species[key].atoms))
         self.atoms=temp[1:]
     
     def makeSpins(self):
@@ -649,12 +654,16 @@ class magStructure:
                structure. Must have a propagation vector, spin origin, and
                starting spin vector.
         """
-        temp=np.array([0,0,0])
-        for key in species:
-            species[key].makeSpins()
-            np.concatenate((temp,species[key].spins))
+        temp=np.array([[0,0,0]])
+        for key in self.species:
+            self.species[key].makeSpins()
+            temp=np.concatenate((temp,self.species[key].spins))
         self.spins=temp[1:]
 
+    def copy(self):
+        """Return a deep copy of the mPDFcalculator object."""
+        temp=[self]        
+        return copy.deepcopy(temp)[0]
 
 class mPDFcalculator:
     """Create an mPDFcalculator object to help calculate mPDF functions.

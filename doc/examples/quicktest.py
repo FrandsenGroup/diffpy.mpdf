@@ -18,7 +18,12 @@ mnostructure=loadStructure('MnO_cubic.cif')
 mnmag=magSpecies(mnostructure,'Mn')
 mnmag.magIdxs=[0,1,2,3]
 mnmag.kvecs=np.array([[0.5,0.5,0.5]])
-mnmag.basisvecs=np.array([[1,-1-1j,0]])
+mnmag.basisvecs=np.array([[1,-1,0]])
 
-mnmag.makeAtoms()
-mnmag.makeSpins()
+magstruc=magStructure(mnostructure)
+magstruc.addSpecies(mnmag)
+
+magstruc.makeAtoms()
+magstruc.makeSpins()
+
+
