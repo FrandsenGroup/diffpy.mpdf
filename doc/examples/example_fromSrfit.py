@@ -95,7 +95,7 @@ gobs = MnOFit.MnO.profile.y
 gcalc = MnOFit.MnO.evaluate()
 baseline = 1.1 * gobs.min()
 gdiff = gobs - gcalc
-baseline2 = 1.1 * (gdiff+baseline).min()
+baseline2 = 1.2 * (gdiff+baseline).min()
 
 # Do the mPDF fit
 
@@ -127,13 +127,13 @@ fit=mc.calc(both=True)[2]
 # Plot!
 ax=plt.figure().add_subplot(111)
 ax.plot(r, gobs, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
-ax.plot(r, gcalc, 'r-', lw=1.5, label="G(r) fit")
+ax.plot(r, gcalc, 'r-', lw=2, label="G(r) fit")
 ax.plot(r, gdiff + baseline,mfc='none',mec='b',marker='o')
-ax.plot(r,fit+baseline,'r-',lw=1.5)
+ax.plot(r,fit+baseline,'r-',lw=2)
 ax.plot(r,gdiff-fit+baseline2,'g-')
 ax.plot(r, np.zeros_like(r) + baseline2, 'k:')
-ax.set_xlabel(r"r ($\AA$)")
-ax.set_ylabel(r"G ($\AA^{-2}$)")
+ax.set_xlabel('r ($\AA$)',fontsize=16)
+ax.set_ylabel('G, d ($\AA^{-2}$)',fontsize=16)
 plt.legend()
 
 plt.show()

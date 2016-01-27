@@ -108,7 +108,9 @@ def getDiffData(fileNames=[],fmt='pdfgui',writedata=False):
         else:
             print 'This format is not currently supported.'
 	
-def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]), rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,dampRate=0.0,dampPower=2.0,maxextension=10.0):
+def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
+        rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,
+        dampRate=0.0,dampPower=2.0,maxextension=10.0):
     """Calculate the normalized mPDF.
     
     At minimum, this module requires input lists of atomic positions and spins.
@@ -219,10 +221,12 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]), r
     else:
         rcv,frcv=r,fr
 
-    return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
+    return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], \
+           frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
     
 
-def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),rmintr=-5.0,rmaxtr=5.0,drtr=0.01,qmin=0,qmax=-1):
+def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),
+        rmintr=-5.0,rmaxtr=5.0,drtr=0.01,qmin=0,qmax=-1):
     """Calculate the unnormalized mPDF quantity D(r).
     
     This module requires a normalized mPDF as an input, as well as a magnetic
@@ -328,7 +332,8 @@ def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[[0]],square=False):
 
     return atoms
 
-def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),basisvecs=np.array([[0,0,1]])):
+def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),
+        basisvecs=np.array([[0,0,1]])):
     """Generate array of 3-vectors representing the spins in a structure.
 
     Args:
@@ -677,7 +682,8 @@ class magSpecies:
         """    
         g=self.gS+self.gL
         if getFFparams(self.ffparamkey) != ['none']:
-            self.ff=self.gS/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey))+self.gL/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey),j2=True)
+            self.ff=(self.gS/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey))+
+                    self.gL/g * jCalc(self.ffqgrid,getFFparams(self.ffparamkey),j2=True))
         else:
             print 'Using generic magnetic form factor.'
             self.ff=jCalc(self.ffqgrid)
@@ -842,7 +848,8 @@ class magStructure:
         """
         temp=np.array([2.0])
         for key in self.species:
-            temp=np.concatenate((temp,(self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
+            temp=np.concatenate((temp,
+                    (self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
         self.gfactors=temp[1:]
     
     def makeFF(self):
@@ -977,14 +984,21 @@ class mPDFcalculator:
         Returns: numpy array giving the r grid of the calculation, as well as
             one or both the mPDF quantities.
         """
-        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,
+                    self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,
+                    self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,
+                    self.dampRate,self.dampPower,self.maxextension)
         if normalized and not both: 
             return rcalc,frcalc
         elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
+                   self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
+                   self.rmaxtr,self.drtr,self.qmin,self.qmax)
             return rcalc,Drcalc
         else:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
+                self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
+                self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             return rcalc,frcalc,Drcalc
 
     def plot(self,normalized=True,both=False):
@@ -1008,11 +1022,15 @@ class mPDFcalculator:
             ax.plot(rcalc,frcalc)
             ax.set_ylabel('f ($\AA^{-2}$)')
         elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
+                    self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
+                    self.rmaxtr,self.drtr,self.qmin,self.qmax)
             ax.plot(rcalc,Drcalc)            
             ax.set_ylabel('D ($\AA^{-2}$)')
         else:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,self.rmaxtr,self.drtr,self.qmin,self.qmax)            
+            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
+                    self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
+                    self.rmaxtr,self.drtr,self.qmin,self.qmax)            
             ax.plot(rcalc,frcalc,'b-',label='f(r)')
             ax.plot(rcalc,Drcalc,'r-',label='D(r)')
             ax.set_ylabel('f, D ($\AA^{-2}$)')
