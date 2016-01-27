@@ -1,14 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import diffpy as dp
-import sys
 
 # DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure import loadStructure
 
-import sys
-sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
-from mcalculator import *
+from mpdfcalculator.mcalculator import *
 
 # Files containing our experimental data and structure file
 structureFile = "MnO_cubic.cif"

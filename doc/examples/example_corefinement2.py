@@ -4,17 +4,14 @@
 # Import necessary functions
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize.minpack import leastsq
+from scipy.optimize import leastsq
 
 from diffpy.Structure.Parsers import getParser
 from diffpy.srfit.pdf import PDFGenerator, PDFParser
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 from diffpy.srfit.fitbase import Profile, FitContribution
 
-import sys
-sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
-from mcalculator import *
-
+from mpdfcalculator.mcalculator import *
 
 # Files containing our experimental data and structure file
 dataFile = "npdf_07334.gr"

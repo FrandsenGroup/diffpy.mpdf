@@ -1,12 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
-import diffpy as dp
 from diffpy.Structure import loadStructure
 
-import sys
-sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
-from mcalculator import *
+from mpdfcalculator.mcalculator import *
 
 # Create the structure from our cif file, update the lattice params
 structureFile = "MnO_R-3m.cif"

@@ -4,11 +4,10 @@
 
 # We'll need numpy and pylab for plotting our results
 import numpy as np
-#import pylab
 import matplotlib.pyplot as plt
 
 # A least squares fitting algorithm from scipy
-from scipy.optimize.minpack import leastsq
+from scipy.optimize import leastsq
 
 # DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure import loadStructure
@@ -16,9 +15,7 @@ from diffpy.srfit.pdf import PDFContribution
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 
 # Load the mPDF calculator modules
-import sys
-sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
-from mcalculator import *
+from mpdfcalculator.mcalculator import *
 
 
 # Files containing our experimental data and structure file

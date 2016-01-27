@@ -11,9 +11,7 @@ from diffpy.srfit.pdf import PDFGenerator, PDFParser
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 from diffpy.srfit.fitbase import Profile, FitContribution
 
-import sys
-sys.path.append('/home/ben/mPDFmodules/mpdfcalculator')
-from mcalculator import *
+from mpdfcalculator.mcalculator import *
 
 
 # Files containing our experimental data and structure file
