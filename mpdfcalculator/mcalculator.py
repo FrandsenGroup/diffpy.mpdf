@@ -352,7 +352,8 @@ def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),basisv
     """
     lat=struc.lattice
     rlat=lat.reciprocal()
-    astar,bstar,cstar=rlat.cartesian((1,0,0)),rlat.cartesian((0,1,0)),rlat.cartesian((0,0,1))
+    (astar,bstar,cstar)=(rlat.cartesian((1,0,0)),rlat.cartesian((0,1,0)),
+                         rlat.cartesian((0,0,1)))
     i=1j
  
     spins=0*atoms
@@ -744,7 +745,9 @@ class magStructure:
         else:
             self.ff=ff
 
-    def makeSpecies(self,label='mag1',magIdxs=None,atoms=None,spins=None,basisvecs=None,kvecs=None,gS=2.0,gL=0.0,ffparamkey=None,ffqgrid=np.arange(0,10.0,0.01),ff=None):
+    def makeSpecies(self,label,magIdxs=None,atoms=None,spins=None,
+                basisvecs=None,kvecs=None,gS=2.0,gL=0.0,ffparamkey=None,
+                ffqgrid=np.arange(0,10.0,0.01),ff=None):
         """Create a magSpecies object and add it to the species dictionary.
 
         Args:
@@ -770,7 +773,18 @@ class magStructure:
             ff (numpy array): magnetic form factor.
 
         """
-        self.species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
+        # check that the label is not a duplicate with any other mag species.
+        duplicate=False
+        for name in self.species.keys():
+            if name==label:
+                duplicate=True
+        if not duplicate:
+            self.species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,
+                self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
+            self.check()
+        else:
+            print 'This label has already been assigned to another species in'
+            print 'the structure. Please choose a new label.'
 
     def loadSpecies(self,magSpec):
         """Load in an already-existing magSpecies object
@@ -779,7 +793,18 @@ class magStructure:
             magSpec (magSpecies object): The magnetic species to be imported
                 into the structure.
         """
-        self.species[magSpec.label]=magSpec
+        # check that the label is not a duplicate with any other mag species.
+        duplicate=False
+        for name in self.species.keys():
+            if name==magSpec.label:
+                duplicate=True
+        if not duplicate:
+            self.species[magSpec.label]=magSpec
+            self.check()
+        else:
+            print 'The label for this species has already been assigned to'
+            print 'another species in the structure. Please choose a new label'
+            print 'for this species.'        
 
     def removeSpecies(self,label):
         """Remove a magnetic species from the species dictionary.
@@ -848,6 +873,24 @@ class magStructure:
         self.makeSpins()
         self.makeGfactors()
         self.makeFF()
+        self.check()
+
+    def check(self):
+        """Run some simple checks and raise a warning if a problem is found.
+        """
+        # check for duplication among magnetic species        
+        duplicate=False
+        idxs=[]
+        for key in self.species:
+            idxs.append(self.species[key].magIdxs)
+        idxs=[item for sublist in idxs for item in sublist] # flatten the list
+        for idx in idxs:
+            if idxs.count(idx)>1:
+                duplicate=True
+        if duplicate:
+            print 'Warning: Magnetic species may have overlapping atoms.'
+            print 'Check the magIdxs lists for your magnetic species.'
+
 
     def copy(self):
         """Return a deep copy of the magStructure object."""
@@ -897,7 +940,11 @@ class mPDFcalculator:
             transform of magnetic form mactor.
 
         """
-    def __init__(self,magstruc=None,calcList=[0],maxextension=10.0,gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,rmaxtr=5.0,drtr=0.01):
+    def __init__(self,magstruc=None,calcList=[0],maxextension=10.0,
+                gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,
+                qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,
+                ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,
+                rmaxtr=5.0,drtr=0.01):
         if magstruc==None:
             self.magstruc=[]
         else:
@@ -953,7 +1000,10 @@ class mPDFcalculator:
         ax=fig.add_subplot(111)
         ax.set_xlabel('r ($\AA$)')
         ax.set_xlim(xmin=self.rmin,xmax=self.rmax)        
-        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,self.dampRate,self.dampPower,self.maxextension)
+        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,
+                     self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,
+                     self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,
+                     self.dampRate,self.dampPower,self.maxextension)
         if normalized and not both: 
             ax.plot(rcalc,frcalc)
             ax.set_ylabel('f ($\AA^{-2}$)')
