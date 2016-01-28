@@ -956,6 +956,9 @@ class mPDFcalculator:
             self.magstruc=[]
         else:
             self.magstruc=magstruc
+            if magstruc.rmaxAtoms<rmax:
+                print 'Warning: Your structure may not be big enough for your'
+                print 'desired calculation range.'
         self.calcList=calcList
         self.maxextension=maxextension
         self.gaussPeakWidth=gaussPeakWidth
