@@ -304,7 +304,8 @@ def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[[0]],square=False):
         bc=BondCalculator(rmax=rmax+np.linalg.norm(struc.lattice.stdbase.sum(axis=1)))
         bc.setPairMask(0,'all',True,others=False)
         bc(magAtoms)
-        atoms=np.vstack([struc.xyz_cartn[magIdxs[0]],bc.directions[bc.sites0==0]])        
+        r0=struc.xyz_cartn[magIdxs[0]]
+        atoms=np.vstack([r0,r0+bc.directions[bc.sites0==0]])        
 
     else:
         # generate the coordinates of each unit cell
