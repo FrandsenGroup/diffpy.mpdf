@@ -3,282 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve, convolve
 from diffpy.srreal.bondcalculator import BondCalculator
+from mpdfcalculator import *
 import copy
 
-def jCalc(q,params=[0.2394,26.038,0.4727,12.1375,0.3065,3.0939,-0.01906],j2=False):
-    """Calculate the magnetic form factor j0.
-
-    This method for calculating the magnetic form factor is based on the
-    approximate empirical forms based on the tables by Brown, consisting of
-    the sum of 3 Gaussians and a constant. 
-    
-    Args:
-        q (numpy array): 1-d grid of momentum transfer on which the form
-            factor is to be computed
-        params (python list): provides the 7 numerical coefficients. The
-            default is an average form factor of 3d j0 approximations.  
-        j2 (boolean): if True, calculate the j2 approximation for orbital
-            angular momentum contributions   
-    
-    Returns:
-        numpy array with same shape as q giving the magnetic form factor j0 or j2.
-    """
-    [A,a,B,b,C,c,D] = params
-    if j2:
-        return (A*np.exp(-a*(q/4/np.pi)**2)+B*np.exp(-b*(q/4/np.pi)**2)+C*np.exp(-c*(q/4/np.pi)**2)+D)*(q/4.0/np.pi)**2
-    else:
-        return A*np.exp(-a*(q/4/np.pi)**2)+B*np.exp(-b*(q/4/np.pi)**2)+C*np.exp(-c*(q/4/np.pi)**2)+D
-
-def cv(x1,y1,x2,y2):
-    """Perform the convolution of two functions and give the correct output.
-
-    Args:    
-        x1 (numpy array): independent variable of first function; must be in
-            ascending order
-        y1 (numpy array): dependent variable of first function
-        x2 (numpy array): independent variable of second function; must have
-            same grid spacing as x1
-        y2 (numpy array): dependent variable of second function
-
-    Returns:
-        xcv (numpy array): independent variable of convoluted function, has
-            dimension len(x1) + len(x2) - 1
-        ycv (numpy array): convolution of y1 and y2, same shape as xcv
-    
-    Returns: arrays ycv and xcv giving the convolution.
-    """
-    dx=x1[1]-x1[0]
-    ycv = dx*np.convolve(y1,y2,'full')
-    xcv=np.linspace(x1[0]+x2[0],x1[-1]+x2[-1],len(ycv))
-    return xcv,ycv
-    
-def costransform(q,fq,rmin=0.0,rmax=50.0,rstep=0.1): # does not require even q-grid
-    """Compute the cosine Fourier transform of a function.
-
-    This method uses direct integration rather than an FFT and doesn't require
-    an even grid. The grid for the Fourier transform is even and specifiable.
-    
-    Args:
-        q (numpy array): independent variable for function to be transformed
-        fq (numpy array): dependent variable for function to be transformed
-        rmin (float, default=0.0): min value of conjugate independent variable
-            grid
-        rmax (float, default=50.0): maximum value of conjugate independent
-            variable grid
-        rstep (float, default=0.1): grid spacing for conjugate independent
-            variable
-    
-    Returns: 
-        r (numpy array): independent variable grid for transformed quantity
-        fr (numpy array): cosine Fourier transform of fq
-    """
-    lostep = int(np.ceil((rmin - 1e-8) / rstep))
-    histep = int(np.floor((rmax + 1e-8) / rstep)) + 1
-    r = np.arange(lostep,histep)*rstep
-    qrmat=np.outer(r,q)
-    integrand=fq*np.cos(qrmat)
-    fr=np.sqrt(2.0/np.pi)*np.trapz(integrand,q)
-    return r,fr
-
-	
-def getDiffData(fileNames=[],fmt='pdfgui',writedata=False):
-    """Extract the fit residual from a structural PDF fit.
-
-    Args:
-        fileNames (python list): list of paths to the files containing the
-            fit information (e.g. calculated and experimental PDF, as in the
-            .fgr files from PDFgui exported fits)
-        fmt (string): string identifying the format of the file(s). Options
-            are currently just 'pdfgui'.
-        writedata (boolean): whether or not the output should be saved to file
-
-    Returns:
-        r (numpy array): same r-grid as contained in the fit file
-        diff (numpy array): the structural PDF fit residual (i.e. the mPDF)
-    """
-    for name in fileNames:
-        if fmt=='pdfgui':
-            allcols = np.loadtxt(name,unpack=True,comments='#',skiprows=14)
-            r,grcalc,diff=allcols[0],allcols[1],allcols[4]
-            grexp = grcalc+diff
-            if writedata:
-                np.savetxt(name[:-4]+'.diff',np.transpose((r,diff)))
-            else:
-                return r,diff
-        else:
-            print 'This format is not currently supported.'
-	
-def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
-        rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1,qmin=0,qmax=-1,
-        dampRate=0.0,dampPower=2.0,maxextension=10.0):
-    """Calculate the normalized mPDF.
-    
-    At minimum, this module requires input lists of atomic positions and spins.
-    
-    Args:
-        xyz (numpy array): list of atomic coordinates of all the magnetic
-            atoms in the structure.
-        sxyz (numpy array): triplets giving the spin vectors of all the 
-            atoms, in the same order as the xyz array provided as input.
-        gfactors (numpy array): Lande g-factors of spins in same order as
-            spin array.
-        calcList (python list): list giving the indices of the atoms array
-            specifying the atoms to be used as the origin when calculating
-            the mPDF.
-        rstep (float): step size for r-grid of calculated mPDF.
-        rmin (float): minimum value of r for which mPDF should be calculated.
-        rmax (float): maximum value of r for which mPDF should be calculated.
-        psigma(float): std deviation (in Angstroms) of Gaussian peak
-            to be convoluted with the calculated mPDF to simulate thermal
-            motion.
-        qmin (float): minimum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        qmax (float): maximum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        dampRate (float): generalized ("stretched") exponential damping rate
-                of the mPDF.
-        dampPower (float): power of the generalized exponential function.
-        maxextension (float): extension of the r-grid on which the mPDF is
-            calculated to properly account for contribution of pairs just
-            outside the boundary.
-
-    Returns: numpy arrays for r and the mPDF fr.
-        """
-    # check if g-factors have been provided
-    if sxyz.shape[0]!=gfactors.shape[0]:
-        gfactors=2.0*np.ones(sxyz.shape[0])
-
-    # calculate s1, s2
-    r = np.arange(rmin, rmax+maxextension+rstep, rstep)
-    rbin =  np.concatenate([r-rstep/2, [r[-1]+rstep/2]])
-    
-    s1 = np.zeros(len(r))
-    s2 = np.zeros(len(r))
-    
-    for i in range(len(calcList)):
-        uu = calcList[i]
-        
-        ri = xyz0 = xyz[uu]
-        rj = xyz
-        si = sxyz0 = sxyz[uu]
-        sj = sxyz
-        gi = gfactors[uu]
-        gj = gfactors
-        
-        dxyz = rj-ri
-        d2xyz = np.sum((dxyz)**2, axis=1).reshape(dxyz.shape[0], 1)
-        d1xyz = np.sqrt(d2xyz)
-        d1xyzr = d1xyz.ravel()
-        
-        xh = dxyz / d1xyz
-        xh[uu] = 0
-        yh = si - xh * np.sum(si*xh, axis=1).reshape(dxyz.shape[0], 1)
-        yh_dis = np.sum(yh**2, axis = 1)
-        yh_ind = np.nonzero(np.abs(yh_dis)<1e-10)
-        yh[yh_ind] = [0,0,0]
-        
-        aij = np.sum(si * yh, axis=1) * np.sum(sj * yh, axis=1) / yh_dis
-        aij[yh_ind] = 0
-        bij = 2 * np.sum(si * xh, axis=1) * np.sum(sj * xh, axis=1) - aij
-        bij[uu] = 0
-        
-        w2 = bij / d1xyzr**3
-        w2[uu] = 0
-        
-        s1 += np.histogram(d1xyzr, bins=rbin, weights=gi*gj*aij)[0]
-        s2 += np.histogram(d1xyzr, bins=rbin, weights=gi*gj*w2)[0]
-    
-    # apply Gaussian shape function
-    if psigma != None:
-        x = np.arange(-3, 3, rstep)
-        y = np.exp(-x**2 / psigma**2 / 2) * (1 / np.sqrt(2*np.pi) / psigma)
-    
-        s1[0] = 0
-        s1 = fftconvolve(s1, y)
-        s1 = s1[len(x)/2: -len(x)/2+1]
-        
-        s2 = fftconvolve(s2, y) * rstep
-        s2 = s2[len(x)/2: -len(x)/2+1]
-        
-    ss2 = np.cumsum(s2)
-
-    if rmin==0:
-        r[0]=1e-4*rstep # avoid infinities at r=0
-    fr = s1 / r + r * (ss2[-1] - ss2)
-    r[0]=rmin
-    fr /= len(calcList)*np.mean(gfactors)**2
-
-    fr *= np.exp(-1.0*(dampRate*r)**dampPower)
-    # Do the convolution with the termination function if qmin/qmax have been given
-    if qmin >= 0 and qmax > qmin:
-        rth=np.arange(0.0,rmax+maxextension+rstep,rstep)
-        rth[0]=1e-4*rstep # avoid infinities at r=0
-        th=(np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
-        rth[0]=0.0
-        rcv,frcv=cv(r,fr,rth,th)
-    else:
-        rcv,frcv=r,fr
-
-    return rcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)], \
-           frcv[np.logical_and(rcv>=r[0]-0.5*rstep,rcv<=rmax+0.5*rstep)]
-    
-
-def calculateDr(r,fr,q,ff,paraScale=1.0,orderedScale=1.0/np.sqrt(2*np.pi),
-        rmintr=-5.0,rmaxtr=5.0,drtr=0.01,qmin=0,qmax=-1):
-    """Calculate the unnormalized mPDF quantity D(r).
-    
-    This module requires a normalized mPDF as an input, as well as a magnetic
-    form factor and associated q grid.
-
-    Args:
-        r (numpy array): r grid for the properly normalized mPDF.
-        fr (numpy array): the properly normalized mPDF.
-        q (numpy array): grid of momentum transfer values used for calculating
-            the magnetic form factor.
-        ff (numpy array): magnetic form factor. Same shape as ffqgrid.
-        paraScale (float): scale factor for the paramagnetic part of the
-            unnormalized mPDF function D(r).
-        ordScale (float): scale factor for the ordered part of the
-            unnormalized mPDF function D(r).
-        rmintr (float): minimum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        rmaxtr (float): maximum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        drtr (float): step size for r-grid used for calculating Fourier
-            transform of magnetic form mactor.
-        qmin (float): minimum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        qmax (float): maximum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-
-    Returns: numpy array for the unnormalized mPDF Dr.
-    """
-
-    rsr,sr=costransform(q,ff,rmintr,rmaxtr,drtr)
-    sr=np.sqrt(np.pi/2.0)*sr
-    rSr,Sr=cv(rsr,sr,rsr,sr)
-    para=-1.0*np.sqrt(2.0*np.pi)*np.gradient(Sr,rSr[1]-rSr[0]) ### paramagnetic term in d(r)
-    rDr,Dr=cv(r,fr,rSr,Sr)
-    Dr*=orderedScale
-    if qmin >= 0 and qmax > qmin:
-        rstep=r[1]-r[0]        
-        rth=np.arange(0.0,r.max()+rstep,rstep)
-        rth[0]=1e-4*rstep # avoid infinities at r=0
-        th=(np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
-        rth[0]=0.0
-        rpara,para=cv(rSr,para,rth,th)
-    else:
-        rpara,para=rSr,para
-
-    Dr[:np.min((len(para),len(Dr)))]+=para[:np.min((len(para),len(Dr)))]*paraScale
-    dr=r[1]-r[0]
-    return Dr[np.logical_and(rDr>=np.min(r)-0.5*dr,rDr<=np.max(r)+0.5*dr)]
-    
-def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[[0]],square=False):
+def generateAtomsXYZ(struc,rmax=30.0,magIdxs=[0],square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
 
     Args:
@@ -356,6 +84,7 @@ def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),
     Note: At the moment, this only works for collinear magnetic structures
         with a single propagation vector.
     """
+    
     lat=struc.lattice
     rlat=lat.reciprocal()
     (astar,bstar,cstar)=(rlat.cartesian((1,0,0)),rlat.cartesian((0,1,0)),
@@ -378,6 +107,56 @@ def generateSpinsXYZ(struc,atoms=np.array([[]]),kvecs=np.array([[0,0,0]]),
 
     return spins
 
+def generateFromUnitCell(unitcell,atombasis,spinCell,rmax=30.0):
+    """Generate array of atomic Cartesian coordinates from a given structure.
+
+    Args:
+        unitcell (numpy array): np.array([avec,bvec,cvec])
+        atombasis (numpy array): gives positions of magnetic atoms in
+            fractional coordinates; np.array([pos1,pos2,pos3,...])
+        spinCell (numpy array): gives orientations of the magnetic moments
+            in the unit cell, in the same order as atombasis
+        rmax (float): largest distance from central atom that should be
+            included
+
+    Returns:
+        atoms=numpy array of triples giving the Cartesian coordinates of all
+              the magnetic atoms. Atom closest to the origin placed first in
+              array.
+        spins=numpy array of triples giving the Cartesian coordinates of all
+              the spins in the structure, in the same order as atoms.
+    
+    Note: This will only work well for structures that can be expressed with a
+        unit cell that is close to orthorhombic or higher symmetry.
+    """
+    cellwithatoms=np.dot(atombasis,unitcell) ### check this
+    radius=rmax+15.0
+    dim1=np.round(radius/np.linalg.norm(unitcell[0]))
+    dim2=np.round(radius/np.linalg.norm(unitcell[1]))
+    dim3=np.round(radius/np.linalg.norm(unitcell[2]))
+
+    ### generate the coordinates of each unit cell 
+    latos=np.dot(np.mgrid[-dim1:dim1+1,-dim2:dim2+1,-dim3:dim3+1].transpose().ravel().reshape((2*dim1+1)*(2*dim2+1)*(2*dim3+1),3),unitcell)
+
+    ### select points within a desired radius from origin
+    latos=latos[np.where(np.apply_along_axis(np.linalg.norm,1,latos)<=(rmax+np.linalg.norm(unitcell.sum(axis=1))))]
+
+    ## rearrange latos array so that [0,0,0] is the first one (for convenience)
+    latos[np.where(np.all(latos==[0,0,0],axis=1))]=latos[0]
+    latos[0]=np.array([0,0,0])
+
+    ### create list of all atomic positions
+    atoms=np.empty([len(latos)*len(cellwithatoms),3])
+    spins=np.empty_like(atoms)
+    index=0
+    for i in range(len(latos)):
+        for j in range(len(cellwithatoms)):
+            atoms[index]=latos[i]+cellwithatoms[j]
+            spins[index]=spinCell[j]
+            index+=1
+
+    return atoms,spins
+    
 def getFFparams(name,j2=False):
     """Get list of parameters for approximation of magnetic form factor
 
@@ -629,18 +408,37 @@ class magSpecies:
         ffqgrid (numpy array): grid of momentum transfer values used for 
             calculating the magnetic form factor.
         ff (numpy array): magnetic form factor.
+        useDiffpyStruc (boolean): True if atoms/spins to be generated from
+            a diffpy structure object; False if a user-provided unit cell is
+            to be used. Note that there may be some problems with user-
+            provided unit cells with lattice angles strongly deviated from
+            90 degrees.
+        latVecs (numpy array): Provides the unit cell lattice vectors as
+            np.array([avec,bvec,cvec]). Only useful if useDiffpyStruc=False.
+        atomBasis (numpy array): Provides positions of the magnetic atoms
+            in fractional coordinates within the unit cell. Only useful if
+            useDiffpyStruc=False. Example: np.array([[0,0,0],[0.5,0.5,0.5]])
+        spinBasis (numpy array): Provides the orientations of the spins in
+            the unit cell, in the same order as atomBasis. Only useful if 
+            useDiffpyStruc=False. Example: np.array([[0,0,1],[0,0,-1]])
 
     """
     def __init__(self,struc=None,label='',magIdxs=[0],atoms=None,spins=None,
                     rmaxAtoms=30.0,basisvecs=None,kvecs=None,gS=2.0,gL=0.0,
-                    ffparamkey=None,ffqgrid=np.arange(0,10.0,0.01),ff=None):
+                    ffparamkey=None,ffqgrid=np.arange(0,10.0,0.01),ff=None,
+                    useDiffpyStruc=True,latVecs=None,atomBasis=None,
+                    spinBasis=None):
         self.label=label
-        self.magIdxs=magIdxs or [0]
         self.rmaxAtoms=30.0
         self.gS=gS
         self.gL=gL
         self.ffparamkey=ffparamkey
         self.ffqgrid=ffqgrid
+        self.useDiffpyStruc=useDiffpyStruc
+        if magIdxs==None:
+            self.magIdxs=[0]
+        else:
+            self.magIdxs=magIdxs
         if struc==None:
             self.struc=[]
         else:
@@ -665,19 +463,48 @@ class magSpecies:
             self.ff=np.array([])
         else:
             self.ff=ff
+        if latVecs==None:
+            self.latVecs=np.array([[4.,0,0],[0,4.,0],[0,0,4.]])
+        else:
+            self.ff=latVecs
+        if atomBasis==None:
+            self.atomBasis=np.array([[0,0,0]])
+        else:
+            self.atomBasis=atomBasis
+        if spinBasis==None:
+            self.spinBasis=np.array([[0,0,1]])
+        else:
+            self.spinBasis=spinBasis
 
+    def __repr__(self):
+        if self.label=='':
+            return 'magSpecies() object'
+        else:
+            return self.label+': magSpecies() object'
+        
     def makeAtoms(self):
         """Generate the Cartesian coordinates of the atoms for this species.
         """
-        self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
+        if self.useDiffpyStruc:
+            self.atoms=generateAtomsXYZ(self.struc,self.rmaxAtoms,self.magIdxs)
+        else:
+            try:
+                self.atoms,self.spins=generateFromUnitCell(self.latVecs,
+                        self.atomBasis,self.spinBasis,self.rmaxAtoms)
+            except:
+                print 'Please check latVecs, atomBasis, and spinBasis.'
 
     def makeSpins(self):
         """Generate the Cartesian coordinates of the spin vectors in the
                structure. Must provide propagation vector(s) and basis 
                vector(s).
         """
-        self.spins=generateSpinsXYZ(self.struc,self.atoms,self.kvecs,self.basisvecs)
-    
+        if self.useDiffpyStruc:
+            self.spins=generateSpinsXYZ(self.struc,self.atoms,self.kvecs,self.basisvecs)
+        else:
+            print 'The spins are generated from makeAtoms().'
+            print 'Please call that method if you have not already.'    
+
     def makeFF(self):
         """Generate the magnetic form factor.
         """    
@@ -688,6 +515,104 @@ class magSpecies:
         else:
             print 'Using generic magnetic form factor.'
             self.ff=jCalc(self.ffqgrid)
+
+    def runChecks(self):
+        """Run some simple checks and raise a warning if a problem is found.
+        """
+        print 'Running checks for '+self.label+' magSpecies object...\n'
+
+        flagCount = 0
+        flag = False
+
+        if self.useDiffpyStruc:
+            # check for improperly nested kvecs array        
+            try:
+                if self.kvecs.shape[1]!=3:
+                    flag=True
+            except:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'kvecs array does not have the correct dimensions.'
+                print 'It must be an N x 3 nested array, where N is the'
+                print 'number of propagation vectors.'
+                print 'Good example: kvecs=np.array([[0,0,0]])'
+                print 'Bad example: kvecs=np.array([0,0,0])'
+            flag=False
+
+            # check for improperly nested basisvecs array        
+            try:
+                if self.basisvecs.shape[1]!=3:
+                    flag=True
+            except:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'basisvecs array does not have the correct dimensions.'
+                print 'It must be an N x 3 nested array, where N is the'
+                print 'number of basis vectors.'
+                print 'Good example: basisvecs=np.array([[0,0,1]])'
+                print 'Bad example: basisvecs=np.array([0,0,1])'
+            flag=False
+
+            # check that basisvecs and kvecs have same shape
+            if self.kvecs.shape!=self.basisvecs.shape:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'kvecs and basisvecs must have the same dimensions.'
+
+        else:
+            # check for improperlatVecs array        
+            if self.latVecs.shape!=(3,3):
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'latVecs array does not have the correct dimensions.'
+                print 'It must be a 3 x 3 nested array.'
+                print 'Good example: np.array([[4,0,0],[0,4,0],[0,0,4]])'
+            flag=False
+
+            # check for improperly nested atomBasis array        
+            try:
+                if self.atomBasis.shape[1]!=3:
+                    flag=True
+            except:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'atomBasis array does not have the correct dimensions.'
+                print 'It must be an N x 3 nested array, where N is the'
+                print 'number of magnetic atoms in the unit cell.'
+                print 'Good example: np.array([[0,0,0]])'
+                print 'Bad example: kvecs=np.array([0,0,0])'
+            flag=False
+
+            # check for improperly nested spinBasis array        
+            try:
+                if self.spinBasis.shape[1]!=3:
+                    flag=True
+            except:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'spinBasis array does not have the correct dimensions.'
+                print 'It must be an N x 3 nested array, where N is the'
+                print 'number of spins in the unit cell.'
+                print 'Good example: np.array([[0,0,1]])'
+                print 'Bad example: np.array([0,0,1])'
+            flag=False
+
+            # check for mismatched number of atoms and spins in basis
+            if self.atomBasis.shape!=self.spinBasis.shape:
+                flag=True
+            if flag:
+                flagCount+=1
+                print 'atomBasis and spinBasis must have the same dimensions.'
+
+        # summarize results
+        if flagCount==0:
+            print 'All magSpecies() checks passed. No obvious problems found.\n'        
 
     def copy(self):
         """Return a deep copy of the magSpecies object.
@@ -717,15 +642,16 @@ class magStructure:
             calculating the magnetic form factor.
         ff (numpy array): magnetic form factor. Should be same shape as
             ffqgrid.
- 
+        label (string): Optional descriptive string for the magStructure.
    """
 
     def __init__(self,struc=None,species=None,atoms=None,spins=None,
                     gfactors=None,rmaxAtoms=30.0,
-                    ffqgrid=np.arange(0,10,0.01),ff=None):
+                    ffqgrid=np.arange(0,10,0.01),ff=None,label=''):
 
         self.rmaxAtoms=rmaxAtoms
         self.ffqgrid=ffqgrid
+        self.label=label
 
         if struc==None:
             self.struc=[]
@@ -748,9 +674,15 @@ class magStructure:
         else:
             self.species=species
         if ff==None:
-            self.ff=np.array([])
+            self.ff=jCalc(self.ffqgrid)
         else:
             self.ff=ff
+
+    def __repr__(self):
+        if self.label=='':
+            return 'magStructure() object'
+        else:
+            return self.label+': magStructure() object'
 
     def makeSpecies(self,label,magIdxs=None,atoms=None,spins=None,
                 basisvecs=None,kvecs=None,gS=2.0,gL=0.0,ffparamkey=None,
@@ -788,7 +720,7 @@ class magStructure:
         if not duplicate:
             self.species[label]=magSpecies(self.struc,label,magIdxs,atoms,spins,
                 self.rmaxAtoms,basisvecs,kvecs,gS,gL,ffparamkey,ffqgrid,ff)
-            self.check()
+            self.runChecks()
         else:
             print 'This label has already been assigned to another species in'
             print 'the structure. Please choose a new label.'
@@ -807,7 +739,8 @@ class magStructure:
                 duplicate=True
         if not duplicate:
             self.species[magSpec.label]=magSpec
-            self.check()
+            self.struc=magSpec.struc
+            self.runChecks()
         else:
             print 'The label for this species has already been assigned to'
             print 'another species in the structure. Please choose a new label'
@@ -819,19 +752,32 @@ class magStructure:
         Args:
             label (string): key for the dictionary entry to be removed.
         """
-        del self.species[label]
+        try:
+            del self.species[label]
+        except:
+            print 'Species cannot be deleted. Check that you are using the'
+            print 'correct species label.'
 
     def makeAtoms(self):
-        """Generate the Cartesian coordinates of the atoms in the structure.
-                Calls the makeAtoms() method for each magSpecies in the
-                species dictionary and concatenates the atoms together.
+        """Generate the Cartesian coordinates of the atoms for this species.
+        
+        Args:
+            fromUnitCell (boolean): True if atoms/spins to be generated from
+                a unit cell provided by the user; False if the diffpy structure
+                object is to be used.
+            unitcell (numpy array): Provides the unit cell lattice vectors as
+                np.array((avec,bvec,cvec)).
+            atombasis (numpy array): Provides positions of the magnetic atoms
+                in fractional coordinates within the unit cell.
+            spin cell (numpy array): Provides the orientations of the spins in
+                the unit cell, in the same order as atombasis
         """
         temp=np.array([[0,0,0]])
         for key in self.species:
             self.species[key].makeAtoms()
             temp=np.concatenate((temp,self.species[key].atoms))
         self.atoms=temp[1:]
-    
+                
     def makeSpins(self):
         """Generate the Cartesian coordinates of the spin vectors in the
                structure. Calls the makeSpins() method for each magSpecies in
@@ -881,171 +827,52 @@ class magStructure:
         self.makeSpins()
         self.makeGfactors()
         self.makeFF()
-        self.check()
+        self.runChecks()
 
-    def check(self):
+    def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
         """
+        # do the magSpecies checks
+        for key in self.species:
+            self.species[key].runChecks()
+
+        print 'Running checks for '+self.label+' magStructure object...\n'
+
+        flag=False
+        flagCount=0
+        
         # check for duplication among magnetic species        
-        duplicate=False
         idxs=[]
         for key in self.species:
             idxs.append(self.species[key].magIdxs)
         idxs=[item for sublist in idxs for item in sublist] # flatten the list
         for idx in idxs:
             if idxs.count(idx)>1:
-                duplicate=True
-        if duplicate:
+                flag=True
+        if flag:
+            flagCount+=1
             print 'Warning: Magnetic species may have overlapping atoms.'
             print 'Check the magIdxs lists for your magnetic species.'
+    
+        # summarize results
+        if flagCount==0:
+            print 'All magStructure checks passed. No obvious problems found.'
+
+    def getSpeciesIdxs(self):
+        """Return a dictionary with the starting index in the atoms and spins
+           arrays corresponding to each magnetic species.
+        """
+        idxDict={}
+        startIdx=0
+        for key in self.species:
+            idxDict[key]=startIdx
+            startIdx+=self.species[key].atoms.shape[0]
+        print idxDict
+        return idxDict
 
 
     def copy(self):
         """Return a deep copy of the magStructure object."""
         return copy.deepcopy(self)
 
-class mPDFcalculator:
-    """Create an mPDFcalculator object to help calculate mPDF functions.
-    
-    This class is loosely modelled after the PDFcalculator class in diffpy.
-    At minimum, it requires a magnetic structure with atoms and spins, and
-    it calculates the mPDF from that. Various other options can be specified
-    for the calculated mPDF.
-    
-    Args:
-        magstruc (magStructure object): provides information about the 
-            magnetic structure. Must have arrays of atoms and spins.
-        calcList (python list): list giving the indices of the atoms array
-            specifying the atoms to be used as the origin when calculating
-            the mPDF.
-        maxextension (float): extension of the r-grid on which the mPDF is
-            calculated to properly account for contribution of pairs just
-            outside the boundary.
-        gaussPeakWidth(float): std deviation (in Angstroms) of Gaussian peak
-            to be convoluted with the calculated mPDF to simulate thermal
-            motion.
-        dampRate (float): generalized ("stretched") exponential damping rate
-                of the mPDF.
-        dampPower (float): power of the generalized exponential function.
-        qmin (float): minimum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        qmax (float): maximum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        rmin (float): minimum value of r for which mPDF should be calculated.
-        rmax (float): maximum value of r for which mPDF should be calculated.
-        rstep (float): step size for r-grid of calculated mPDF.
-        ordScale (float): scale factor for the ordered part of the
-            unnormalized mPDF function D(r).
-        paraScale (float): scale factor for the paramagnetic part of the
-            unnormalized mPDF function D(r).
-        rmintr (float): minimum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        rmaxtr (float): maximum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        drtr (float): step size for r-grid used for calculating Fourier
-            transform of magnetic form mactor.
-
-        """
-    def __init__(self,magstruc=None,calcList=[0],maxextension=10.0,
-                gaussPeakWidth=0.1,dampRate=0.0,dampPower=2.0,qmin=-1.0,
-                qmax=-1.0,rmin=0.0,rmax=20.0,rstep=0.01,
-                ordScale=1.0/np.sqrt(2*np.pi),paraScale=1.0,rmintr=-5.0,
-                rmaxtr=5.0,drtr=0.01):
-        if magstruc==None:
-            self.magstruc=[]
-        else:
-            self.magstruc=magstruc
-            if magstruc.rmaxAtoms<rmax:
-                print 'Warning: Your structure may not be big enough for your'
-                print 'desired calculation range.'
-        self.calcList=calcList
-        self.maxextension=maxextension
-        self.gaussPeakWidth=gaussPeakWidth
-        self.dampRate=dampRate
-        self.dampPower=dampPower
-        self.qmin=qmin
-        self.qmax=qmax
-        self.rmin=rmin
-        self.rmax=rmax
-        self.rstep=rstep
-        self.ordScale=ordScale
-        self.paraScale=paraScale
-        self.rmintr=rmintr
-        self.rmaxtr=rmaxtr
-        self.drtr=drtr  
-
-    def calc(self,normalized=True,both=False):
-        """Calculate the magnetic PDF.
-
-        Args:
-            normalized (boolean): indicates whether or not the normalized mPDF
-                should be returned.
-            both (boolean): indicates whether or not both normalized and
-                unnormalized mPDF quantities should be returned.
-
-        Returns: numpy array giving the r grid of the calculation, as well as
-            one or both the mPDF quantities.
-        """
-        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,
-                    self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,
-                    self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,
-                    self.dampRate,self.dampPower,self.maxextension)
-        if normalized and not both: 
-            return rcalc,frcalc
-        elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
-                   self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
-                   self.rmaxtr,self.drtr,self.qmin,self.qmax)
-            return rcalc,Drcalc
-        else:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
-                self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
-                self.rmaxtr,self.drtr,self.qmin,self.qmax)            
-            return rcalc,frcalc,Drcalc
-
-    def plot(self,normalized=True,both=False):
-        """Plot the magnetic PDF.
-
-        Args:
-            normalized (boolean): indicates whether or not the normalized mPDF
-                should be plotted.
-            both (boolean): indicates whether or not both normalized and
-                unnormalized mPDF quantities should be plotted.
-        """
-        fig=plt.figure()
-        ax=fig.add_subplot(111)
-        ax.set_xlabel('r ($\AA$)')
-        ax.set_xlim(xmin=self.rmin,xmax=self.rmax)        
-        rcalc,frcalc=calculatemPDF(self.magstruc.atoms,self.magstruc.spins,
-                     self.magstruc.gfactors,self.calcList,self.rstep,self.rmin,
-                     self.rmax,self.gaussPeakWidth,self.qmin,self.qmax,
-                     self.dampRate,self.dampPower,self.maxextension)
-        if normalized and not both: 
-            ax.plot(rcalc,frcalc)
-            ax.set_ylabel('f ($\AA^{-2}$)')
-        elif not normalized and not both:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
-                    self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
-                    self.rmaxtr,self.drtr,self.qmin,self.qmax)
-            ax.plot(rcalc,Drcalc)            
-            ax.set_ylabel('D ($\AA^{-2}$)')
-        else:
-            Drcalc=calculateDr(rcalc,frcalc,self.magstruc.ffqgrid,
-                    self.magstruc.ff,self.paraScale,self.ordScale,self.rmintr,
-                    self.rmaxtr,self.drtr,self.qmin,self.qmax)            
-            ax.plot(rcalc,frcalc,'b-',label='f(r)')
-            ax.plot(rcalc,Drcalc,'r-',label='D(r)')
-            ax.set_ylabel('f, D ($\AA^{-2}$)')
-            plt.legend(loc='best')
-        plt.show()
-
-    def rgrid(self):
-        """Return the current r grid of the mPDF calculator."""
-        return np.arange(self.rmin,self.rmax+self.rstep,self.rstep)
-
-    def copy(self):
-        """Return a deep copy of the mPDFcalculator object."""
-        return copy.deepcopy(self)
 

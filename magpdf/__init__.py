@@ -15,7 +15,7 @@
 """
 
 # package version
-from mcalculator import *
-
+from magstructure import *
+from mpdfcalculator import *
 
 # End of file
