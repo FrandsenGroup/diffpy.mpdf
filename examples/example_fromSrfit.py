@@ -6,22 +6,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# A least squares fitting algorithm from scipy
-from scipy.optimize import leastsq
+# Load the mPDF calculator modules
+from cmi_plugins.mpdfmodules import *
 
 # DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure import loadStructure
 from diffpy.srfit.pdf import PDFContribution
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 
-# Load the mPDF calculator modules
-from mpdfcalculator.mcalculator import *
-
+# A least squares fitting algorithm from scipy
+from scipy.optimize import leastsq
 
 # Files containing our experimental data and structure file
 dataFile = "npdf_07334.gr"
 structureFile = "MnO_R-3m.cif"
 spaceGroup = "H-3m"
+mnostructure = loadStructure(structureFile)
+
+# Create the Mn2+ magnetic species
+mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],
+                basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),
+                ffparamkey='Mn2')
+
+# Create and prep the magnetic structure
+magstruc=magStructure()
+magstruc.loadSpecies(mn2p)
+magstruc.makeAll()
+
+# 
+# Set up the mPDF calculator
+mc=mPDFcalculator(magstruc=magstruc,rmax=20.0,gaussPeakWidth=0.2)
 
 # The first thing to construct is a contribution. Since this is a simple
 # example, the contribution will simply contain our PDF data and an associated
@@ -33,7 +47,6 @@ MnOPDF.loadData(dataFile)
 MnOPDF.setCalculationRange(xmin=0.01, xmax=20, dx=0.01)
 
 # Add the structure from our cif file to the contribution
-mnostructure = loadStructure(structureFile)
 MnOPDF.addStructure("MnO", mnostructure)
 
 # The FitRecipe does the work of calculating the PDF with the fit variable
@@ -98,20 +111,6 @@ gdiff = gobs - gcalc
 baseline2 = 1.2 * (gdiff+baseline).min()
 
 # Do the mPDF fit
-
-# Create the Mn2+ magnetic species
-mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),ffparamkey='Mn2')
-
-# Create and prep the magnetic structure
-magstruc=magStructure()
-magstruc.loadSpecies(mn2p)
-magstruc.makeAll()
-
-# 
-# Set up the mPDF calculator
-mc=mPDFcalculator(magstruc=magstruc,rmax=20.0,gaussPeakWidth=0.2)
-
-# Do the refinement
 mc.rmin=r.min()
 mc.rmax=r.max()
 def residual(p,yexp,mcalc):
@@ -126,14 +125,18 @@ fit=mc.calc(both=True)[2]
 
 # Plot!
 ax=plt.figure().add_subplot(111)
-ax.plot(r, gobs, 'bo', label="G(r) data",markerfacecolor='none', markeredgecolor='b')
-ax.plot(r, gcalc, 'r-', lw=2, label="G(r) fit")
-ax.plot(r, gdiff + baseline,mfc='none',mec='b',marker='o')
-ax.plot(r,fit+baseline,'r-',lw=2)
-ax.plot(r,gdiff-fit+baseline2,'g-')
+ax.plot(r, gobs, 'bo', label="Total PDF",markerfacecolor='b', markeredgecolor='b')
+ax.plot(r, gdiff + baseline,mfc='Indigo',mec='Indigo',marker='o',linestyle='none',label='mPDF')
+ax.plot(r, gcalc, 'r-', lw=2.5, label="Fit")
+ax.plot(r,fit+baseline,'r-',lw=2.5)
+ax.plot(r,gdiff-fit+baseline2,'g-',label='Residual')
 ax.plot(r, np.zeros_like(r) + baseline2, 'k:')
 ax.set_xlabel('r ($\AA$)',fontsize=16)
 ax.set_ylabel('G, d ($\AA^{-2}$)',fontsize=16)
+ax.set_xlim(xmin=0,xmax=20)
+ax.set_yticks([])
+ax.set_yticklabels([])
 plt.legend()
 
+plt.tight_layout()
 plt.show()
