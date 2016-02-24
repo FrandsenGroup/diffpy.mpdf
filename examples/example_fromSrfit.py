@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the mPDF calculator modules
-from cmi_plugins.mpdfmodules import *
+from diffpy.magpdf import *
 
 # DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure import loadStructure

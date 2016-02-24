@@ -95,9 +95,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/magpdf.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/diffpymagpdf.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/magpdf.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/diffpymagpdf.qhc"
 
 .PHONY: applehelp
 applehelp:
@@ -114,8 +114,8 @@ devhelp:
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/magpdf"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/magpdf"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/diffpymagpdf"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/diffpymagpdf"
 	@echo "# devhelp"
 
 .PHONY: epub

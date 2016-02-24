@@ -16,7 +16,7 @@
 import copy
 import numpy as np
 from diffpy.srreal.bondcalculator import BondCalculator
-from magpdf.mpdfcalculator import jCalc
+from diffpy.magpdf.mpdfcalculator import jCalc
 
 def generateAtomsXYZ(struc, rmax=30.0, magIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.

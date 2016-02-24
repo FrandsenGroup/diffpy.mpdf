@@ -20,6 +20,14 @@ magpdf.mpdfcalculator module
     :undoc-members:
     :show-inheritance:
 
+magpdf.version module
+---------------------
+
+.. automodule:: magpdf.version
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

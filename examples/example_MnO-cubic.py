@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # DiffPy-CMI modules for building a fitting recipe
 from diffpy.Structure import loadStructure
 
-from cmi_plugins.mpdfmodules import *
+from diffpy.magpdf import *
 
 # Files containing our experimental data and structure file
 structureFile = "MnO_cubic.cif"

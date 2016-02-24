@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
 from diffpy.Structure import loadStructure
 
-from magpdf import *
+from diffpy.magpdf import *
 
 # Create the structure from our cif file, update the lattice params
 structureFile = "MnO_R-3m.cif"

@@ -11,8 +11,7 @@ from diffpy.srfit.pdf import PDFGenerator, PDFParser
 from diffpy.srfit.fitbase import FitRecipe, FitResults
 from diffpy.srfit.fitbase import Profile, FitContribution
 
-from magpdf import *
-
+from diffpy.magpdf import *
 
 # Files containing our experimental data and structure file
 dataFile = "npdf_07334.gr"
