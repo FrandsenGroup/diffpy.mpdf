@@ -92,8 +92,6 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
         numpy array of triples giving the spin vectors of all the magnetic
             atoms, in the same order as the atoms array provided as input.
 
-    Note: At the moment, this only works for collinear magnetic structures
-        with a single propagation vector.
     """
 
     lat = struc.lattice
@@ -103,9 +101,9 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
     i = 1j
 
     spins = 0*atoms
-    cspins = 0*atoms+0j*atoms
+    cspins = 0*atoms + 0j*atoms
     for idx, kvec in enumerate(kvecs):
-        kcart = kvec[0]*astar+kvec[1]*bstar+kvec[2]*cstar
+        kcart = kvec[0]*astar + kvec[1]*bstar + kvec[2]*cstar
         phasefac = np.exp(-2.0*np.pi*i*np.dot(atoms, kcart))
         cspins += basisvecs[idx]*phasefac[:, np.newaxis]
     spins = np.real(cspins)

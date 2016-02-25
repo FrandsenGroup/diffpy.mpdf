@@ -115,7 +115,7 @@ def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
     for name in fileNames:
         if fmt == 'pdfgui':
             allcols = np.loadtxt(name, unpack=True, comments='#', skiprows=14)
-            r, grcalc, diff = allcols[0], allcols[1], allcols[4]
+            r, diff = allcols[0], allcols[4]
             if writedata:
                 np.savetxt(name[:-4]+'.diff', np.transpose((r, diff)))
             else:
