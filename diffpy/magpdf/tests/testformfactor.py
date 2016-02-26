@@ -5,15 +5,16 @@
 
 
 import unittest
-from diffpy.magpdf import jCalc
+import diffpy.magpdf
+import numpy as np
 
 ##############################################################################
-def fun(x):
-    return x + 1
-
-class basicTest(unittest.TestCase):
+class mPDFfromCIFtest(unittest.TestCase):
     def test(self):
-        self.assertEqual(fun(3),4)
+        q=np.arange(0,10,0.01)
+        fq=diffpy.magpdf.jCalc(q,diffpy.magpdf.getFFparams('Mn2'))
+        testval=np.round(fq[100],decimals=4)
+        self.assertEqual(testval,0.9323)
 
 # End of class TestAtomRadiiTable
 

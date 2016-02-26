@@ -1,6 +1,13 @@
 diffpy.magpdf package
 =====================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    diffpy.magpdf.tests
+
 Submodules
 ----------
 

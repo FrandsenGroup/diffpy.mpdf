@@ -31,8 +31,11 @@ def testsuite():
     '''
     import unittest
     modulenames = '''
-        diffpy.magpdf.tests.basic1
-        diffpy.magpdf.tests.basic2
+        diffpy.magpdf.tests.testbasicmpdf
+        diffpy.magpdf.tests.testmpdffromcif
+        diffpy.magpdf.tests.testmpdffromselfcreated
+        diffpy.magpdf.tests.testformfactor
+        diffpy.magpdf.tests.testgetdiffdata
     '''.split()
     suite = unittest.TestSuite()
     loader = unittest.defaultTestLoader
