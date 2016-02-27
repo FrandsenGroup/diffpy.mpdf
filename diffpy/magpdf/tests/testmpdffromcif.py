@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Unit tests for the AtomRadiiTable class.
+"""Unit tests for various magpdf classes and functions.
 """
 
 
@@ -34,7 +34,7 @@ class mPDFfromCIFtest(unittest.TestCase):
         testval=np.round(dr[100],decimals=4)
         self.assertEqual(testval,10.9454)
 
-# End of class TestAtomRadiiTable
+# End of class mPDFfromCIFtest
 
 if __name__ == '__main__':
     unittest.main()

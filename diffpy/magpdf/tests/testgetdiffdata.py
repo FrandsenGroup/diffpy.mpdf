@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Unit tests for the AtomRadiiTable class.
+"""Unit tests for reading in mPDF data.
 """
 
 
@@ -15,14 +15,14 @@ def find(name, path):
         if name in files:
             return os.path.join(root, name)
 
-class basicmPDFtest(unittest.TestCase):
+class getDiffDataTest(unittest.TestCase):
     def test(self):
         path = os.path.dirname(os.path.abspath(__file__))
         r,dr=diffpy.magpdf.getDiffData([find('testdata.fgr',path)])
         testval=dr.max()
         self.assertEqual(testval,107.42)
 
-# End of class TestAtomRadiiTable
+# End of class getDiffDataTest
 
 if __name__ == '__main__':
     unittest.main()

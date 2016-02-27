@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Unit tests for the AtomRadiiTable class.
+"""Unit tests for creating magnetic structures.
 """
 
 
@@ -9,7 +9,7 @@ import diffpy.magpdf
 import numpy as np
 
 ##############################################################################
-class mPDFfromCIFtest(unittest.TestCase):
+class mPDFfromSelftest(unittest.TestCase):
     def test(self):
         msp=diffpy.magpdf.magSpecies(useDiffpyStruc=False)
         msp.latVecs=np.array([[4,0,0],[0,4,0],[0,0,4]])
@@ -26,7 +26,7 @@ class mPDFfromCIFtest(unittest.TestCase):
         testval=np.round(fr.max(),decimals=4)
         self.assertEqual(testval,3.3996)
 
-# End of class TestAtomRadiiTable
+# End of class mPDFfromSelftest
 
 if __name__ == '__main__':
     unittest.main()

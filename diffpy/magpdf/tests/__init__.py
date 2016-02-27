@@ -36,6 +36,7 @@ def testsuite():
         diffpy.magpdf.tests.testmpdffromselfcreated
         diffpy.magpdf.tests.testformfactor
         diffpy.magpdf.tests.testgetdiffdata
+        diffpy.magpdf.tests.testspinsatoms
     '''.split()
     suite = unittest.TestSuite()
     loader = unittest.defaultTestLoader
