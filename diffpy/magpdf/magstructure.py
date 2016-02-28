@@ -472,6 +472,29 @@ def atomsFromSpins(magstruc,spinvecs,fractional=True,returnIdxs=False):
     else:
         return atoms,idxs
 
+def visualizeSpins(atoms,spins):
+    """Set up a 3d plot showing an arrangement of spins.
+
+    Args:
+        atoms (numpy array): array of atomic positions of spins to be
+            visualized.
+        spins (numpy array): array of spin vectors in same order as atoms.
+
+    Returns:
+        matplotlib figure object with a quiver plot on 3d axes.        
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import axes3d
+
+    x,y,z=np.transpose(atoms)
+    u,v,w=np.transpose(spins)
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.quiver(x, y, z, u, v, w, pivot='middle')
+
+    return fig
+
 class magSpecies:
     """Store information for a single species of magnetic atom.
 
@@ -1017,6 +1040,43 @@ class magStructure:
             List of arrays of atoms corresponding to the spins.
         """
         return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def visualize(self,atoms,spins,showcrystalaxes=False,
+                  axesorigin=np.array([0,0,0])):
+        """Generate a crude 3-d plot to visualize the selected spins.
+
+        Args:
+            atoms (numpy array): array of atomic positions of spins to be
+                visualized.
+            spins (numpy array): array of spin vectors in same order as atoms.
+            showcrystalaxes (boolean): if True, will display the crystal axes
+                determined from the first magnetic species in the magStructure
+            axesorigin (array): position at which the crystal axes should be
+                displayed
+        """
+        import matplotlib.pyplot as plt        
+        from mpl_toolkits.mplot3d import axes3d
+
+        fig = visualizeSpins(atoms,spins)
+        if showcrystalaxes:
+            ax3d = fig.axes[0]
+            try:
+                mspec=self.species.items()[0][1]
+                if mspec.useDiffpyStruc:
+                    lat=mspec.struc.lattice
+                    a, b, c = lat.stdbase
+                else:
+                    a, b, c = mspec.latVecs
+                xo, yo, zo = axesorigin
+                ax3d.quiver(xo, yo, zo, a[0], a[1], a[2], pivot='tail', color='r')
+                ax3d.quiver(xo, yo, zo, b[0], b[1], b[2], pivot='tail', color='g')
+                ax3d.quiver(xo, yo, zo, c[0], c[1], c[2], pivot='tail', color='b')
+            except:
+                print 'Please make sure your magnetic structure contains a'
+                print 'magnetic species with magSpecies.struc set to a diffpy'
+                print 'structure or magSpecies.latVecs provided and'
+                print 'magSpecies.useDiffpyStruc set to False.'
+        plt.show()
 
     def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
