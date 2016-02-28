@@ -37,6 +37,13 @@ mstruc=magStructure()
 mstruc.loadSpecies(helix)
 mstruc.makeAll()
 
+# Visualize the spins
+x,y,z=mstruc.atoms.transpose()
+mask=np.logical_and(z==0,np.logical_and(y==0,np.abs(x)<30))
+visatoms=mstruc.atoms[mask]
+visspins=spinsFromAtoms(mstruc,visatoms,fractional=False)
+mstruc.visualize(visatoms,visspins)
+
 # Create the mPDF calculator
 mc=mPDFcalculator(mstruc)
 mc.rmax=70.0

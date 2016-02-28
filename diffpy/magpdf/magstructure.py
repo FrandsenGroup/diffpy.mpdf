@@ -493,6 +493,13 @@ def visualizeSpins(atoms,spins):
     ax = fig.add_subplot(111, projection='3d')
     ax.quiver(x, y, z, u, v, w, pivot='middle')
 
+    xmin,xmax=ax.get_xlim3d()
+    ax.set_xlim3d(np.min((-1,xmin)),np.max((1,xmax)))
+    ymin,ymax=ax.get_ylim3d()
+    ax.set_ylim3d(np.min((-1,ymin)),np.max((1,ymax)))
+    zmin,zmax=ax.get_zlim3d()
+    ax.set_zlim3d(np.min((-1,zmin)),np.max((1,zmax)))
+
     return fig
 
 class magSpecies:
