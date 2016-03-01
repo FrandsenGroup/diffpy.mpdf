@@ -1,6 +1,13 @@
 magpdf package
 ==============
 
+Subpackages
+-----------
+
+.. toctree::
+
+    magpdf.tests
+
 Submodules
 ----------
 

@@ -100,6 +100,10 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
 
     spins = 0*atoms
     cspins = 0*atoms + 0j*atoms
+    if len(np.array(kvecs).shape) == 1:
+        kvecs = [kvecs]        
+    if len(np.array(basisvecs).shape) == 1:
+        basisvecs = [basisvecs]        
     for idx, kvec in enumerate(kvecs):
         kcart = kvec[0]*astar + kvec[1]*bstar + kvec[2]*cstar
         phasefac = np.exp(-2.0*np.pi*i*np.dot(atoms, kcart))
@@ -113,14 +117,14 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
 
     return spins
 
-def generateFromUnitCell(unitcell, atombasis, spinCell, rmax=30.0):
+def generateFromUnitCell(unitcell, atombasis, spinbasis, rmax=30.0):
     """Generate array of atomic Cartesian coordinates from a given structure.
 
     Args:
         unitcell (numpy array): np.array([avec, bvec, cvec])
         atombasis (numpy array): gives positions of magnetic atoms in
             fractional coordinates; np.array([pos1, pos2, pos3, ...])
-        spinCell (numpy array): gives orientations of the magnetic moments
+        spinbasis (numpy array): gives orientations of the magnetic moments
             in the unit cell, in the same order as atombasis
         rmax (float): largest distance from central atom that should be
             included
@@ -135,6 +139,10 @@ def generateFromUnitCell(unitcell, atombasis, spinCell, rmax=30.0):
     Note: This will only work well for structures that can be expressed with a
         unit cell that is close to orthorhombic or higher symmetry.
     """
+    if len(np.array(atombasis).shape) == 1:
+        atombasis = [atombasis]        
+    if len(np.array(spinbasis).shape) == 1:
+        spinbasis = [spinbasis]        
     cellwithatoms = np.dot(atombasis, unitcell) ### check this
     radius = rmax+15.0
     dim1 = np.round(radius/np.linalg.norm(unitcell[0]))
@@ -160,7 +168,7 @@ def generateFromUnitCell(unitcell, atombasis, spinCell, rmax=30.0):
     for lato in latos:
         for j, atompos in enumerate(cellwithatoms):
             atoms[index] = lato + atompos
-            spins[index] = spinCell[j]
+            spins[index] = spinbasis[j]
             index += 1
     return atoms, spins
 
@@ -699,36 +707,6 @@ class magSpecies:
         flag = False
 
         if self.useDiffpyStruc:
-            # check for improperly nested kvecs array
-            try:
-                if self.kvecs.shape[1] != 3:
-                    flag = True
-            except:
-                flag = True
-            if flag:
-                flagCount += 1
-                print 'kvecs array does not have the correct dimensions.'
-                print 'It must be an N x 3 nested array, where N is the'
-                print 'number of propagation vectors.'
-                print 'Good example: kvecs = np.array([[0, 0, 0]])'
-                print 'Bad example: kvecs = np.array([0, 0, 0])'
-            flag = False
-
-            # check for improperly nested basisvecs array
-            try:
-                if self.basisvecs.shape[1] != 3:
-                    flag = True
-            except:
-                flag = True
-            if flag:
-                flagCount += 1
-                print 'basisvecs array does not have the correct dimensions.'
-                print 'It must be an N x 3 nested array, where N is the'
-                print 'number of basis vectors.'
-                print 'Good example: basisvecs = np.array([[0, 0, 1]])'
-                print 'Bad example: basisvecs = np.array([0, 0, 1])'
-            flag = False
-
             # check that basisvecs and kvecs have same shape
             if self.kvecs.shape != self.basisvecs.shape:
                 flag = True
@@ -745,36 +723,6 @@ class magSpecies:
                 print 'latVecs array does not have the correct dimensions.'
                 print 'It must be a 3 x 3 nested array.'
                 print 'Good example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])'
-            flag = False
-
-            # check for improperly nested atomBasis array
-            try:
-                if self.atomBasis.shape[1] != 3:
-                    flag = True
-            except:
-                flag = True
-            if flag:
-                flagCount += 1
-                print 'atomBasis array does not have the correct dimensions.'
-                print 'It must be an N x 3 nested array, where N is the'
-                print 'number of magnetic atoms in the unit cell.'
-                print 'Good example: np.array([[0, 0, 0]])'
-                print 'Bad example: kvecs = np.array([0, 0, 0])'
-            flag = False
-
-            # check for improperly nested spinBasis array
-            try:
-                if self.spinBasis.shape[1] != 3:
-                    flag = True
-            except:
-                flag = True
-            if flag:
-                flagCount += 1
-                print 'spinBasis array does not have the correct dimensions.'
-                print 'It must be an N x 3 nested array, where N is the'
-                print 'number of spins in the unit cell.'
-                print 'Good example: np.array([[0, 0, 1]])'
-                print 'Bad example: np.array([0, 0, 1])'
             flag = False
 
             # check for mismatched number of atoms and spins in basis
@@ -904,6 +852,32 @@ class magStructure:
             print 'This label has already been assigned to another species in'
             print 'the structure. Please choose a new label.'
 
+    def getCoordsFromSpecies(self):
+        """Read in atomic positions and spins from magnetic species.
+
+        This differs from makeSpins() and makeAtoms() because it simply loads
+        the atoms and spins from the species without re-generating them from 
+        the structure.
+        """
+        tempA = np.array([[0, 0, 0]])
+        tempS = np.array([[0, 0, 0]])
+        for key in self.species:
+            na = self.species[key].atoms.shape[0]
+            ns = self.species[key].atoms.shape[0]
+            if (na > 0) and (na == ns):            
+                tempA = np.concatenate((tempA, self.species[key].atoms))
+                tempS = np.concatenate((tempS, self.species[key].spins))
+            else:
+                print 'Coordinates of atoms and spins for ' + key
+                print 'have not been loaded because they have not yet been'
+                print 'generated and/or do not match in shape.'
+        if tempA.shape != (1, 3):        
+            self.atoms = tempA[1:]
+            self.spins = tempS[1:]
+        elif len(self.species) == 0:
+            self.atoms = np.array([])
+            self.spins = np.array([])
+
     def loadSpecies(self, magSpec):
         """Load in an already-existing magSpecies object
 
@@ -919,20 +893,25 @@ class magStructure:
         if not duplicate:
             self.species[magSpec.label] = magSpec
             self.struc = magSpec.struc
+            self.getCoordsFromSpecies()
             self.runChecks()
         else:
             print 'The label for this species has already been assigned to'
             print 'another species in the structure. Please choose a new label'
             print 'for this species.'
 
-    def removeSpecies(self, label):
+    def removeSpecies(self, label, update=True):
         """Remove a magnetic species from the species dictionary.
 
         Args:
             label (string): key for the dictionary entry to be removed.
+            update (boolean): if True, the magStructure will update its atoms
+                and spins with the removed species now excluded.
         """
         try:
             del self.species[label]
+            if update:
+                self.getCoordsFromSpecies()
         except:
             print 'Species cannot be deleted. Check that you are using the'
             print 'correct species label.'

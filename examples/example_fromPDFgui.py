@@ -13,7 +13,7 @@ lat.a,lat.b,lat.c=3.1505626,3.1505626,7.5936979
 mnostructure.lattice=lat
 
 # Create the Mn2+ magnetic species
-mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([[1,0,0]]),kvecs=np.array([[0,0,1.5]]),ffparamkey='Mn2')
+mn2p=magSpecies(struc=mnostructure,label='Mn2+',magIdxs=[0,1,2],basisvecs=2.5*np.array([1,0,0]),kvecs=np.array([0,0,1.5]),ffparamkey='Mn2')
 
 # Create and prep the magnetic structure
 magstruc=magStructure()
