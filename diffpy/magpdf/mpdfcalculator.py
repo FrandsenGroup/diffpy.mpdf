@@ -440,7 +440,7 @@ class mPDFcalculator:
                                  self.magstruc.ff, self.paraScale, self.rmintr,
                                  self.rmaxtr, self.rstep, self.qmin, self.qmax)
             ax.plot(rcalc, frcalc*np.sqrt(2*np.pi), 'b-', label='f(r)')
-            ax.plot(rcalc, Drcalc, 'r-', label='D(r)')
+            ax.plot(rcalc, Drcalc, 'r-', label='d(r)')
             ax.set_ylabel(r'f, d ($\AA^{-2}$)')
             plt.legend(loc='best')
         plt.show()
