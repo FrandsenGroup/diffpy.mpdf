@@ -494,12 +494,15 @@ def visualizeSpins(atoms,spins):
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
 
-    x,y,z=np.transpose(atoms)
-    u,v,w=np.transpose(spins)
+    xx,yy,zz=np.transpose(atoms)
+    uu,vv,ww=np.transpose(spins)
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.quiver(x, y, z, u, v, w, pivot='middle')
+    for i in range(len(xx)):
+        x, y, z, u, v, w = xx[i], yy[i], zz[i], uu[i], vv[i], ww[i]
+        mag = np.sqrt(u**2 + v**2 + w**2)
+        ax.quiver(x, y, z, u, v, w, pivot='middle',length=mag)
 
     xmin,xmax=ax.get_xlim3d()
     ax.set_xlim3d(np.min((-1,xmin)),np.max((1,xmax)))
@@ -1077,17 +1080,19 @@ class magStructure:
         flagCount = 0
 
         # check for duplication among magnetic species
-        idxs = []
-        for key in self.species:
-            idxs.append(self.species[key].magIdxs)
-        idxs = [item for sublist in idxs for item in sublist] # flatten the list
-        for idx in idxs:
-            if idxs.count(idx) > 1:
-                flag = True
-        if flag:
-            flagCount += 1
-            print 'Warning: Magnetic species may have overlapping atoms.'
-            print 'Check the magIdxs lists for your magnetic species.'
+        if len(self.species) > 0:        
+            if self.species.values()[0].useDiffpyStruc:
+                idxs = []
+                for key in self.species:
+                    idxs.append(self.species[key].magIdxs)
+                idxs = [item for sublist in idxs for item in sublist] # flatten the list
+                for idx in idxs:
+                    if idxs.count(idx) > 1:
+                        flag = True
+                if flag:
+                    flagCount += 1
+                    print 'Warning: Magnetic species may have overlapping atoms.'
+                    print 'Check the magIdxs lists for your magnetic species.'
 
         # summarize results
         if flagCount == 0:
