@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# magpdf            by Simon J. L. Billinge group
-#                   (c) 2016.
-#                   All rights reserved.
+# diffpy.magpdf       by Billinge Group
+#                     Simon J. L. Billinge sb2896@columbia.edu
+#                     (c) 2016 trustees of Columbia University in the City of
+#                           New York.
+#                      All rights reserved
 #
 # File coded by:    Benjamin Frandsen
 #
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
 #
 ##############################################################################
+
 
 """functions and classes to create magnetic structures for mPDF calculations."""
 

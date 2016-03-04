@@ -1,17 +1,18 @@
 #!/usr/bin/env python
-########################################################################
+##############################################################################
 #
-# diffpy.magpdf     by DANSE Diffraction group
-#                   Simon J. L. Billinge
-#                   (c) 2016 The Trustees of Columbia University
-#                   in the City of New York.  All rights reserved.
+# diffpy.magpdf       by Billinge Group
+#                     Simon J. L. Billinge sb2896@columbia.edu
+#                     (c) 2016 trustees of Columbia University in the City of
+#                           New York.
+#                      All rights reserved
 #
 # File coded by:    Benjamin Frandsen
 #
 # See AUTHORS.txt for a list of people who contributed.
-# See LICENSE_DANSE.txt for license information.
+# See LICENSE.txt for license information.
 #
-########################################################################
+##############################################################################
 
 
 """Definition of __version__, __date__, __gitsha__.
