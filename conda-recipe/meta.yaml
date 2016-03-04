@@ -21,8 +21,9 @@ requirements:
   run:
     - python
     - setuptools
-    - numpy >= 1.9.2
+    - numpy >=1.9.2
     - matplotlib
+    - scipy
     - diffpy.structure
     - diffpy.srreal
 
