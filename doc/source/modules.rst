@@ -1,7 +1,7 @@
-magpdf
+diffpy
 ======
 
 .. toctree::
    :maxdepth: 4
 
-   magpdf
+   diffpy
