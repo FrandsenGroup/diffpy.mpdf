@@ -9,33 +9,44 @@ This package aims to provide a convenient method for computing the magnetic PDF 
 
 This package requires Python 2.6 or 2.7 and the following software:
 
-numpy
-matplotlib
-diffpy.Structure
-diffpy.srreal
+numpy, matplotlib, scipy, diffpy.Structure, diffpy.srreal
 
 Recommended software:
 
-diffpy.srfit
+Full diffpy-cmi suite.
 
-numpy and matplotlib can be installed through standard package managers such as pip or conda. The diffpy packages can be installed together through conda via the command ''conda install -c diffpy diffpy-cmi'', or by following the instructions at http://www.diffpy.org.
+Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit).
 
 ## Installation
 
-The easiest way to install this package is to clone this github repository:
+The recommended way to install this package is through conda. For help installing conda, please visit https://www.continuum.io/downloads. Once conda is installed, you can follow the simple steps below to install diffpy.magpdf. You will also install the full diffpy-cmi suite along the way. 
 
-git clone https://github.com/benfrandsen/mPDFmodules.git
+#### Step 1: Add the appropriate conda channels to your conda configuration.
+    >>> conda config --add channels diffpy
+    >>> conda config --add channels benfrandsen
+These commands tell conda to look through these channels on the Anaconda cloud server to find the appropriate software.
 
-Then navigate into the newly created mPDFmodules directory and execute the command ''python setup.py install''. You can now call mPDF functions from any standard python script via ''from diffpy.magpdf import *''.
+#### Step 2 (recommended): Create and activate a conda environment for diffpy + diffpy.magpdf.
+    >>> conda create --name diffpy python=2.7
+    >>> source activate diffpy
+Note that you can name the environment anything you choose by passing it a different name after the --name flag in the first command.
+    
+#### Step 3: Install diffpy-cmi
+    >>> conda install diffpy-cmi
+    
+#### Step 4: Install diffpy.magpdf
+    >>> conda install diffpy.magpdf
+    
+#### Alternative: Download and install from source
+If you prefer not to use conda, you can also zip and download this entire github repository (see the Download Zip button in the upper right corner), then unzip the file and execute the following command from inside the unzipped directory:
+
+    >>> python setup.py install
 
 
 ## Contributors
 
-Simon Billinge
-Benjamin Frandsen
-Pavol Juhas
-Xiaohao Yang
+Benjamin Frandsen, Pavol Juhas, Xiaohao Yang, and Simon Billinge.
 
 ## License
 
-GNU General Public License.
+Modified BSD License.
