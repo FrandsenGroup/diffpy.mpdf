@@ -83,7 +83,7 @@ setup_args = dict(
         maintainer_email = 'benfrandsen@gmail.com',
         description = "Tools for magnetic PDF analysis.",
         license = 'BSD-style license',
-        url = "https://github.com/benfrandsen/mPDFmodules/",
+        url = "https://github.com/benfrandsen/diffpy.magpdf/",
         keywords = "mPDF magnetic PDF",
         classifiers = [
             # List of possible values at
