@@ -35,11 +35,18 @@ Note that you can name the environment anything you choose by passing it a diffe
     >>> conda install diffpy.magpdf
 Note that this will also install the full diffpy-cmi suite if it has not already been installed in this environment.
     
+#### Alternative option: Install from the python package index
+If you prefer to use the python package index and have pip installed, please install the prerequisite software and then use the command:
+    >>> pip install diffpy.magpdf
+
 #### Alternative: Download and install from source
-If you prefer not to use conda, you can also zip and download this entire github repository (see the Download Zip button in the upper right corner), then unzip the file and execute the following command from inside the unzipped directory:
+If you prefer to install from source, you can also zip and download this entire github repository (see the Download Zip button in the upper right corner), then unzip the file and execute the following command from inside the unzipped directory:
 
     >>> python setup.py install
 Note that this will only work if all the dependencies are already properly installed.
+
+## Documentation
+Please see http://pythonhosted.org/diffpy.magpdf/ for the documentation.
 
 ## Contributors
 
