@@ -37,9 +37,10 @@ Note that this will also install the full diffpy-cmi suite if it has not already
     
 #### Alternative option: Install from the python package index
 If you prefer to use the python package index and have pip installed, please install the prerequisite software and then use the command:
+
     >>> pip install diffpy.magpdf
 
-#### Alternative: Download and install from source
+#### Alternative option: Download and install from source
 If you prefer to install from source, you can also zip and download this entire github repository (see the Download Zip button in the upper right corner), then unzip the file and execute the following command from inside the unzipped directory:
 
     >>> python setup.py install
