@@ -5,7 +5,7 @@
 
 
 import unittest
-import diffpy.magpdf
+import diffpy.mpdf
 import numpy as np
 
 ##############################################################################
@@ -13,19 +13,19 @@ class spinsAtomsTest(unittest.TestCase):
     def testSpinsFromAtoms(self):
         atoms=np.array([[0,0,0],[1,0,0],[2,0,0]])
         spins=np.array([[0,0,1],[0,0,-1],[0,0,1]])
-        mstr=diffpy.magpdf.magStructure()
+        mstr=diffpy.mpdf.magStructure()
         mstr.atoms=atoms
         mstr.spins=spins
-        testval=diffpy.magpdf.spinsFromAtoms(mstr,[1,0,0],fractional=False)[0][2]
+        testval=diffpy.mpdf.spinsFromAtoms(mstr,[1,0,0],fractional=False)[0][2]
         self.assertEqual(testval,-1)
 
     def testAtomsFromSpins(self):
         atoms=np.array([[0,0,0],[1,0,0],[2,0,0]])
         spins=np.array([[0,0,1],[0,0,-1],[0,0,1]])
-        mstr=diffpy.magpdf.magStructure()
+        mstr=diffpy.mpdf.magStructure()
         mstr.atoms=atoms
         mstr.spins=spins
-        testval=diffpy.magpdf.atomsFromSpins(mstr,[0,0,-1],fractional=False)[0][0][0]
+        testval=diffpy.mpdf.atomsFromSpins(mstr,[0,0,-1],fractional=False)[0][0][0]
         self.assertEqual(testval,1)
 
 # End of class spinsAtomsTest

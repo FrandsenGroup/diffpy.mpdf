@@ -18,10 +18,10 @@
 """
 
 # package version
-from diffpy.magpdf.version import __version__
+from diffpy.mpdf.version import __version__
 
 # convenience imports
-from diffpy.magpdf.magstructure import *
-from diffpy.magpdf.mpdfcalculator import *
+from diffpy.mpdf.magstructure import *
+from diffpy.mpdf.mpdfcalculator import *
 
 # End of file

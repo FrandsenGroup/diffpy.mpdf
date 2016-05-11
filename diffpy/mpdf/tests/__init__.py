@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.magpdf       by Billinge Group
+# diffpy.mpdf       by Billinge Group
 #                     Simon J. L. Billinge sb2896@columbia.edu
 #                     (c) 2016 trustees of Columbia University in the City of
 #                           New York.
@@ -14,7 +14,7 @@
 #
 ##############################################################################
 
-"""Unit tests for diffpy.magpdf.
+"""Unit tests for diffpy.mpdf.
 """
 
 
@@ -27,17 +27,17 @@ del logging
 
 
 def testsuite():
-    '''Build a unit tests suite for the diffpy.magpdf package.
+    '''Build a unit tests suite for the diffpy.mpdf package.
     Return a unittest.TestSuite object.
     '''
     import unittest
     modulenames = '''
-        diffpy.magpdf.tests.testbasicmpdf
-        diffpy.magpdf.tests.testmpdffromcif
-        diffpy.magpdf.tests.testmpdffromselfcreated
-        diffpy.magpdf.tests.testformfactor
-        diffpy.magpdf.tests.testgetdiffdata
-        diffpy.magpdf.tests.testspinsatoms
+        diffpy.mpdf.tests.testbasicmpdf
+        diffpy.mpdf.tests.testmpdffromcif
+        diffpy.mpdf.tests.testmpdffromselfcreated
+        diffpy.mpdf.tests.testformfactor
+        diffpy.mpdf.tests.testgetdiffdata
+        diffpy.mpdf.tests.testspinsatoms
     '''.split()
     suite = unittest.TestSuite()
     loader = unittest.defaultTestLoader
@@ -49,7 +49,7 @@ def testsuite():
 
 
 def test():
-    '''Execute all unit tests for the diffpy.magpdf package.
+    '''Execute all unit tests for the diffpy.mpdf package.
     Return a unittest TestResult object.
     '''
     import unittest

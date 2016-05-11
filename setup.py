@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-# Installation script for diffpy.magpdf
+# Installation script for diffpy.mpdf
 
-"""magpdf - Tools for magnetic pair distribution function analysis.
-Packages:   diffpy.magpdf
+"""mpdf - Tools for magnetic pair distribution function analysis.
+Packages:   diffpy.mpdf
 """
 
 import os
@@ -16,7 +16,7 @@ FALLBACK_VERSION = '1.0.1.post0'
 # versioncfgfile holds version data for git commit hash and date.
 # It must reside in the same directory as version.py.
 MYDIR = os.path.dirname(os.path.abspath(__file__))
-versioncfgfile = os.path.join(MYDIR, 'diffpy/magpdf/version.cfg')
+versioncfgfile = os.path.join(MYDIR, 'diffpy/mpdf/version.cfg')
 gitarchivecfgfile = versioncfgfile.replace('version.cfg', 'gitarchive.cfg')
 
 def gitinfo():
@@ -70,11 +70,11 @@ versiondata = getversioncfg()
 
 # define distribution
 setup_args = dict(
-        name = "diffpy.magpdf",
+        name = "diffpy.mpdf",
         version = versiondata.get('DEFAULT', 'version'),
         namespace_packages = ['diffpy'],
         packages = find_packages(),
-        test_suite = 'diffpy.magpdf.tests',
+        test_suite = 'diffpy.mpdf.tests',
         include_package_data = True,
         zip_safe = False,
         author = 'Simon J.L. Billinge group',
@@ -83,7 +83,7 @@ setup_args = dict(
         maintainer_email = 'benfrandsen@gmail.com',
         description = "Tools for magnetic PDF analysis.",
         license = 'BSD-style license',
-        url = "https://github.com/benfrandsen/diffpy.magpdf/",
+        url = "https://github.com/benfrandsen/diffpy.mpdf/",
         keywords = "mPDF magnetic PDF",
         classifiers = [
             # List of possible values at

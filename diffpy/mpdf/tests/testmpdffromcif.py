@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-"""Unit tests for various magpdf classes and functions.
+"""Unit tests for various mpdf classes and functions.
 """
 
 
 import unittest
 import sys
 import os
-import diffpy.magpdf
+import diffpy.mpdf
 from diffpy.Structure import loadStructure
 import numpy as np
 
@@ -21,15 +21,15 @@ class mPDFfromCIFtest(unittest.TestCase):
     def test(self):
         path = os.path.dirname(os.path.abspath(__file__))
         struc=loadStructure(find('MnO_cubic.cif',path))
-        msp=diffpy.magpdf.magSpecies(struc=struc)
+        msp=diffpy.mpdf.magSpecies(struc=struc)
         msp.magIdxs=[0,1,2,3]
         msp.basisvecs=np.array([[1,-1,0]])
         msp.kvecs=np.array([[0.5,0.5,0.5]])
         msp.ffparamkey='Mn2'
-        mstr=diffpy.magpdf.magStructure()
+        mstr=diffpy.mpdf.magStructure()
         mstr.loadSpecies(msp)
         mstr.makeAll()
-        mc=diffpy.magpdf.mPDFcalculator(magstruc=mstr)
+        mc=diffpy.mpdf.mPDFcalculator(magstruc=mstr)
         r,fr,dr=mc.calc(both=True)
         testval=np.round(dr[100],decimals=4)
         self.assertEqual(testval,10.9411)

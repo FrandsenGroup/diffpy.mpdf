@@ -6,7 +6,7 @@
 
 import unittest
 import sys, os
-import diffpy.magpdf
+import diffpy.mpdf
 import numpy as np
 
 ##############################################################################
@@ -18,7 +18,7 @@ def find(name, path):
 class getDiffDataTest(unittest.TestCase):
     def test(self):
         path = os.path.dirname(os.path.abspath(__file__))
-        r,dr=diffpy.magpdf.getDiffData([find('testdata.fgr',path)])
+        r,dr=diffpy.mpdf.getDiffData([find('testdata.fgr',path)])
         testval=dr.max()
         self.assertEqual(testval,107.42)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.magpdf       by Billinge Group
+# diffpy.mpdf         by Billinge Group
 #                     Simon J. L. Billinge sb2896@columbia.edu
 #                     (c) 2016 trustees of Columbia University in the City of
 #                           New York.
@@ -21,7 +21,7 @@
 import copy
 import numpy as np
 from diffpy.srreal.bondcalculator import BondCalculator
-from diffpy.magpdf.mpdfcalculator import jCalc
+from diffpy.mpdf.mpdfcalculator import jCalc
 
 def generateAtomsXYZ(struc, rmax=30.0, magIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
@@ -670,7 +670,7 @@ class magSpecies:
         """Return the spin vectors corresponding to specified atomic
            positions.
 
-        This method calls the diffpy.magpdf.spinsFromAtoms() method. 
+        This method calls the diffpy.mpdf.spinsFromAtoms() method. 
 
         Args:
             magstruc: magSpecies or magStructure object containing atoms and spins
@@ -689,7 +689,7 @@ class magSpecies:
     def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
         """Return the atomic positions corresponding to specified spins.
 
-        This method calls the diffpy.magpdf.atomsFromSpins() method. 
+        This method calls the diffpy.mpdf.atomsFromSpins() method. 
 
         Args:
             magstruc: magSpecies or magStructure object containing atoms and spins
@@ -999,7 +999,7 @@ class magStructure:
         """Return the spin vectors corresponding to specified atomic
            positions.
 
-        This method calls the diffpy.magpdf.spinsFromAtoms() method. 
+        This method calls the diffpy.mpdf.spinsFromAtoms() method. 
 
         Args:
             magstruc: magSpecies or magStructure object containing atoms and spins
@@ -1018,7 +1018,7 @@ class magStructure:
     def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
         """Return the atomic positions corresponding to specified spins.
 
-        This method calls the diffpy.magpdf.atomsFromSpins() method. 
+        This method calls the diffpy.mpdf.atomsFromSpins() method. 
 
         Args:
             magstruc: magSpecies or magStructure object containing atoms and spins
