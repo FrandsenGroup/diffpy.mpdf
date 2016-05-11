@@ -492,6 +492,14 @@ class mPDFcalculator:
             print 'makeAtoms() and makeSpins() again on your magStructure.\n'
         flag = False
 
+        ### check for nan values in spin array
+        if np.any(np.isnan(self.magstruc.spins)):
+            flag = True
+        if flag:
+            flagCount += 1
+            print 'Spin array contains nan values ("not a number").\n'
+        flag = False
+
         ### check if rmax is too big for rmaxAtoms in structure
         for key in self.magstruc.species:
             if self.magstruc.species[key].rmaxAtoms < self.rmax:
