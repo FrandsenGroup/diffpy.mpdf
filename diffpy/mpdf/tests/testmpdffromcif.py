@@ -21,15 +21,15 @@ class mPDFfromCIFtest(unittest.TestCase):
     def test(self):
         path = os.path.dirname(os.path.abspath(__file__))
         struc=loadStructure(find('MnO_cubic.cif',path))
-        msp=diffpy.mpdf.magSpecies(struc=struc)
+        msp=diffpy.mpdf.MagSpecies(struc=struc)
         msp.magIdxs=[0,1,2,3]
         msp.basisvecs=np.array([[1,-1,0]])
         msp.kvecs=np.array([[0.5,0.5,0.5]])
         msp.ffparamkey='Mn2'
-        mstr=diffpy.mpdf.magStructure()
+        mstr=diffpy.mpdf.MagStructure()
         mstr.loadSpecies(msp)
         mstr.makeAll()
-        mc=diffpy.mpdf.mPDFcalculator(magstruc=mstr)
+        mc=diffpy.mpdf.MPDFcalculator(magstruc=mstr)
         r,fr,dr=mc.calc(both=True)
         testval=np.round(dr[100],decimals=4)
         self.assertEqual(testval,10.9411)

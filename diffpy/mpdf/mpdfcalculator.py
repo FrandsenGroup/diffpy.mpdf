@@ -70,7 +70,7 @@ def cv(x1, y1, x2, y2):
     xcv = np.linspace(x1[0]+x2[0], x1[-1]+x2[-1], len(ycv))
     return xcv, ycv
 
-def costransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
+def cosTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
     """Compute the cosine Fourier transform of a function.
 
     This method uses direct integration rather than an FFT and doesn't require
@@ -275,7 +275,7 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     Returns: numpy array for the unnormalized mPDF Dr.
     """
 
-    rsr, sr = costransform(q, ff, rmintr, rmaxtr, drtr)
+    rsr, sr = cosTransform(q, ff, rmintr, rmaxtr, drtr)
     sr = np.sqrt(np.pi/2.0)*sr
     rSr, Sr = cv(rsr, sr, rsr, sr)
     para = -1.0*np.sqrt(2.0*np.pi)*np.gradient(Sr, rSr[1]-rSr[0]) ### paramagnetic term in d(r)
@@ -301,8 +301,8 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     Dr += paraScale*para
     return Dr
 
-class mPDFcalculator:
-    """Create an mPDFcalculator object to help calculate mPDF functions.
+class MPDFcalculator:
+    """Create an MPDFcalculator object to help calculate mPDF functions.
 
     This class is loosely modelled after the PDFcalculator class in diffpy.
     At minimum, it requires a magnetic structure with atoms and spins, and
@@ -310,7 +310,7 @@ class mPDFcalculator:
     for the calculated mPDF.
 
     Args:
-        magstruc (magStructure object): provides information about the
+        magstruc (MagStructure object): provides information about the
             magnetic structure. Must have arrays of atoms and spins.
         calcList (python list): list giving the indices of the atoms array
             specifying the atoms to be used as the origin when calculating
@@ -342,7 +342,7 @@ class mPDFcalculator:
             magnetic form factor required for unnormalized mPDF.
         drtr (float): step size for r-grid used for calculating Fourier
             transform of magnetic form mactor.
-        label (string): Optional descriptive string for the mPDFcalculator.
+        label (string): Optional descriptive string for the MPDFcalculator.
         """
     def __init__(self, magstruc=None, calcList=[0], maxextension=10.0,
                  gaussPeakWidth=0.1, dampRate=0.0, dampPower=2.0, qmin=-1.0,
@@ -374,9 +374,9 @@ class mPDFcalculator:
 
     def __repr__(self):
         if self.label == '':
-            return 'mPDFcalculator() object'
+            return 'MPDFcalculator() object'
         else:
-            return self.label+': mPDFcalculator() object'
+            return self.label+': MPDFcalculator() object'
 
     def calc(self, normalized=True, both=False):
         """Calculate the magnetic PDF.
@@ -478,7 +478,7 @@ class mPDFcalculator:
     def runChecks(self):
         """Run some quick checks to help with troubleshooting.
         """
-        print 'Running checks on mPDFcalculator...\n'
+        print 'Running checks on MPDFcalculator...\n'
 
         flagCount = 0
         flag = False
@@ -489,7 +489,7 @@ class mPDFcalculator:
         if flag:
             flagCount += 1
             print 'Number of atoms and spins do not match; try calling'
-            print 'makeAtoms() and makeSpins() again on your magStructure.\n'
+            print 'makeAtoms() and makeSpins() again on your MagStructure.\n'
         flag = False
 
         ### check for nan values in spin array
@@ -506,13 +506,13 @@ class mPDFcalculator:
                 flag = True
         if flag:
             flagCount += 1
-            print 'Warning: the atoms in your magStructure may not fill a'
+            print 'Warning: the atoms in your MagStructure may not fill a'
             print 'volume large enough for the desired rmax for the mPDF'
             print 'calculation. Adjust rmax and/or rmaxAtoms in the'
-            print 'magSpecies or magStructure objects.\n'
+            print 'MagSpecies or MagStructure objects.\n'
         flag = False
 
-        ### check if calcList may not be representative of all magSpecies.
+        ### check if calcList may not be representative of all MagSpecies.
         if len(self.calcList) < len(self.magstruc.species):
             flag = True
         if flag:
@@ -530,7 +530,7 @@ class mPDFcalculator:
         if flag:
             flagCount += 1
             print 'calcList contains indices that are too large for the'
-            print 'arrays of atoms and spins contained in the magStructure.'
+            print 'arrays of atoms and spins contained in the MagStructure.'
         flag = False
 
         ### check for unphysical parameters like negative scale factors
@@ -551,6 +551,6 @@ class mPDFcalculator:
         return np.arange(self.rmin, self.rmax+self.rstep, self.rstep)
 
     def copy(self):
-        """Return a deep copy of the mPDFcalculator object."""
+        """Return a deep copy of the MPDFcalculator object."""
         return copy.deepcopy(self)
 

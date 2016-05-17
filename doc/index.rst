@@ -1,10 +1,10 @@
-.. diffpy.magpdf documentation master file, created by
-   sphinx-quickstart on Fri Mar  4 12:22:16 2016.
+.. diffpy.mpdf documentation master file, created by
+   sphinx-quickstart on Thu May 12 17:04:33 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to diffpy.magpdf's documentation!
-=========================================
+Welcome to diffpy.mpdf's documentation!
+=======================================
 
 Contents:
 
