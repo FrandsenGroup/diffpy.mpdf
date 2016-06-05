@@ -99,6 +99,34 @@ def cosTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even
     fr = np.sqrt(2.0/np.pi)*np.trapz(integrand, q)
     return r, fr
 
+def sinTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
+    """Compute the sine Fourier transform of a function.
+
+    This method uses direct integration rather than an FFT and doesn't require
+    an even grid. The grid for the Fourier transform is even and specifiable.
+
+    Args:
+        q (numpy array): independent variable for function to be transformed
+        fq (numpy array): dependent variable for function to be transformed
+        rmin (float, default = 0.0): min value of conjugate independent variable
+            grid
+        rmax (float, default = 50.0): maximum value of conjugate independent
+            variable grid
+        rstep (float, default = 0.1): grid spacing for conjugate independent
+            variable
+
+    Returns:
+        r (numpy array): independent variable grid for transformed quantity
+
+        fr (numpy array): cosine Fourier transform of fq
+    """
+    lostep = int(np.ceil((rmin - 1e-8) / rstep))
+    histep = int(np.floor((rmax + 1e-8) / rstep)) + 1
+    r = np.arange(lostep, histep)*rstep
+    qrmat = np.outer(r, q)
+    integrand = fq*np.sin(qrmat)
+    fr = np.sqrt(2.0/np.pi)*np.trapz(integrand, q)
+    return r, fr
 
 def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
     """Extract the fit residual from a structural PDF fit.
@@ -300,6 +328,51 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
         para = para[:Dr.shape[0]]
     Dr += paraScale*para
     return Dr
+
+def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
+    """Calculate the magnetic scattering via Fourier transform of the mPDF.
+
+    This module requires a normalized mPDF as an input, as well as a magnetic
+    form factor and associated q grid.
+
+    Args:
+        r (numpy array): r grid for the properly normalized mPDF.
+        fr (numpy array): the properly normalized mPDF.
+        q (numpy array): grid of momentum transfer values used for calculating
+            the magnetic form factor.
+        ff (numpy array): magnetic form factor. Same shape as ffqgrid.
+        paraScale (float): scale factor for the paramagnetic part of the
+            unnormalized mPDF function D(r).
+        rmintr (float): minimum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        rmaxtr (float): maximum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        drtr (float): step size for r-grid used for calculating Fourier
+            transform of magnetic form mactor.
+        qmin (float): minimum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+        qmax (float): maximum experimentally accessible q-value (to be used
+            for simulating termination ripples). If <0, no termination effects
+            are included.
+
+    Returns: numpy array for the unnormalized mPDF Dr.
+    """
+    if quantity=='sq':
+        q, fq = sinTransform(r, fr, qmin, qmax, qstep)
+        sq = 1.0*fq
+        sq[1:] = fq[1:]/q[1:] + 1
+        sq[0] = 0.0
+        return q, sq
+    elif quantity=='iq':
+        q, iqq = sinTransform(r, fr, qmin, qmax, qstep)
+        iq = 1.0*iqq
+        iq[1:] = iq[1:]/q[1:]
+        iq[0] = 0.0
+        return q, iq
+    else:
+        print 'Please specify a valid magnetic scattering type (sq or iq).'
+        return 0*r, 0*fr
 
 class MPDFcalculator:
     """Create an MPDFcalculator object to help calculate mPDF functions.

@@ -440,7 +440,7 @@
 <span class="sd">       positions.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">        magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">        positions (list or array): atomic positions for which the</span>
 <span class="sd">            corresponding spins should be returned.</span>
 <span class="sd">        fractional (boolean): set as True if the atomic positions are in</span>
@@ -489,7 +489,7 @@
     <span class="sd">&quot;&quot;&quot;Return the atomic positions corresponding to specified spins.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">        magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">        spinvecs (list or array): spin vectors for which the</span>
 <span class="sd">            corresponding atoms should be returned.</span>
 <span class="sd">        fractional (boolean): set as True if the atomic positions are to be</span>
@@ -559,7 +559,7 @@
 
     <span class="k">return</span> <span class="n">fig</span></div>
 
-<div class="viewcode-block" id="magSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies">[docs]</a><span class="k">class</span> <span class="nc">magSpecies</span><span class="p">:</span>
+<div class="viewcode-block" id="MagSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies">[docs]</a><span class="k">class</span> <span class="nc">MagSpecies</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Store information for a single species of magnetic atom.</span>
 
 
@@ -666,11 +666,11 @@
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;magSpecies() object&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;MagSpecies() object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: magSpecies() object&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: MagSpecies() object&#39;</span>
 
-<div class="viewcode-block" id="magSpecies.makeAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.makeAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">makeAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.makeAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.makeAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">makeAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the Cartesian coordinates of the atoms for this species.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">useDiffpyStruc</span><span class="p">:</span>
@@ -684,7 +684,7 @@
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">print</span> <span class="s1">&#39;Please check latVecs, atomBasis, and spinBasis.&#39;</span></div>
 
-<div class="viewcode-block" id="magSpecies.makeSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.makeSpins">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.makeSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.makeSpins">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the Cartesian coordinates of the spin vectors in the</span>
 <span class="sd">               structure. Must provide propagation vector(s) and basis</span>
 <span class="sd">               vector(s).</span>
@@ -696,7 +696,7 @@
             <span class="k">print</span> <span class="s1">&#39;the spins are generated from the makeAtoms() method.&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;Please call that method if you have not already.&#39;</span></div>
 
-<div class="viewcode-block" id="magSpecies.makeFF"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.makeFF">[docs]</a>    <span class="k">def</span> <span class="nf">makeFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.makeFF"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.makeFF">[docs]</a>    <span class="k">def</span> <span class="nf">makeFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the magnetic form factor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gS</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">gL</span>
@@ -707,14 +707,14 @@
             <span class="k">print</span> <span class="s1">&#39;Using generic magnetic form factor.&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">=</span> <span class="n">jCalc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffqgrid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="magSpecies.spinsFromAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.spinsFromAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.spinsFromAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.spinsFromAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the spin vectors corresponding to specified atomic</span>
 <span class="sd">           positions.</span>
 
 <span class="sd">        This method calls the diffpy.mpdf.spinsFromAtoms() method. </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">            magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">            positions (list or array): atomic positions for which the</span>
 <span class="sd">                corresponding spins should be returned.</span>
 <span class="sd">            fractional (boolean): set as True if the atomic positions are in</span>
@@ -727,13 +727,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="p">,</span><span class="n">returnIdxs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="magSpecies.atomsFromSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.atomsFromSpins">[docs]</a>    <span class="k">def</span> <span class="nf">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.atomsFromSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.atomsFromSpins">[docs]</a>    <span class="k">def</span> <span class="nf">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the atomic positions corresponding to specified spins.</span>
 
 <span class="sd">        This method calls the diffpy.mpdf.atomsFromSpins() method. </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">            magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">            spinvecs (list or array): spin vectors for which the</span>
 <span class="sd">                corresponding atoms should be returned.</span>
 <span class="sd">            fractional (boolean): set as True if the atomic positions are to be</span>
@@ -747,10 +747,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="p">,</span><span class="n">returnIdxs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="magSpecies.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagSpecies.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Run some simple checks and raise a warning if a problem is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">print</span> <span class="s1">&#39;Running checks for &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39; magSpecies object...</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;Running checks for &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39; MagSpecies object...</span><span class="se">\n</span><span class="s1">&#39;</span>
 
         <span class="n">flagCount</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
@@ -783,25 +783,25 @@
 
         <span class="c1"># summarize results</span>
         <span class="k">if</span> <span class="n">flagCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s1">&#39;All magSpecies() checks passed. No obvious problems found.</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+            <span class="k">print</span> <span class="s1">&#39;All MagSpecies() checks passed. No obvious problems found.</span><span class="se">\n</span><span class="s1">&#39;</span></div>
 
-<div class="viewcode-block" id="magSpecies.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magSpecies.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a deep copy of the magSpecies object.</span>
+<div class="viewcode-block" id="MagSpecies.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagSpecies.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a deep copy of the MagSpecies object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="magStructure"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure">[docs]</a><span class="k">class</span> <span class="nc">magStructure</span><span class="p">:</span>
+<div class="viewcode-block" id="MagStructure"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure">[docs]</a><span class="k">class</span> <span class="nc">MagStructure</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Build on the diffpy.Structure class to include magnetic attributes.</span>
 
 <span class="sd">    This class takes a diffpy.Structure object and packages additional info</span>
-<span class="sd">    relating to magnetic structure, which can then be fed to an mPDFcalculator</span>
+<span class="sd">    relating to magnetic structure, which can then be fed to an MPDFcalculator</span>
 <span class="sd">    object.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        struc (diffpy.Structure object): provides lattice parameters and unit</span>
 <span class="sd">            cell of desired structure.</span>
 <span class="sd">        species (python dictionary): dictionary of magnetic species in the</span>
-<span class="sd">            structure. The values are magSpecies objects.</span>
+<span class="sd">            structure. The values are MagSpecies objects.</span>
 <span class="sd">        atoms (numpy array): list of atomic coordinates of all the magnetic</span>
 <span class="sd">            atoms in the structure; e.g. generated by generateAtomsXYZ()</span>
 <span class="sd">        spins (numpy array): triplets giving the spin vectors of all the</span>
@@ -813,7 +813,7 @@
 <span class="sd">            calculating the magnetic form factor.</span>
 <span class="sd">        ff (numpy array): magnetic form factor. Should be same shape as</span>
 <span class="sd">            ffqgrid.</span>
-<span class="sd">        label (string): Optional descriptive string for the magStructure.</span>
+<span class="sd">        label (string): Optional descriptive string for the MagStructure.</span>
 <span class="sd">   &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spins</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -854,14 +854,14 @@
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;magStructure() object&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;MagStructure() object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: magStructure() object&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: MagStructure() object&#39;</span>
 
-<div class="viewcode-block" id="magStructure.makeSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">magIdxs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spins</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="MagStructure.makeSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">magIdxs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spins</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                     <span class="n">basisvecs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kvecs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">gS</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">gL</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ffparamkey</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                     <span class="n">ffqgrid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ff</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a magSpecies object and add it to the species dictionary.</span>
+        <span class="sd">&quot;&quot;&quot;Create a MagSpecies object and add it to the species dictionary.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            label (string): label for this particular magnetic species. Should be</span>
@@ -894,14 +894,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">duplicate</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ffqgrid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="n">ffqgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">magSpecies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">struc</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">magIdxs</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">spins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">MagSpecies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">struc</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">magIdxs</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">spins</span><span class="p">,</span>
                                              <span class="bp">self</span><span class="o">.</span><span class="n">rmaxAtoms</span><span class="p">,</span> <span class="n">basisvecs</span><span class="p">,</span> <span class="n">kvecs</span><span class="p">,</span> <span class="n">gS</span><span class="p">,</span> <span class="n">gL</span><span class="p">,</span> <span class="n">ffparamkey</span><span class="p">,</span> <span class="n">ffqgrid</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runChecks</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;This label has already been assigned to another species in&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;the structure. Please choose a new label.&#39;</span></div>
 
-<div class="viewcode-block" id="magStructure.getCoordsFromSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.getCoordsFromSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">getCoordsFromSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.getCoordsFromSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.getCoordsFromSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">getCoordsFromSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Read in atomic positions and spins from magnetic species.</span>
 
 <span class="sd">        This differs from makeSpins() and makeAtoms() because it simply loads</span>
@@ -927,11 +927,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span></div>
 
-<div class="viewcode-block" id="magStructure.loadSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.loadSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">loadSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magSpec</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load in an already-existing magSpecies object</span>
+<div class="viewcode-block" id="MagStructure.loadSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.loadSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">loadSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magSpec</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load in an already-existing MagSpecies object</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            magSpec (magSpecies object): The magnetic species to be imported</span>
+<span class="sd">            magSpec (MagSpecies object): The magnetic species to be imported</span>
 <span class="sd">                into the structure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check that the label is not a duplicate with any other mag species.</span>
@@ -949,12 +949,12 @@
             <span class="k">print</span> <span class="s1">&#39;another species in the structure. Please choose a new label&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;for this species.&#39;</span></div>
 
-<div class="viewcode-block" id="magStructure.removeSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.removeSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">removeSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.removeSpecies"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.removeSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">removeSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove a magnetic species from the species dictionary.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            label (string): key for the dictionary entry to be removed.</span>
-<span class="sd">            update (boolean): if True, the magStructure will update its atoms</span>
+<span class="sd">            update (boolean): if True, the MagStructure will update its atoms</span>
 <span class="sd">                and spins with the removed species now excluded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -965,7 +965,7 @@
             <span class="k">print</span> <span class="s1">&#39;Species cannot be deleted. Check that you are using the&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;correct species label.&#39;</span></div>
 
-<div class="viewcode-block" id="magStructure.makeAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">makeAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.makeAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">makeAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the Cartesian coordinates of the atoms for this species.</span>
 
 <span class="sd">        Args:</span>
@@ -985,9 +985,9 @@
             <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">temp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
 
-<div class="viewcode-block" id="magStructure.makeSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeSpins">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.makeSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeSpins">[docs]</a>    <span class="k">def</span> <span class="nf">makeSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the Cartesian coordinates of the spin vectors in the</span>
-<span class="sd">               structure. Calls the makeSpins() method for each magSpecies in</span>
+<span class="sd">               structure. Calls the makeSpins() method for each MagSpecies in</span>
 <span class="sd">               the species dictionary and concatenates them together.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
@@ -996,9 +996,9 @@
             <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">temp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">spins</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spins</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
 
-<div class="viewcode-block" id="magStructure.makeGfactors"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeGfactors">[docs]</a>    <span class="k">def</span> <span class="nf">makeGfactors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.makeGfactors"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeGfactors">[docs]</a>    <span class="k">def</span> <span class="nf">makeGfactors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate an array of Lande g-factors in the same order as the spins</span>
-<span class="sd">                in the magStructure.</span>
+<span class="sd">                in the MagStructure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">:</span>
@@ -1006,7 +1006,7 @@
                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">gS</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">gL</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">spins</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gfactors</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
 
-<div class="viewcode-block" id="magStructure.makeFF"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeFF">[docs]</a>    <span class="k">def</span> <span class="nf">makeFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.makeFF"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeFF">[docs]</a>    <span class="k">def</span> <span class="nf">makeFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the properly weighted average magnetic form factor of all</span>
 <span class="sd">                the magnetic species in the structure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1026,7 +1026,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">print</span> <span class="s1">&#39;Check that all mag species have same q-grid.&#39;</span></div>
 
-<div class="viewcode-block" id="magStructure.makeAll"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.makeAll">[docs]</a>    <span class="k">def</span> <span class="nf">makeAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.makeAll"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.makeAll">[docs]</a>    <span class="k">def</span> <span class="nf">makeAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Shortcut method to generate atoms, spins, g-factors, and form</span>
 <span class="sd">                factor for the magnetic structure all in one go.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1036,14 +1036,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">makeFF</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">runChecks</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="magStructure.spinsFromAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.spinsFromAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.spinsFromAtoms"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.spinsFromAtoms">[docs]</a>    <span class="k">def</span> <span class="nf">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the spin vectors corresponding to specified atomic</span>
 <span class="sd">           positions.</span>
 
 <span class="sd">        This method calls the diffpy.mpdf.spinsFromAtoms() method. </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">            magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">            positions (list or array): atomic positions for which the</span>
 <span class="sd">                corresponding spins should be returned.</span>
 <span class="sd">            fractional (boolean): set as True if the atomic positions are in</span>
@@ -1056,13 +1056,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">spinsFromAtoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">positions</span><span class="p">,</span><span class="n">fractional</span><span class="p">,</span><span class="n">returnIdxs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="magStructure.atomsFromSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.atomsFromSpins">[docs]</a>    <span class="k">def</span> <span class="nf">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.atomsFromSpins"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.atomsFromSpins">[docs]</a>    <span class="k">def</span> <span class="nf">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">returnIdxs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the atomic positions corresponding to specified spins.</span>
 
 <span class="sd">        This method calls the diffpy.mpdf.atomsFromSpins() method. </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            magstruc: magSpecies or magStructure object containing atoms and spins</span>
+<span class="sd">            magstruc: MagSpecies or MagStructure object containing atoms and spins</span>
 <span class="sd">            spinvecs (list or array): spin vectors for which the</span>
 <span class="sd">                corresponding atoms should be returned.</span>
 <span class="sd">            fractional (boolean): set as True if the atomic positions are to be</span>
@@ -1076,7 +1076,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">atomsFromSpins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">spinvecs</span><span class="p">,</span><span class="n">fractional</span><span class="p">,</span><span class="n">returnIdxs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="magStructure.visualize"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">atoms</span><span class="p">,</span><span class="n">spins</span><span class="p">,</span><span class="n">showcrystalaxes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<div class="viewcode-block" id="MagStructure.visualize"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">atoms</span><span class="p">,</span><span class="n">spins</span><span class="p">,</span><span class="n">showcrystalaxes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                   <span class="n">axesorigin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])):</span>
         <span class="sd">&quot;&quot;&quot;Generate a crude 3-d plot to visualize the selected spins.</span>
 
@@ -1085,7 +1085,7 @@
 <span class="sd">                visualized.</span>
 <span class="sd">            spins (numpy array): array of spin vectors in same order as atoms.</span>
 <span class="sd">            showcrystalaxes (boolean): if True, will display the crystal axes</span>
-<span class="sd">                determined from the first magnetic species in the magStructure</span>
+<span class="sd">                determined from the first magnetic species in the MagStructure</span>
 <span class="sd">            axesorigin (array): position at which the crystal axes should be</span>
 <span class="sd">                displayed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1108,19 +1108,19 @@
                 <span class="n">ax3d</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">zo</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">pivot</span><span class="o">=</span><span class="s1">&#39;tail&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">print</span> <span class="s1">&#39;Please make sure your magnetic structure contains a&#39;</span>
-                <span class="k">print</span> <span class="s1">&#39;magnetic species with magSpecies.struc set to a diffpy&#39;</span>
-                <span class="k">print</span> <span class="s1">&#39;structure or magSpecies.latVecs provided and&#39;</span>
-                <span class="k">print</span> <span class="s1">&#39;magSpecies.useDiffpyStruc set to False.&#39;</span>
+                <span class="k">print</span> <span class="s1">&#39;magnetic species with MagSpecies.struc set to a diffpy&#39;</span>
+                <span class="k">print</span> <span class="s1">&#39;structure or MagSpecies.latVecs provided and&#39;</span>
+                <span class="k">print</span> <span class="s1">&#39;MagSpecies.useDiffpyStruc set to False.&#39;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="magStructure.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Run some simple checks and raise a warning if a problem is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># do the magSpecies checks</span>
+        <span class="c1"># do the MagSpecies checks</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">runChecks</span><span class="p">()</span>
 
-        <span class="k">print</span> <span class="s1">&#39;Running checks for &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39; magStructure object...</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;Running checks for &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39; MagStructure object...</span><span class="se">\n</span><span class="s1">&#39;</span>
 
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">flagCount</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1142,9 +1142,9 @@
 
         <span class="c1"># summarize results</span>
         <span class="k">if</span> <span class="n">flagCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s1">&#39;All magStructure checks passed. No obvious problems found.&#39;</span></div>
+            <span class="k">print</span> <span class="s1">&#39;All MagStructure checks passed. No obvious problems found.&#39;</span></div>
 
-<div class="viewcode-block" id="magStructure.getSpeciesIdxs"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.getSpeciesIdxs">[docs]</a>    <span class="k">def</span> <span class="nf">getSpeciesIdxs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MagStructure.getSpeciesIdxs"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.getSpeciesIdxs">[docs]</a>    <span class="k">def</span> <span class="nf">getSpeciesIdxs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a dictionary with the starting index in the atoms and spins</span>
 <span class="sd">           arrays corresponding to each magnetic species.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1157,8 +1157,8 @@
         <span class="k">return</span> <span class="n">idxDict</span></div>
 
 
-<div class="viewcode-block" id="magStructure.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.magStructure.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a deep copy of the magStructure object.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MagStructure.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.magstructure.MagStructure.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a deep copy of the MagStructure object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 

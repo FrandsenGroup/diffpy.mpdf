@@ -111,7 +111,7 @@
     <span class="n">xcv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">x2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">x2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">ycv</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">xcv</span><span class="p">,</span> <span class="n">ycv</span></div>
 
-<div class="viewcode-block" id="costransform"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.costransform">[docs]</a><span class="k">def</span> <span class="nf">costransform</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">fq</span><span class="p">,</span> <span class="n">rmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">rstep</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span> <span class="c1"># does not require even q-grid</span>
+<div class="viewcode-block" id="cosTransform"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.cosTransform">[docs]</a><span class="k">def</span> <span class="nf">cosTransform</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">fq</span><span class="p">,</span> <span class="n">rmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">rstep</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span> <span class="c1"># does not require even q-grid</span>
     <span class="sd">&quot;&quot;&quot;Compute the cosine Fourier transform of a function.</span>
 
 <span class="sd">    This method uses direct integration rather than an FFT and doesn&#39;t require</span>
@@ -316,7 +316,7 @@
 <span class="sd">    Returns: numpy array for the unnormalized mPDF Dr.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">rsr</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">costransform</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">ff</span><span class="p">,</span> <span class="n">rmintr</span><span class="p">,</span> <span class="n">rmaxtr</span><span class="p">,</span> <span class="n">drtr</span><span class="p">)</span>
+    <span class="n">rsr</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">cosTransform</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">ff</span><span class="p">,</span> <span class="n">rmintr</span><span class="p">,</span> <span class="n">rmaxtr</span><span class="p">,</span> <span class="n">drtr</span><span class="p">)</span>
     <span class="n">sr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span><span class="o">*</span><span class="n">sr</span>
     <span class="n">rSr</span><span class="p">,</span> <span class="n">Sr</span> <span class="o">=</span> <span class="n">cv</span><span class="p">(</span><span class="n">rsr</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">rsr</span><span class="p">,</span> <span class="n">sr</span><span class="p">)</span>
     <span class="n">para</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">Sr</span><span class="p">,</span> <span class="n">rSr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">rSr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">### paramagnetic term in d(r)</span>
@@ -342,8 +342,8 @@
     <span class="n">Dr</span> <span class="o">+=</span> <span class="n">paraScale</span><span class="o">*</span><span class="n">para</span>
     <span class="k">return</span> <span class="n">Dr</span></div>
 
-<div class="viewcode-block" id="mPDFcalculator"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator">[docs]</a><span class="k">class</span> <span class="nc">mPDFcalculator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create an mPDFcalculator object to help calculate mPDF functions.</span>
+<div class="viewcode-block" id="MPDFcalculator"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator">[docs]</a><span class="k">class</span> <span class="nc">MPDFcalculator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create an MPDFcalculator object to help calculate mPDF functions.</span>
 
 <span class="sd">    This class is loosely modelled after the PDFcalculator class in diffpy.</span>
 <span class="sd">    At minimum, it requires a magnetic structure with atoms and spins, and</span>
@@ -351,7 +351,7 @@
 <span class="sd">    for the calculated mPDF.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        magstruc (magStructure object): provides information about the</span>
+<span class="sd">        magstruc (MagStructure object): provides information about the</span>
 <span class="sd">            magnetic structure. Must have arrays of atoms and spins.</span>
 <span class="sd">        calcList (python list): list giving the indices of the atoms array</span>
 <span class="sd">            specifying the atoms to be used as the origin when calculating</span>
@@ -383,7 +383,7 @@
 <span class="sd">            magnetic form factor required for unnormalized mPDF.</span>
 <span class="sd">        drtr (float): step size for r-grid used for calculating Fourier</span>
 <span class="sd">            transform of magnetic form mactor.</span>
-<span class="sd">        label (string): Optional descriptive string for the mPDFcalculator.</span>
+<span class="sd">        label (string): Optional descriptive string for the MPDFcalculator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magstruc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">calcList</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">maxextension</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
                  <span class="n">gaussPeakWidth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dampRate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dampPower</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span>
@@ -415,11 +415,11 @@
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;mPDFcalculator() object&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;MPDFcalculator() object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: mPDFcalculator() object&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;: MPDFcalculator() object&#39;</span>
 
-<div class="viewcode-block" id="mPDFcalculator.calc"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator.calc">[docs]</a>    <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">both</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MPDFcalculator.calc"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator.calc">[docs]</a>    <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">both</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate the magnetic PDF.</span>
 
 <span class="sd">        Args:</span>
@@ -464,7 +464,7 @@
             <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">rcalc</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rstep</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">rcalc</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">frcalc</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">Drcalc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="mPDFcalculator.plot"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">both</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MPDFcalculator.plot"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">both</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plot the magnetic PDF.</span>
 
 <span class="sd">        Args:</span>
@@ -516,10 +516,10 @@
             <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="mPDFcalculator.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MPDFcalculator.runChecks"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator.runChecks">[docs]</a>    <span class="k">def</span> <span class="nf">runChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Run some quick checks to help with troubleshooting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">print</span> <span class="s1">&#39;Running checks on mPDFcalculator...</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;Running checks on MPDFcalculator...</span><span class="se">\n</span><span class="s1">&#39;</span>
 
         <span class="n">flagCount</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
@@ -530,7 +530,7 @@
         <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
             <span class="n">flagCount</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">print</span> <span class="s1">&#39;Number of atoms and spins do not match; try calling&#39;</span>
-            <span class="k">print</span> <span class="s1">&#39;makeAtoms() and makeSpins() again on your magStructure.</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="k">print</span> <span class="s1">&#39;makeAtoms() and makeSpins() again on your MagStructure.</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="c1">### check for nan values in spin array</span>
@@ -547,13 +547,13 @@
                 <span class="n">flag</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
             <span class="n">flagCount</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">print</span> <span class="s1">&#39;Warning: the atoms in your magStructure may not fill a&#39;</span>
+            <span class="k">print</span> <span class="s1">&#39;Warning: the atoms in your MagStructure may not fill a&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;volume large enough for the desired rmax for the mPDF&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;calculation. Adjust rmax and/or rmaxAtoms in the&#39;</span>
-            <span class="k">print</span> <span class="s1">&#39;magSpecies or magStructure objects.</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="k">print</span> <span class="s1">&#39;MagSpecies or MagStructure objects.</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
 
-        <span class="c1">### check if calcList may not be representative of all magSpecies.</span>
+        <span class="c1">### check if calcList may not be representative of all MagSpecies.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calcList</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">magstruc</span><span class="o">.</span><span class="n">species</span><span class="p">):</span>
             <span class="n">flag</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
@@ -571,7 +571,7 @@
         <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
             <span class="n">flagCount</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">print</span> <span class="s1">&#39;calcList contains indices that are too large for the&#39;</span>
-            <span class="k">print</span> <span class="s1">&#39;arrays of atoms and spins contained in the magStructure.&#39;</span>
+            <span class="k">print</span> <span class="s1">&#39;arrays of atoms and spins contained in the MagStructure.&#39;</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="c1">### check for unphysical parameters like negative scale factors</span>
@@ -587,12 +587,12 @@
         <span class="k">if</span> <span class="n">flagCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;All checks passed. No obvious problems found.</span><span class="se">\n</span><span class="s1">&#39;</span></div>
 
-<div class="viewcode-block" id="mPDFcalculator.rgrid"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator.rgrid">[docs]</a>    <span class="k">def</span> <span class="nf">rgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MPDFcalculator.rgrid"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator.rgrid">[docs]</a>    <span class="k">def</span> <span class="nf">rgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the current r grid of the mPDF calculator.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">rstep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rstep</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="mPDFcalculator.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.mPDFcalculator.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a deep copy of the mPDFcalculator object.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MPDFcalculator.copy"><a class="viewcode-back" href="../../../source/diffpy.mpdf.html#diffpy.mpdf.mpdfcalculator.MPDFcalculator.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a deep copy of the MPDFcalculator object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 </pre></div>
