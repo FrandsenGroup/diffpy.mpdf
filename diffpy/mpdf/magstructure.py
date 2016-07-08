@@ -518,6 +518,29 @@ def visualizeSpins(atoms,spins):
 
     return fig
 
+def findAtomIndices(magstruc,atomList):
+    """Return list of indices corresponding to input list of atomic coordinates.
+
+    Args:
+        atomList (numpy array of atomic coordinates)
+
+    Returns:
+        List of indices corresponding to the atomList.
+    """
+    if len(np.array(atomList).shape) == 1:
+        atomList = [atomList]
+    indices = []
+    for idx, atom in enumerate(atomList):
+        dvals = np.apply_along_axis(np.linalg.norm,1,atom-magstruc.atoms)
+        match = np.argmin(dvals)
+        indices.append(match)
+        if dvals[match]>0.001:
+            print 'Warning: atom with index '+str(idx)+' in atomList could not'
+            print 'be found in the MagStructure, so the index of the nearest'
+            print 'atom has been returned instead.'
+    return indices
+
+
 class MagSpecies:
     """Store information for a single species of magnetic atom.
 
@@ -705,6 +728,19 @@ class MagSpecies:
             List of arrays of atoms corresponding to the spins.
         """
         return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def findAtomIndices(self,atomList):
+        """Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        """
+        return findAtomIndices(self,atomList)
 
     def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
@@ -1071,6 +1107,19 @@ class MagStructure:
                 print 'structure or MagSpecies.latVecs provided and'
                 print 'MagSpecies.useDiffpyStruc set to False.'
         plt.show()
+
+    def findAtomIndices(self,atomList):
+        """Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        """
+        return findAtomIndices(self,atomList)
 
     def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
