@@ -128,6 +128,30 @@ def sinTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even
     fr = np.sqrt(2.0/np.pi)*np.trapz(integrand, q)
     return r, fr
 
+def getStdUnc(fitResult,data,numConstraints=0):
+    """Return the standard uncertainty of refined parameters.
+
+    This method is based on the scipy.optimize.least_squares routine.
+    
+    Args:
+        fitResult: Output from scipy.optimize.least_squares routine
+        data (numpy array): The data against which the fit is performed
+        numConstraints (int): Number of constraints used in the model
+
+    Returns:
+        pUnc (numpy array): standard uncertainties of the refined parameters.
+        chisq (float): Value of chi^2 for the fit.
+    """
+    Rw = np.sqrt((fitResult.fun**2).sum()/(data**2).sum())
+    numParams = len(fitResult.x)
+    Rexp = np.sqrt((data.shape[0]-numParams+numConstraints)/(data**2).sum())
+    j = fitResult.jac
+    jac = np.dot(j.transpose(),j)
+    cov = np.linalg.inv(jac)*Rw**2/Rexp**2
+    pUnc = np.sqrt(cov.diagonal())
+    chisq = Rw**2/Rexp**2
+    return pUnc,chisq
+
 def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
     """Extract the fit residual from a structural PDF fit.
 
