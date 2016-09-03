@@ -78,7 +78,7 @@ def generateAtomsXYZ(struc, rmax=30.0, magIdxs=[0], square=False):
     return atoms
 
 def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
-                     basisvecs=np.array([[0, 0, 1]])):
+                     basisvecs=np.array([[0, 0, 1]]), origin=np.array([0,0,0])):
     """Generate array of 3-vectors representing the spins in a structure.
 
     Args:
@@ -90,6 +90,8 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
             vector(s) of the magnetic structure
         basisvecs (numpy array): list of three-vectors describing the spin
             located at the spin origin.
+        origin (numpy array): Cartesian coordinates specifying the origin
+            to be used when calculating the phases of the spins.
 
     Returns:
         numpy array of triples giving the spin vectors of all the magnetic
@@ -111,7 +113,7 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
         basisvecs = [basisvecs]        
     for idx, kvec in enumerate(kvecs):
         kcart = kvec[0]*astar + kvec[1]*bstar + kvec[2]*cstar
-        phasefac = np.exp(-2.0*np.pi*i*np.dot(atoms, kcart))
+        phasefac = np.exp(-2.0*np.pi*i*np.dot(atoms-origin, kcart))
         cspins += basisvecs[idx]*phasefac[:, np.newaxis]
     spins = np.real(cspins)
 
@@ -530,14 +532,27 @@ def findAtomIndices(magstruc,atomList):
     if len(np.array(atomList).shape) == 1:
         atomList = [atomList]
     indices = []
+    x,y,z=magstruc.atoms.transpose()
+    allIdxs = np.arange(len(x))
     for idx, atom in enumerate(atomList):
-        dvals = np.apply_along_axis(np.linalg.norm,1,atom-magstruc.atoms)
-        match = np.argmin(dvals)
-        indices.append(match)
-        if dvals[match]>0.001:
+        xa,ya,za = atom[0],atom[1],atom[2]
+        maskx = (np.abs(x - xa) < 0.01)
+        masky = (np.abs(y - ya) < 0.01)
+        maskz = (np.abs(z - za) < 0.01)
+        match = allIdxs[np.logical_and(maskx,np.logical_and(masky,maskz))]
+        if len(match) == 0:
             print 'Warning: atom with index '+str(idx)+' in atomList could not'
-            print 'be found in the MagStructure, so the index of the nearest'
-            print 'atom has been returned instead.'
+            print 'be found in the MagStructure, so the index -1 has been'
+            print 'returned instead.'
+            indices.append(-1)
+        if len(match) == 1:
+            indices.append(match[0])
+        if len(match) > 1:
+            print 'Warning: '+str(len(match))+' atoms matching index '+str(idx)
+            print 'have been found in the MagStructure, so just the first index has'
+            print 'been returned.'
+            indices.append(match[0])
+
     return indices
 
 
@@ -587,14 +602,17 @@ class MagSpecies:
             useDiffpyStruc = False. Example: np.array([[0, 0, 0], [0.5, 0.5, 0.5]])
         spinBasis (numpy array): Provides the orientations of the spins in
             the unit cell, in the same order as atomBasis. Only useful if
-            useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]])
+            useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]]
+        spinOrigin (numpy array): Cartesian coordinates of the position that will
+            be considered the origin when generating spin directions from basis
+            vectors and propagation vectors. Default is np.array([0,0,0]).
 
     """
     def __init__(self, struc=None, label='', magIdxs=[0], atoms=None, spins=None,
                  rmaxAtoms=30.0, basisvecs=None, kvecs=None, gS=2.0, gL=0.0,
                  ffparamkey=None, ffqgrid=None, ff=None,
                  useDiffpyStruc=True, latVecs=None, atomBasis=None,
-                 spinBasis=None):
+                 spinBasis=None, spinOrigin=None):
         self.label = label
         self.rmaxAtoms = rmaxAtoms
         self.gS = gS
@@ -645,6 +663,10 @@ class MagSpecies:
             self.spinBasis = np.array([[0, 0, 1]])
         else:
             self.spinBasis = spinBasis
+        if spinOrigin is None:
+            self.spinOrigin = np.array([[0, 0, 0]])
+        else:
+            self.spinOrigin = spinOrigin
 
     def __repr__(self):
         if self.label == '':
@@ -672,7 +694,8 @@ class MagSpecies:
                vector(s).
         """
         if self.useDiffpyStruc:
-            self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs)
+            self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
+                                          self.spinOrigin)
         else:
             print 'Since you are not using a diffpy Structure object,'
             print 'the spins are generated from the makeAtoms() method.'

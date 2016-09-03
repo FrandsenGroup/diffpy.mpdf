@@ -379,7 +379,8 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
         qmax (float): maximum experimentally accessible q-value (to be used
             for simulating termination ripples). If <0, no termination effects
             are included.
-
+        quantity (str): type of magnetic scattering quantity to return; either
+            'sq' or 'iq'.
     Returns: numpy array for the unnormalized mPDF Dr.
     """
     if quantity=='sq':
