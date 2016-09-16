@@ -152,6 +152,58 @@ def getStdUnc(fitResult,data,numConstraints=0):
     chisq = Rw**2/Rexp**2
     return pUnc,chisq
 
+def smoothData(xdata,ydata,qCutoff,func='sinc',gaussHeight=0.01):
+    """Smooth out high-frequency contributions from the data.
+
+    This method performs a convolution in real space to simulate a truncation
+    in reciprocal space. This is motivated by the fact that high-frequency
+    noise can sometimes obscure the lower-frequency mPDF signal when the mPDF
+    is collected together with the nuclear PDF. This high-frequency noise comes
+    from scattering intensity at high q that cannot possibly come from magnetic
+    scattering, due to the strong suppression from the magnetic form factor.
+    To better isolate the mPDF from this high-frequency noise, one could
+    truncate the Fourier transfrom at some cutoff q value beyond which the
+    magnetic scattering is negligible (e.g. where the square of the magnetic
+    form factor is reduced to 1% of its original value). This can be done by
+    multiplying the scattering in q-space by a "window function" that is equal
+    to unity for q between 0 and the cutoff value and 0 outside this window.
+    By the convolution theorem, this is equivalent to convoluting the full
+    Fourier transform in real space with a sinc function. Alternatively, one
+    could multiply the scattering in q-space by a Guassian function which is
+    reduced to some small amplitude at the desired cutoff q value.  This is
+    equivalent to a convolution in real space with another Gaussian function.
+    The former method is recommended because it will generally be more
+    physically justifiable.
+
+    Args:
+        xdata: numpy array containing the independent variable of the data
+            to be smoothed.
+        ydata: numpy array containing the dependent variable; this array will
+            be smoothed.
+        qCutoff: q value beyond which all contributions will be ignored.
+        func: string specifying the type of real-space convolution function,
+            either 'sinc' or 'gaussian' (see previous discussion).
+        gaussHeight: float specifying what the height of the q-space Gaussian
+            function should be at the specified value of qCutoff.
+
+    Returns:
+        Numpy array containing the smoothed version of ydata.
+    """
+    dr = np.mean((xdata - np.roll(xdata,1))[1:])
+    rs = np.arange(-10,10,dr)
+    if func=='sinc':
+        s = np.sinc(rs*qCutoff/np.pi)
+    elif func=='gaussian':
+        rg = 1.0/(qCutoff*np.sqrt(np.log(1.0/gaussHeight)/2.0))
+        s = np.exp(-rs**2/2.0/rg**2)
+    else:
+        print 'The only function options are sinc and gaussian. Please check'
+        print 'your input. Using sinc by default.'
+        s = np.sinc(rs*qCutoff/np.pi)
+    xsmooth, ysmooth = cv(xdata,ydata,rs,s)
+    msk = np.logical_and(xsmooth>(xdata.min()-0.5*dr),xsmooth<(xdata.max()+0.5*dr))
+    return ysmooth[msk]
+        
 def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
     """Extract the fit residual from a structural PDF fit.
 
