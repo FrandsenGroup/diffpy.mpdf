@@ -420,8 +420,8 @@ def spinsFromAtoms(magstruc,positions,fractional=True,returnIdxs=False):
     for pos in positions:
         if fractional:
             pos=magstruc.struc.lattice.cartesian(pos)
-        mask = np.all(np.round(magstruc.atoms,decimals=6)==
-                      np.round(pos,decimals=6),axis=1)
+        mask = np.all(np.round(magstruc.atoms,decimals=5)==
+                      np.round(pos,decimals=5),axis=1)
         goodspins = magstruc.spins[mask]
         goodidxs = np.where(mask)[0]
         if len(goodspins) == 1:
@@ -468,8 +468,8 @@ def atomsFromSpins(magstruc,spinvecs,fractional=True,returnIdxs=False):
     idxs = []
     badlist = []
     for spin in spinvecs:
-        mask = np.all(np.round(magstruc.spins,decimals=6)==
-                      np.round(spin,decimals=6),axis=1)
+        mask = np.all(np.round(magstruc.spins,decimals=5)==
+                      np.round(spin,decimals=5),axis=1)
         goodatoms = magstruc.atoms[mask]
         goodidxs = np.where(mask)[0]
         if fractional:
