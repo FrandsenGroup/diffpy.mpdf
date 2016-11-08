@@ -201,6 +201,7 @@ def smoothData(xdata,ydata,qCutoff,func='sinc',gaussHeight=0.01):
         print 'your input. Using sinc by default.'
         s = np.sinc(rs*qCutoff/np.pi)
     xsmooth, ysmooth = cv(xdata,ydata,rs,s)
+    ysmooth /= np.trapz(s,rs)
     msk = np.logical_and(xsmooth>(xdata.min()-0.5*dr),xsmooth<(xdata.max()+0.5*dr))
     return ysmooth[msk]
         
@@ -220,6 +221,8 @@ def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
 
         diff (numpy array): the structural PDF fit residual (i.e. the mPDF)
     """
+    if type(fileNames) is str:
+        fileNames = [fileNames]
     for name in fileNames:
         if fmt == 'pdfgui':
             allcols = np.loadtxt(name, unpack=True, comments='#', skiprows=14)
@@ -234,7 +237,8 @@ def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, dampRate=0.0, dampPower=2.0, maxextension=10.0,
-                  orderedScale=1.0/np.sqrt(2*np.pi)):
+                  orderedScale=1.0,
+                  K1=0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -268,13 +272,14 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
             calculated to properly account for contribution of pairs just
             outside the boundary.
         ordScale (float): overall scale factor for the mPDF function f(r).
+        K1 (float): A constant related to the total angular momentum quantum
+            number and the average Lande splitting factor.
 
     Returns: numpy arrays for r and the mPDF fr.
         """
     # check if g-factors have been provided
     if sxyz.shape[0] != gfactors.shape[0]:
         gfactors = 2.0*np.ones(sxyz.shape[0])
-
     # calculate s1, s2
     r = np.arange(rmin, rmax+maxextension+rstep, rstep)
     rbin = np.concatenate([r-rstep/2, [r[-1]+rstep/2]])
@@ -331,7 +336,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
         r[0] = 1e-4*rstep # avoid infinities at r = 0
     fr = s1 / r + r * (ss2[-1] - ss2)
     r[0] = rmin
-    fr /= len(calcList)*np.mean(gfactors)**2
+    fr /= len(calcList)*K1/(1.913*2.81794/2.0)**2
 
     fr *= orderedScale*np.exp(-1.0*(dampRate*r/dampPower)**dampPower)
     # Do the convolution with the termination function if qmin/qmax have been given
@@ -341,6 +346,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
         th = (np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
         rth[0] = 0.0
         rcv, frcv = cv(r, fr, rth, th)
+        frcv /= np.trapz(th,rth)
     else:
         rcv, frcv = r, fr
 
@@ -349,7 +355,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
 
 
 def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
-                drtr=0.01, qmin=0, qmax=-1):
+                drtr=0.01, qmin=0, qmax=-1, K1=None, K2=None):
     """Calculate the unnormalized mPDF quantity D(r).
 
     This module requires a normalized mPDF as an input, as well as a magnetic
@@ -375,15 +381,22 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
         qmax (float): maximum experimentally accessible q-value (to be used
             for simulating termination ripples). If <0, no termination effects
             are included.
+        K1 (float): a constant used for calculating Dr; should be averaged
+            over all magnetic species. Important if physical information is
+            to be extracted from mPDF scale factors, e.g. moment size.
+        K2 (float): another constant used for calculating Dr.
 
     Returns: numpy array for the unnormalized mPDF Dr.
     """
-
+    if K1 is None:
+        K1 = 0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)
+    if K2 is None:
+        K2 = K1
     rsr, sr = cosTransform(q, ff, rmintr, rmaxtr, drtr)
-    sr = np.sqrt(np.pi/2.0)*sr
+    #sr = np.sqrt(np.pi/2.0)*sr ### I don't think we should multiply by sqrt(pi/2)
     rSr, Sr = cv(rsr, sr, rsr, sr)
-    para = -1.0*np.sqrt(2.0*np.pi)*np.gradient(Sr, rSr[1]-rSr[0]) ### paramagnetic term in d(r)
-    rDr, Dr = cv(r, fr, rSr, Sr)
+    rDr, Dr = cv(r, K1/(2.0*np.pi)*fr, rSr, Sr)
+    para = -K2/np.pi*np.gradient(Sr, rSr[1]-rSr[0]) ### paramagnetic term in d(r)
     if qmin >= 0 and qmax > qmin:
         rstep = r[1]-r[0]
         rth = np.arange(0.0, r.max()+rstep, rstep)
@@ -497,7 +510,7 @@ class MPDFcalculator:
     def __init__(self, magstruc=None, calcList=[0], maxextension=10.0,
                  gaussPeakWidth=0.1, dampRate=0.0, dampPower=2.0, qmin=-1.0,
                  qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
-                 ordScale=1.0/np.sqrt(2*np.pi), paraScale=1.0, rmintr=-5.0,
+                 ordScale=1.0, paraScale=1.0, rmintr=-5.0,
                  rmaxtr=5.0, label=''):
         if magstruc is None:
             self.magstruc = []
@@ -546,7 +559,8 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             return rcalc, frcalc
         elif not normalized and not both:
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
@@ -554,10 +568,12 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax+self.maxextension,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
-                                 self.rmaxtr, self.rstep, self.qmin, self.qmax)
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
             mask = (rcalc <= self.rmax + 0.5*self.rstep)
             return rcalc[mask], Drcalc[mask]
         else:
@@ -566,14 +582,16 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax+self.maxextension,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
-                                 self.rmaxtr, self.rstep, self.qmin, self.qmax)
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
             mask = (rcalc <= self.rmax + 0.5*self.rstep)
             return rcalc[mask], frcalc[mask], Drcalc[mask]
 
-    def plot(self, normalized=True, both=False):
+    def plot(self, normalized=True, both=False, scaled=True):
         """Plot the magnetic PDF.
 
         Args:
@@ -592,7 +610,8 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             ax.plot(rcalc, frcalc) 
             ax.set_ylabel(r'f ($\AA^{-2}$)')
         elif not normalized and not both:
@@ -601,10 +620,12 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax+self.maxextension,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
-                                 self.rmaxtr, self.rstep, self.qmin, self.qmax)
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
             mask = (rcalc <= self.rmax + 0.5*self.rstep)
             ax.plot(rcalc[mask], Drcalc[mask])
             ax.set_ylabel(r'd ($\AA^{-2}$)')
@@ -614,13 +635,21 @@ class MPDFcalculator:
                                           self.rstep, self.rmin, self.rmax+self.maxextension,
                                           self.gaussPeakWidth, self.qmin, self.qmax,
                                           self.dampRate, self.dampPower,
-                                          self.maxextension, self.ordScale)
+                                          self.maxextension, self.ordScale,
+                                          self.magstruc.K1)
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
-                                 self.rmaxtr, self.rstep, self.qmin, self.qmax)
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
             mask = (rcalc <= self.rmax + 0.5*self.rstep)
-            ax.plot(rcalc[mask], frcalc[mask]*np.sqrt(2*np.pi), 'b-', label='f(r)') # extra factor makes it easier to compare
-            ax.plot(rcalc[mask], Drcalc[mask], 'r-', label='d(r)')
+            if scaled:
+                frscl = np.max(np.abs(frcalc))
+                drscl = np.max(np.abs(Drcalc[rcalc>1.5]))
+                scl = frscl / drscl
+            else:
+                scl = 1.0
+            ax.plot(rcalc[mask], frcalc[mask], 'b-', label='f(r)')
+            ax.plot(rcalc[mask], scl * Drcalc[mask], 'r-', label='d(r)')
             ax.set_ylabel(r'f, d ($\AA^{-2}$)')
             plt.legend(loc='best')
         plt.show()
