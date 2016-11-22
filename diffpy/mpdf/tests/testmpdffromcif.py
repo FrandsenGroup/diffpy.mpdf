@@ -32,7 +32,7 @@ class mPDFfromCIFtest(unittest.TestCase):
         mc=diffpy.mpdf.MPDFcalculator(magstruc=mstr)
         r,fr,dr=mc.calc(both=True)
         testval=np.round(dr[100],decimals=4)
-        self.assertEqual(testval,10.9411)
+        self.assertEqual(testval,20.8841)
 
 # End of class mPDFfromCIFtest
 

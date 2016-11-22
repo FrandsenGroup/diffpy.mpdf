@@ -24,7 +24,7 @@ class mPDFfromSelftest(unittest.TestCase):
         mc=diffpy.mpdf.MPDFcalculator(magstruc=mstr)
         r,fr=mc.calc()
         testval=np.round(fr.max(),decimals=4)
-        self.assertEqual(testval,3.3996)
+        self.assertEqual(testval,17.0428)
 
 # End of class mPDFfromSelftest
 

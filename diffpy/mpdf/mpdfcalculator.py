@@ -345,13 +345,17 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
         rth[0] = 1e-4*rstep # avoid infinities at r = 0
         th = (np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
         rth[0] = 0.0
+        a1 = np.trapz(np.abs(fr),r)
         rcv, frcv = cv(r, fr, rth, th)
-        frcv /= np.trapz(th,rth)
+        mask = np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= rmax+0.5*rstep)
+        rcv = rcv[mask]
+        frcv = frcv[mask]
+        a2 = np.trapz(np.abs(frcv),rcv)
+        frcv = frcv * a1 / a2
     else:
         rcv, frcv = r, fr
 
-    return rcv[np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= rmax+0.5*rstep)], \
-           frcv[np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= rmax+0.5*rstep)]
+    return rcv, frcv
 
 
 def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
