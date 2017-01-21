@@ -338,18 +338,19 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
     r[0] = rmin
     fr /= len(calcList)*K1/(1.913*2.81794/2.0)**2
 
-    fr *= orderedScale*np.exp(-1.0*(dampRate*r/dampPower)**dampPower)
+    fr *= orderedScale*np.exp((-1.0*(dampRate*r)**dampPower)/dampPower)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:
         rth = np.arange(0.0, rmax+maxextension+rstep, rstep)
         rth[0] = 1e-4*rstep # avoid infinities at r = 0
         th = (np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
         rth[0] = 0.0
-        a1 = np.trapz(np.abs(fr),r)
         rcv, frcv = cv(r, fr, rth, th)
         mask = np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= rmax+0.5*rstep)
         rcv = rcv[mask]
         frcv = frcv[mask]
+        # Scale the convolved function back to the scale of the original
+        a1 = np.trapz(np.abs(fr),r)        
         a2 = np.trapz(np.abs(frcv),rcv)
         frcv = frcv * a1 / a2
     else:
