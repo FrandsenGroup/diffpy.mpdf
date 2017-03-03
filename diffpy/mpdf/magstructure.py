@@ -892,7 +892,7 @@ class MagStructure:
         else:
             self.ff = ff
         if K1 is None:
-            self.K1 = 0.66667*(1.913*2.81794)**2*0.5*2.0*0.5*(0.5+1)
+            self.K1 = 0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)
         else:
             self.K1 = K1
         if K2 is None:
