@@ -19,7 +19,7 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import fftconvolve
+from scipy.signal import convolve, fftconvolve
 
 def jCalc(q, params=[0.2394, 26.038, 0.4727, 12.1375, 0.3065, 3.0939, -0.01906],
           j2=False):
@@ -66,11 +66,114 @@ def cv(x1, y1, x2, y2):
 
     """
     dx = x1[1]-x1[0]
-    ycv = dx*np.convolve(y1, y2, 'full')
+    ycv = dx*convolve(y1, y2, 'full')
     xcv = np.linspace(x1[0]+x2[0], x1[-1]+x2[-1], len(ycv))
     return xcv, ycv
 
-def cosTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
+def fourierTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # requires even q-grid
+    """Compute the Fourier transform of a function.
+
+    This method uses the FFT algorithm and returns correctly spaced x and
+    y arrays on an even and specifiable grid. The input grid must be evenly
+    spaced.
+
+    Args:
+        q (numpy array): independent variable for function to be transformed
+        fq (numpy array): dependent variable for function to be transformed
+        rmin (float, default = 0.0): min value of conjugate independent variable
+            grid
+        rmax (float, default = 50.0): maximum value of conjugate independent
+            variable grid
+        rstep (float, default = 0.1): grid spacing for conjugate independent
+            variable
+
+    Returns:
+        r (numpy array): independent variable grid for transformed quantity
+
+        fr (numpy array): Fourier transform of fq (complex)
+    """
+    lostep = int(np.ceil((rmin - 1e-8) / rstep))
+    histep = int(np.floor((rmax + 1e-8) / rstep)) + 1
+    r = np.arange(lostep,histep)*rstep
+    qstep = q[1] - q[0]
+    if (q[0]-0.01*qstep) > 0: 
+        nn = int(np.round(q[0]/qstep))
+        addme = np.linspace(0.0,q[0]-qstep,nn)
+        q = np.concatenate((addme,q))
+        fq = np.concatenate((0.0*addme,fq))
+    qmaxrstep = np.pi/rstep
+    nin = len(q)
+    nbase = max([nin,histep,qmaxrstep/qstep])
+    nlog2 = int(np.ceil(np.log2(nbase)))
+    nout = 2**nlog2
+    qmaxdb = 2*nout*qstep
+    yindb=np.concatenate((fq,np.zeros(2*nout - nin)))
+    cyoutdb = np.fft.ifft(yindb)*np.sqrt(2/np.pi)*qmaxdb
+    frdb = cyoutdb
+    rstepfine = 2*np.pi/qmaxdb
+    rfine = np.arange(nout) * rstepfine
+    frfine = frdb[:nout]
+    frr = np.interp(r, rfine, np.real(frfine))
+    fri = np.interp(r, rfine, np.imag(frfine))
+    if r[0]+0.0001*rstep < 0:
+        nn = int(np.round(-r[0]/rstep))
+        frr[:nn] = 1.0*frr[2*nn:nn:-1]
+        fri[:nn] = -1.0*fri[2*nn:nn:-1]
+    fr = frr + 1j*fri
+    return r, fr
+
+def cosTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # requires even q-grid
+    """Compute the cosine Fourier transform of a function.
+
+    This method uses the FFT algorithm and returns correctly spaced x and
+    y arrays on an even and specifiable grid. The input grid must be evenly
+    spaced.
+
+    Args:
+        q (numpy array): independent variable for function to be transformed
+        fq (numpy array): dependent variable for function to be transformed
+        rmin (float, default = 0.0): min value of conjugate independent variable
+            grid
+        rmax (float, default = 50.0): maximum value of conjugate independent
+            variable grid
+        rstep (float, default = 0.1): grid spacing for conjugate independent
+            variable
+
+    Returns:
+        r (numpy array): independent variable grid for transformed quantity
+
+        fr (numpy array): cosine Fourier transform of fq
+    """
+    r, fr = fourierTransform(q,fq,rmin,rmax,rstep)
+    fr = np.real(fr)
+    return r, fr
+
+def sinTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # requires even q-grid
+    """Compute the sine Fourier transform of a function.
+
+    This method uses direct integration rather than an FFT and doesn't require
+    an even grid. The grid for the Fourier transform is even and specifiable.
+
+    Args:
+        q (numpy array): independent variable for function to be transformed
+        fq (numpy array): dependent variable for function to be transformed
+        rmin (float, default = 0.0): min value of conjugate independent variable
+            grid
+        rmax (float, default = 50.0): maximum value of conjugate independent
+            variable grid
+        rstep (float, default = 0.1): grid spacing for conjugate independent
+            variable
+
+    Returns:
+        r (numpy array): independent variable grid for transformed quantity
+
+        fr (numpy array): sine Fourier transform of fq
+    """
+    r, fr = fourierTransform(q,fq,rmin,rmax,rstep)
+    fr = np.imag(fr)
+    return r, fr
+
+def cosTransformDirectIntegration(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
     """Compute the cosine Fourier transform of a function.
 
     This method uses direct integration rather than an FFT and doesn't require
@@ -99,7 +202,7 @@ def cosTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even
     fr = np.sqrt(2.0/np.pi)*np.trapz(integrand, q)
     return r, fr
 
-def sinTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
+def sinTransformDirectIntegration(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even q-grid
     """Compute the sine Fourier transform of a function.
 
     This method uses direct integration rather than an FFT and doesn't require
@@ -127,6 +230,7 @@ def sinTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1): # does not require even
     integrand = fq*np.sin(qrmat)
     fr = np.sqrt(2.0/np.pi)*np.trapz(integrand, q)
     return r, fr
+
 
 def getStdUnc(fitResult,data,numConstraints=0):
     """Return the standard uncertainty of refined parameters.
