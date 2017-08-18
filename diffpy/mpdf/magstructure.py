@@ -509,7 +509,7 @@ def visualizeSpins(atoms,spins):
     for i in range(len(xx)):
         x, y, z, u, v, w = xx[i], yy[i], zz[i], uu[i], vv[i], ww[i]
         mag = np.sqrt(u**2 + v**2 + w**2)
-        ax.quiver(x, y, z, u, v, w, pivot='middle',length=mag)
+        ax.quiver(x, y, z, u, v, w, pivot='middle')
 
     xmin,xmax=ax.get_xlim3d()
     ax.set_xlim3d(np.min((-1,xmin)),np.max((1,xmax)))
@@ -555,6 +555,26 @@ def findAtomIndices(magstruc,atomList):
 
     return indices
 
+def getStrucFromPDFgui(fileName, strucIdx=0):
+    """Extract the refined atomic structure from a PDFgui project file.
+
+    Args:
+        fileName (str): path to the .ddp file containing the fit
+        strucIdx (int): index of fit in .ddp file from which the refined
+             structure is to be extracted. Default is 0.
+
+    Returns:
+        struc (diffpy.Structure object): Refined atomic structure.
+    """
+    if fileName[-4:] == '.ddp':
+        from diffpy.pdfgui import tui
+        prj = tui.LoadProject(fileName)
+        struc = prj.getPhases()[strucIdx]
+        struc = struc.refined
+        return struc
+    else:
+        print 'Please provide a PDFgui project file (.ddp extenstion)'
+        return []
 
 class MagSpecies:
     """Store information for a single species of magnetic atom.
@@ -610,12 +630,14 @@ class MagSpecies:
         spinOrigin (numpy array): Cartesian coordinates of the position that will
             be considered the origin when generating spin directions from basis
             vectors and propagation vectors. Default is np.array([0,0,0]).
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
     """
     def __init__(self, struc=None, label='', magIdxs=[0], atoms=None, spins=None,
                  rmaxAtoms=30.0, basisvecs=None, kvecs=None, S=0.5, L=0.0,
                  J=None, gS=None, gL=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
-                 atomBasis=None, spinBasis=None, spinOrigin=None):
+                 atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False):
         self.label = label
         self.rmaxAtoms = rmaxAtoms
         self.S = S
@@ -683,6 +705,7 @@ class MagSpecies:
             self.spinOrigin = np.array([[0, 0, 0]])
         else:
             self.spinOrigin = spinOrigin
+        self.verbose = verbose
 
     def __repr__(self):
         if self.label == '':
@@ -784,7 +807,8 @@ class MagSpecies:
     def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
         """
-        print 'Running checks for '+self.label+' MagSpecies object...\n'
+        if self.verbose:        
+            print 'Running checks for '+self.label+' MagSpecies object...\n'
 
         flagCount = 0
         flag = False
@@ -795,7 +819,8 @@ class MagSpecies:
                 flag = True
             if flag:
                 flagCount += 1
-                print 'kvecs and basisvecs must have the same dimensions.'
+                if self.verbose:
+                    print 'kvecs and basisvecs must have the same dimensions.'
 
         else:
             # check for improperlatVecs array
@@ -803,9 +828,10 @@ class MagSpecies:
                 flag = True
             if flag:
                 flagCount += 1
-                print 'latVecs array does not have the correct dimensions.'
-                print 'It must be a 3 x 3 nested array.'
-                print 'Example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])'
+                if self.verbose:
+                    print 'latVecs array does not have the correct dimensions.'
+                    print 'It must be a 3 x 3 nested array.'
+                    print 'Example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])'
             flag = False
 
             # check for mismatched number of atoms and spins in basis
@@ -813,11 +839,13 @@ class MagSpecies:
                 flag = True
             if flag:
                 flagCount += 1
-                print 'atomBasis and spinBasis must have the same dimensions.'
+                if self.verbose:
+                    print 'atomBasis and spinBasis must have the same dimensions.'
 
         # summarize results
         if flagCount == 0:
-            print 'All MagSpecies() checks passed. No obvious problems found.\n'
+            if self.verbose:
+                print 'All MagSpecies() checks passed. No obvious problems found.\n'
 
     def copy(self):
         """Return a deep copy of the MagSpecies object.
@@ -854,11 +882,13 @@ class MagStructure:
         K2 (float): another constant used for calculating Dr.
         fractions (python dictionary): Dictionary providing the fraction of
             spins in the magnetic structure corresponding to each species.
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
    """
 
     def __init__(self, struc=None, species=None, atoms=None, spins=None,
                  gfactors=None, rmaxAtoms=30.0, ffqgrid=None, ff=None,
-                 label='', K1=None, K2=None, fractions=None):
+                 label='', K1=None, K2=None, fractions=None, verbose=False):
 
         self.rmaxAtoms = rmaxAtoms
         self.label = label
@@ -903,6 +933,7 @@ class MagStructure:
             self.fractions = {}
         else:
             self.fractions = fractions
+        self.verbose = verbose
 
     def __repr__(self):
         if self.label == '':
@@ -948,7 +979,8 @@ class MagStructure:
                 ffqgrid = np.arange(0, 10.0, 0.01)
             self.species[label] = MagSpecies(self.struc, label, magIdxs, atoms, spins,
                                              self.rmaxAtoms, basisvecs, kvecs, S, L,
-                                             J, gS, gL, ffparamkey, ffqgrid, ff)
+                                             J, gS, gL, ffparamkey, ffqgrid, ff,
+                                             self.verbose)
             # update the list of fractions
             totatoms = 0.0
             for key in self.species:
@@ -979,9 +1011,10 @@ class MagStructure:
                 tempA = np.concatenate((tempA, self.species[key].atoms))
                 tempS = np.concatenate((tempS, self.species[key].spins))
             else:
-                print 'Coordinates of atoms and spins for ' + key
-                print 'have not been loaded because they have not yet been'
-                print 'generated and/or do not match in shape.'
+                if self.verbose:
+                    print 'Coordinates of atoms and spins for ' + key
+                    print 'have not been loaded because they have not yet been'
+                    print 'generated and/or do not match in shape.'
         if tempA.shape != (1, 3):        
             self.atoms = tempA[1:]
             self.spins = tempS[1:]
@@ -1251,7 +1284,8 @@ class MagStructure:
         for key in self.species:
             self.species[key].runChecks()
 
-        print 'Running checks for '+self.label+' MagStructure object...\n'
+        if self.verbose:        
+            print 'Running checks for '+self.label+' MagStructure object...\n'
 
         flag = False
         flagCount = 0
@@ -1268,8 +1302,9 @@ class MagStructure:
                         flag = True
                 if flag:
                     flagCount += 1
-                    print 'Warning: Magnetic species may have overlapping atoms.'
-                    print 'Check the magIdxs lists for your magnetic species.'
+                    if self.verbose:
+                        print 'Warning: Magnetic species may have overlapping atoms.'
+                        print 'Check the magIdxs lists for your magnetic species.'
                     flag = False
 
         # check that the fractions are consistent
@@ -1284,13 +1319,15 @@ class MagStructure:
                 flag = True
         if flag:
             flagCount += 1
-            print 'Species fractions do not correspond to actual number of'
-            print 'spins of each species in the structure.'
+            if self.verbose:
+                print 'Species fractions do not correspond to actual number of'
+                print 'spins of each species in the structure.'
         flag = False
 
         # summarize results
         if flagCount == 0:
-            print 'All MagStructure checks passed. No obvious problems found.'
+            if self.verbose:
+                print 'All MagStructure checks passed. No obvious problems found.'
 
     def getSpeciesIdxs(self):
         """Return a dictionary with the starting index in the atoms and spins

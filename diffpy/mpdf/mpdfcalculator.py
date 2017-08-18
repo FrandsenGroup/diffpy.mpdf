@@ -309,34 +309,43 @@ def smoothData(xdata,ydata,qCutoff,func='sinc',gaussHeight=0.01):
     msk = np.logical_and(xsmooth>(xdata.min()-0.5*dr),xsmooth<(xdata.max()+0.5*dr))
     return ysmooth[msk]
         
-def getDiffData(fileNames=[], fmt='pdfgui', writedata=False):
-    """Extract the fit residual from a structural PDF fit.
+def getDiffData(fileName, fitIdx=0, writedata=False, skips = 14):
+    """Extract the fit residual from a structural PDF fit. Works for .fgr and
+       .ddp files.
 
     Args:
-        fileNames (python list): list of paths to the files containing the
-            fit information (e.g. calculated and experimental PDF, as in the
-            .fgr files from PDFgui exported fits)
-        fmt (string): string identifying the format of the file(s). Options
-            are currently just 'pdfgui'.
+        fileName (str): path to the .fgr or .ddp file containing the fit
+        fitIdx (int): index of fit in .ddp file from which the residual
+             is to be extracted.
         writedata (boolean): whether or not the output should be saved to file
+        skips (int): Number of rows to be skipped in .fgr file to get to data;
+            default is 14.
 
     Returns:
         r (numpy array): same r-grid as contained in the fit file
 
         diff (numpy array): the structural PDF fit residual (i.e. the mPDF)
     """
-    if type(fileNames) is str:
-        fileNames = [fileNames]
-    for name in fileNames:
-        if fmt == 'pdfgui':
-            allcols = np.loadtxt(name, unpack=True, comments='#', skiprows=14)
-            r, diff = allcols[0], allcols[4]
-            if writedata:
-                np.savetxt(name[:-4]+'.diff', np.transpose((r, diff)))
-            else:
-                return r, diff
-        else:
-            print 'This format is not currently supported.'
+    if fileName[-4:] == '.fgr':
+        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=skips)
+        r, diff = allcols[0], allcols[4]
+        if writedata:
+            np.savetxt(fileName[:-4]+'.diff', np.transpose((r, diff)))
+        return r, diff
+    elif fileName[-4:] == '.ddp':
+        from diffpy.pdfgui import tui
+        prj = tui.LoadProject(fileName)
+        fit = prj.getFits()[fitIdx]
+        dataSet = fit.getDataSet(0)
+        r = np.array(dataSet.rcalc)
+        diff = np.array(dataSet.Gdiff)
+        if writedata:
+            np.savetxt(fileName[:-4]+'_'+str(fitIdx)+'.diff',
+                       np.transpose((r, diff)))
+        return r, diff            
+    else:
+        print 'This file format is not currently supported.'
+        return np.array([0]), np.array([0])
 
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
