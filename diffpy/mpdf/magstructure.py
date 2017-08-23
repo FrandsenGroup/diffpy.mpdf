@@ -499,7 +499,6 @@ def visualizeSpins(atoms,spins):
         matplotlib figure object with a quiver plot on 3d axes.        
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import axes3d
 
     xx,yy,zz=np.transpose(atoms)
     uu,vv,ww=np.transpose(spins)
@@ -508,7 +507,6 @@ def visualizeSpins(atoms,spins):
     ax = fig.add_subplot(111, projection='3d')
     for i in range(len(xx)):
         x, y, z, u, v, w = xx[i], yy[i], zz[i], uu[i], vv[i], ww[i]
-        mag = np.sqrt(u**2 + v**2 + w**2)
         ax.quiver(x, y, z, u, v, w, pivot='middle')
 
     xmin,xmax=ax.get_xlim3d()
@@ -1142,7 +1140,6 @@ class MagStructure:
            dictionary must be accurate before running this method.
         """
         K1, K2 = 0, 0        
-        g1, J1, g2, J2 = 0, 0, 0, 0
         for key in self.species:
             gSa, gLa = self.species[key].gS, self.species[key].gL
             ga = gSa + gLa
@@ -1241,7 +1238,6 @@ class MagStructure:
                 displayed
         """
         import matplotlib.pyplot as plt        
-        from mpl_toolkits.mplot3d import axes3d
 
         fig = visualizeSpins(atoms,spins)
         if showcrystalaxes:
