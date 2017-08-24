@@ -499,6 +499,7 @@ def visualizeSpins(atoms,spins):
         matplotlib figure object with a quiver plot on 3d axes.        
     """
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import axes3d
 
     xx,yy,zz=np.transpose(atoms)
     uu,vv,ww=np.transpose(spins)
@@ -1238,6 +1239,7 @@ class MagStructure:
                 displayed
         """
         import matplotlib.pyplot as plt        
+        from mpl_toolkits.mplot3d import axes3d
 
         fig = visualizeSpins(atoms,spins)
         if showcrystalaxes:

@@ -72,6 +72,7 @@ versiondata = getversioncfg()
 setup_args = dict(
         name = "diffpy.mpdf",
         version = versiondata.get('DEFAULT', 'version'),
+        #version = '1.0.0',
         namespace_packages = ['diffpy'],
         packages = find_packages(),
         test_suite = 'diffpy.mpdf.tests',

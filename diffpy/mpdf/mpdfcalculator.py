@@ -459,7 +459,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
         th = (np.sin(qmax*rth)-np.sin(qmin*rth))/np.pi/rth
         rth[0] = 0.0
         rcv, frcv = cv(r, fr, rth, th)
-        mask = np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= rmax+0.5*rstep)
+        mask = np.logical_and(rcv >= r[0]-0.5*rstep, rcv <= r[-1]+0.5*rstep)
         rcv = rcv[mask]
         frcv = frcv[mask]
         # Scale the convolved function back to the scale of the original
@@ -539,32 +539,17 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
 def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
     """Calculate the magnetic scattering via Fourier transform of the mPDF.
 
-    This module requires a normalized mPDF as an input, as well as a magnetic
-    form factor and associated q grid.
-
     Args:
         r (numpy array): r grid for the properly normalized mPDF.
-        fr (numpy array): the properly normalized mPDF.
-        q (numpy array): grid of momentum transfer values used for calculating
-            the magnetic form factor.
-        ff (numpy array): magnetic form factor. Same shape as ffqgrid.
-        paraScale (float): scale factor for the paramagnetic part of the
+        fr (numpy array): the mPDF, either normalized or unnormalized.
+        qmin (float): minimum value of the output q-grid.
+        qmax (float): maximum value of the output q-grid.
+        qstep (float): spacing for the q-grid.
             unnormalized mPDF function D(r).
-        rmintr (float): minimum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        rmaxtr (float): maximum value of r for the Fourier transform of the
-            magnetic form factor required for unnormalized mPDF.
-        drtr (float): step size for r-grid used for calculating Fourier
-            transform of magnetic form mactor.
-        qmin (float): minimum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
-        qmax (float): maximum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
         quantity (str): type of magnetic scattering quantity to return; either
-            'sq' or 'iq'.
-    Returns: numpy array for the unnormalized mPDF Dr.
+            'sq' or 'iq'. If 'sq', provide properly normalized mPDF; if 'iq',
+            provide the unnormalized mPDF.
+    Returns: q-grid and associated magnetic scattering.
     """
     if quantity=='sq':
         q, fq = sinTransform(r, fr, qmin, qmax, qstep)
@@ -626,7 +611,7 @@ class MPDFcalculator:
         label (string): Optional descriptive string for the MPDFcalculator.
         """
     def __init__(self, magstruc=None, calcList=[0], maxextension=10.0,
-                 gaussPeakWidth=0.1, dampRate=0.0, dampPower=2.0, qmin=-1.0,
+                 gaussPeakWidth=0.1, dampRate=0.0, dampPower=2.0, qmin=0.0,
                  qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
                  ordScale=1.0, paraScale=1.0, rmintr=-5.0,
                  rmaxtr=5.0, label=''):
@@ -679,7 +664,8 @@ class MPDFcalculator:
                                           self.dampRate, self.dampPower,
                                           self.maxextension, self.ordScale,
                                           self.magstruc.K1)
-            return rcalc, frcalc
+            mask = (rcalc <= self.rmax + 0.5*self.rstep)            
+            return rcalc[mask], frcalc[mask]
         elif not normalized and not both:
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
                                           self.magstruc.gfactors, self.calcList,
@@ -730,7 +716,8 @@ class MPDFcalculator:
                                           self.dampRate, self.dampPower,
                                           self.maxextension, self.ordScale,
                                           self.magstruc.K1)
-            ax.plot(rcalc, frcalc) 
+            mask = (rcalc <= self.rmax + 0.5*self.rstep)            
+            ax.plot(rcalc[mask], frcalc[mask]) 
             ax.set_ylabel(r'f ($\AA^{-2}$)')
         elif not normalized and not both:
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
