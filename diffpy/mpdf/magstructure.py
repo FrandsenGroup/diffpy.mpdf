@@ -1313,7 +1313,7 @@ class MagStructure:
             if totatoms == 0.0:
                 totatoms = 1.0 # prevent divide by zero problems
             frac = float(self.species[key].atoms.shape[0])/totatoms
-            if np.abs(frac - self.fractions[key])/frac > 0.1:
+            if (frac > 0) and (np.abs(frac - self.fractions[key])/frac > 0.1):
                 flag = True
         if flag:
             flagCount += 1

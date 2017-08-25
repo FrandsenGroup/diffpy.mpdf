@@ -3,7 +3,7 @@ if errorlevel 1 exit 1
 
 :: Add more build steps here, if they are necessary.
 
-"%PYTHON%" setup.py --version > __conda_version__.txt
+:: "%PYTHON%" setup.py --version > __conda_version__.txt
 
 :: See
 :: http://docs.continuum.io/conda/build.html
