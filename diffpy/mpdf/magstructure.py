@@ -554,13 +554,16 @@ def findAtomIndices(magstruc,atomList):
 
     return indices
 
-def getStrucFromPDFgui(fileName, strucIdx=0):
+def getStrucFromPDFgui(fileName, fitIdx=0, phaseIdx=0):
     """Extract the refined atomic structure from a PDFgui project file.
 
     Args:
         fileName (str): path to the .ddp file containing the fit
-        strucIdx (int): index of fit in .ddp file from which the refined
+        fitIdx (int): index of fit in .ddp file from which the refined
              structure is to be extracted. Default is 0.
+        phaseIdx (int): index of phase within the specified fit for
+             which the refined structure is to be extracted. Default
+             is 0.
 
     Returns:
         struc (diffpy.Structure object): Refined atomic structure.
@@ -568,11 +571,23 @@ def getStrucFromPDFgui(fileName, strucIdx=0):
     if fileName[-4:] == '.ddp':
         from diffpy.pdfgui import tui
         prj = tui.LoadProject(fileName)
-        struc = prj.getPhases()[strucIdx]
-        struc = struc.refined
+        try:        
+            fit = prj.getFits()[fitIdx]
+        except IndexError:
+            print 'Fit index does not correspond to any fit in your'
+            print 'PDFgui project.'
+            struc = []
+            return struc
+        try:
+            struc = prj.getPhases([fit])[phaseIdx]
+            struc = struc.refined
+        except IndexError:
+            print 'Phase index does not correspond to any phase in your'
+            print 'specified fit in the PDFgui project.'
+            struc = []
         return struc
     else:
-        print 'Please provide a PDFgui project file (.ddp extenstion)'
+        print 'Please provide a PDFgui project file (.ddp extension)'
         return []
 
 class MagSpecies:
