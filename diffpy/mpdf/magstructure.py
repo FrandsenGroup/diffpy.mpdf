@@ -57,9 +57,9 @@ def generateAtomsXYZ(struc, rmax=30.0, magIdxs=[0], square=False):
         lat = struc.lattice
         unitcell = lat.stdbase
         cellwithatoms = struc.xyz_cartn[np.array(magIdxs)]
-        dim1 = np.round(rmax/np.linalg.norm(unitcell[0]))
-        dim2 = np.round(rmax/np.linalg.norm(unitcell[1]))
-        dim3 = np.round(rmax/np.linalg.norm(unitcell[2]))
+        dim1 = int(np.round(rmax/np.linalg.norm(unitcell[0])))
+        dim2 = int(np.round(rmax/np.linalg.norm(unitcell[1])))
+        dim3 = int(np.round(rmax/np.linalg.norm(unitcell[2])))
         ocoords = np.mgrid[-dim1:dim1+1, -dim2:dim2+1, -dim3:dim3+1].transpose().ravel().reshape((2*dim1+1)*(2*dim2+1)*(2*dim3+1), 3)
         latos = np.dot(ocoords, unitcell)
 
@@ -152,9 +152,9 @@ def generateFromUnitCell(unitcell, atombasis, spinbasis, rmax=30.0):
         spinbasis = [spinbasis]        
     cellwithatoms = np.dot(atombasis, unitcell) ### check this
     radius = rmax+15.0
-    dim1 = np.round(radius/np.linalg.norm(unitcell[0]))
-    dim2 = np.round(radius/np.linalg.norm(unitcell[1]))
-    dim3 = np.round(radius/np.linalg.norm(unitcell[2]))
+    dim1 = int(np.round(radius/np.linalg.norm(unitcell[0])))
+    dim2 = int(np.round(radius/np.linalg.norm(unitcell[1])))
+    dim3 = int(np.round(radius/np.linalg.norm(unitcell[2])))
 
     ### generate the coordinates of each unit cell
     ocoords = np.mgrid[-dim1:dim1+1, -dim2:dim2+1, -dim3:dim3+1].transpose().ravel().reshape((2*dim1+1)*(2*dim2+1)*(2*dim3+1), 3)
@@ -420,8 +420,8 @@ def spinsFromAtoms(magstruc,positions,fractional=True,returnIdxs=False):
     for pos in positions:
         if fractional:
             pos=magstruc.struc.lattice.cartesian(pos)
-        mask = np.all(np.round(magstruc.atoms,decimals=5)==
-                      np.round(pos,decimals=5),axis=1)
+        mask = np.all(np.round(magstruc.atoms,decimals=4)==
+                      np.round(pos,decimals=4),axis=1)
         goodspins = magstruc.spins[mask]
         goodidxs = np.where(mask)[0]
         if len(goodspins) == 1:
