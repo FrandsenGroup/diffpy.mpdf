@@ -8,7 +8,10 @@ import unittest
 import sys
 import os
 import diffpy.mpdf
-from diffpy.Structure import loadStructure
+try:
+    from diffpy.structure import loadStructure
+except:
+    from diffpy.Structure import loadStructure
 import numpy as np
 
 ##############################################################################

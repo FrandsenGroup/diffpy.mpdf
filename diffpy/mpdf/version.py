@@ -19,7 +19,10 @@
 """
 
 from pkg_resources import resource_filename
-from ConfigParser import RawConfigParser
+try:
+    from configparser import RawConfigParser
+except:
+    from ConfigParser import RawConfigParser
 
 # obtain version information from the version.cfg file
 cp = RawConfigParser(dict(version='', date='', commit='', timestamp=0))

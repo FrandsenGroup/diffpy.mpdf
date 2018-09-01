@@ -304,8 +304,8 @@ def smoothData(xdata,ydata,qCutoff,func='sinc',gaussHeight=0.01):
         rg = 1.0/(qCutoff*np.sqrt(np.log(1.0/gaussHeight)/2.0))
         s = np.exp(-rs**2/2.0/rg**2)
     else:
-        print 'The only function options are sinc and gaussian. Please check'
-        print 'your input. Using sinc by default.'
+        print('The only function options are sinc and gaussian. Please check')
+        print('your input. Using sinc by default.')
         s = np.sinc(rs*qCutoff/np.pi)
     xsmooth, ysmooth = cv(xdata,ydata,rs,s)
     ysmooth /= np.trapz(s,rs)
@@ -347,7 +347,7 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips = 14):
                        np.transpose((r, diff)))
         return r, diff            
     else:
-        print 'This file format is not currently supported.'
+        print('This file format is not currently supported.')
         return np.array([0]), np.array([0])
 
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
@@ -444,10 +444,10 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
 
         s1[0] = 0
         s1 = fftconvolve(s1, y)
-        s1 = s1[len(x)/2: -len(x)/2+1]
+        s1 = s1[int(len(x)/2): int(-len(x)/2+1)]
 
         s2 = fftconvolve(s2, y) * rstep
-        s2 = s2[len(x)/2: -len(x)/2+1]
+        s2 = s2[int(len(x)/2): int(-len(x)/2+1)]
 
     ss2 = np.cumsum(s2)
 
@@ -570,7 +570,7 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
         iq[0] = 0.0
         return q, iq
     else:
-        print 'Please specify a valid magnetic scattering type (sq or iq).'
+        print('Please specify a valid magnetic scattering type (sq or iq).')
         return 0*r, 0*fr
 
 class MPDFcalculator:
@@ -627,8 +627,8 @@ class MPDFcalculator:
         else:
             self.magstruc = magstruc
             if magstruc.rmaxAtoms < rmax:
-                print 'Warning: Your structure may not be big enough for your'
-                print 'desired calculation range.'
+                print('Warning: Your structure may not be big enough for your')
+                print('desired calculation range.')
         self.calcList = calcList
         self.maxextension = maxextension
         self.gaussPeakWidth = gaussPeakWidth
@@ -769,7 +769,7 @@ class MPDFcalculator:
     def runChecks(self):
         """Run some quick checks to help with troubleshooting.
         """
-        print 'Running checks on MPDFcalculator...\n'
+        print('Running checks on MPDFcalculator...\n')
 
         flagCount = 0
         flag = False
@@ -779,8 +779,8 @@ class MPDFcalculator:
             flag = True
         if flag:
             flagCount += 1
-            print 'Number of atoms and spins do not match; try calling'
-            print 'makeAtoms() and makeSpins() again on your MagStructure.\n'
+            print('Number of atoms and spins do not match; try calling')
+            print('makeAtoms() and makeSpins() again on your MagStructure.\n')
         flag = False
 
         ### check for nan values in spin array
@@ -788,7 +788,7 @@ class MPDFcalculator:
             flag = True
         if flag:
             flagCount += 1
-            print 'Spin array contains nan values ("not a number").\n'
+            print('Spin array contains nan values ("not a number").\n')
         flag = False
 
         ### check if rmax is too big for rmaxAtoms in structure
@@ -797,10 +797,10 @@ class MPDFcalculator:
                 flag = True
         if flag:
             flagCount += 1
-            print 'Warning: the atoms in your MagStructure may not fill a'
-            print 'volume large enough for the desired rmax for the mPDF'
-            print 'calculation. Adjust rmax and/or rmaxAtoms in the'
-            print 'MagSpecies or MagStructure objects.\n'
+            print('Warning: the atoms in your MagStructure may not fill a')
+            print('volume large enough for the desired rmax for the mPDF')
+            print('calculation. Adjust rmax and/or rmaxAtoms in the')
+            print('MagSpecies or MagStructure objects.\n')
         flag = False
 
         ### check if calcList may not be representative of all MagSpecies.
@@ -808,11 +808,11 @@ class MPDFcalculator:
             flag = True
         if flag:
             flagCount += 1
-            print 'Warning: your calcList may not be representative of all'
-            print 'the magnetic species. calcList should have the index of'
-            print 'at least one spin from each species. Use'
-            print 'magStruc.getSpeciesIdxs() to see starting indices for'
-            print 'each species.\n'
+            print('Warning: your calcList may not be representative of all')
+            print('the magnetic species. calcList should have the index of')
+            print('at least one spin from each species. Use')
+            print('magStruc.getSpeciesIdxs() to see starting indices for')
+            print('each species.\n')
         flag = False
 
         ### check if calcList has indices that exceed the spin array
@@ -820,8 +820,8 @@ class MPDFcalculator:
             flag = True
         if flag:
             flagCount += 1
-            print 'calcList contains indices that are too large for the'
-            print 'arrays of atoms and spins contained in the MagStructure.'
+            print('calcList contains indices that are too large for the')
+            print('arrays of atoms and spins contained in the MagStructure.')
         flag = False
 
         ### check for unphysical parameters like negative scale factors
@@ -829,13 +829,13 @@ class MPDFcalculator:
             flag = True
         if flag:
             flagCount += 1
-            print 'Warning: you have a negative scale factor.'
-            print 'Paramagnetic scale = ', self.paraScale
-            print 'Ordered scale = ', self.ordScale
+            print('Warning: you have a negative scale factor.')
+            print('Paramagnetic scale = ', self.paraScale)
+            print('Ordered scale = ', self.ordScale)
         flag = False
 
         if flagCount == 0:
-            print 'All checks passed. No obvious problems found.\n'
+            print('All checks passed. No obvious problems found.\n')
 
     def rgrid(self):
         """Return the current r grid of the mPDF calculator."""
