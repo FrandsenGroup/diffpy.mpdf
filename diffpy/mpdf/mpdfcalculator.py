@@ -403,6 +403,9 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
     s1 = np.zeros(len(r))
     s2 = np.zeros(len(r))
 
+    if calcList == 'all':
+        calcList = np.arange(len(xyz))
+
     for uu in calcList:
         ri = xyz[uu]
         rj = xyz
@@ -583,7 +586,8 @@ class MPDFcalculator:
             magnetic structure. Must have arrays of atoms and spins.
         calcList (python list): list giving the indices of the atoms array
             specifying the atoms to be used as the origin when calculating
-            the mPDF.
+            the mPDF. If given the string argument 'all', then every atom
+            will be used (potentially causing very long calculation times).
         maxextension (float): extension of the r-grid on which the mPDF is
             calculated to properly account for contribution of pairs just
             outside the boundary.
