@@ -118,7 +118,7 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
     spins = np.real(cspins)
 
     if np.abs(np.imag(cspins)).max() > 0.0001:
-        print(np.abs(np.imag(cspins)).max())
+        print((np.abs(np.imag(cspins)).max()))
         print('Warning: basis vectors resulted in complex spins.')
         print('Imaginary parts have been discarded.')
 
@@ -540,14 +540,14 @@ def findAtomIndices(magstruc,atomList):
         maskz = (np.abs(z - za) < 0.01)
         match = allIdxs[np.logical_and(maskx,np.logical_and(masky,maskz))]
         if len(match) == 0:
-            print('Warning: atom with index '+str(idx)+' in atomList could not')
+            print(('Warning: atom with index '+str(idx)+' in atomList could not'))
             print('be found in the MagStructure, so the index -1 has been')
             print('returned instead.')
             indices.append(-1)
         if len(match) == 1:
             indices.append(match[0])
         if len(match) > 1:
-            print('Warning: '+str(len(match))+' atoms matching index '+str(idx))
+            print(('Warning: '+str(len(match))+' atoms matching index '+str(idx)))
             print('have been found in the MagStructure, so just the first index has')
             print('been returned.')
             indices.append(match[0])
@@ -822,7 +822,7 @@ class MagSpecies:
         """Run some simple checks and raise a warning if a problem is found.
         """
         if self.verbose:        
-            print('Running checks for '+self.label+' MagSpecies object...\n')
+            print(('Running checks for '+self.label+' MagSpecies object...\n'))
 
         flagCount = 0
         flag = False
@@ -985,7 +985,7 @@ class MagStructure:
         """
         # check that the label is not a duplicate with any other mag species.
         duplicate = False
-        for name in self.species.keys():
+        for name in list(self.species.keys()):
             if name == label:
                 duplicate = True
         if not duplicate:
@@ -1026,7 +1026,7 @@ class MagStructure:
                 tempS = np.concatenate((tempS, self.species[key].spins))
             else:
                 if self.verbose:
-                    print('Coordinates of atoms and spins for ' + key)
+                    print(('Coordinates of atoms and spins for ' + key))
                     print('have not been loaded because they have not yet been')
                     print('generated and/or do not match in shape.')
         if tempA.shape != (1, 3):        
@@ -1045,7 +1045,7 @@ class MagStructure:
         """
         # check that the label is not a duplicate with any other mag species.
         duplicate = False
-        for name in self.species.keys():
+        for name in list(self.species.keys()):
             if name == magSpec.label:
                 duplicate = True
         if not duplicate:
@@ -1056,7 +1056,7 @@ class MagStructure:
             totatoms = 0.0
             for key in self.species:
                 totatoms += self.species[key].atoms.shape[0]
-            for key in self.species.keys():
+            for key in list(self.species.keys()):
                 if totatoms == 0.0:
                     totatoms = 1.0 # prevent divide by zero problems
                 frac = float(self.species[key].atoms.shape[0])/totatoms
@@ -1260,7 +1260,7 @@ class MagStructure:
         if showcrystalaxes:
             ax3d = fig.axes[0]
             try:
-                mspec=self.species.items()[0][1]
+                mspec=list(self.species.items())[0][1]
                 if mspec.useDiffpyStruc:
                     lat=mspec.struc.lattice
                     a, b, c = lat.stdbase
@@ -1298,7 +1298,7 @@ class MagStructure:
             self.species[key].runChecks()
 
         if self.verbose:        
-            print('Running checks for '+self.label+' MagStructure object...\n')
+            print(('Running checks for '+self.label+' MagStructure object...\n'))
 
         flag = False
         flagCount = 0

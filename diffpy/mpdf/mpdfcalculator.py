@@ -830,8 +830,8 @@ class MPDFcalculator:
         if flag:
             flagCount += 1
             print('Warning: you have a negative scale factor.')
-            print('Paramagnetic scale = ', self.paraScale)
-            print('Ordered scale = ', self.ordScale)
+            print(('Paramagnetic scale = ', self.paraScale))
+            print(('Ordered scale = ', self.ordScale))
         flag = False
 
         if flagCount == 0:
