@@ -19,7 +19,7 @@ Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit).
 
 ## Installation
 
-The recommended way to install this package is through conda. For help installing conda, please visit https://www.continuum.io/downloads. Once conda is installed, you can follow the simple steps below to install diffpy.mpdf. You will also install the full diffpy-cmi suite along the way. 
+The recommended way to install this package is through conda. For help installing conda, please visit https://www.anaconda.com/download.  Once conda is installed, you can follow the simple steps below to install diffpy.mpdf. You will also install the full diffpy-cmi suite along the way.
 
 #### Step 1: Add the appropriate conda channels to your conda configuration.
     >>> conda config --add channels diffpy
@@ -30,11 +30,11 @@ These commands tell conda to look through these channels on the Anaconda cloud s
     >>> conda create --name diffpy python=2.7
     >>> source activate diffpy
 Note that you can name the environment anything you choose by passing it a different name after the --name flag in the first command.
-    
+
 #### Step 3: Install diffpy.mpdf
     >>> conda install diffpy.mpdf
 Note that this will also install the full diffpy-cmi suite if it has not already been installed in this environment.
-    
+
 #### Alternative option: Install from the python package index
 If you prefer to use the python package index and have pip installed, please install the prerequisite software and then use the command:
 
