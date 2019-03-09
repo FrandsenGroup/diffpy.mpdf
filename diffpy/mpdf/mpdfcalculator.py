@@ -517,6 +517,9 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     if K2 is None:
         K2 = K1
     rsr, sr = cosTransform(q, ff, rmintr, rmaxtr, drtr)
+    #### Double-check whether or not I should normalize sr!
+    #norm = np.trapz(sr,rsr)
+    #sr /= norm
     #sr = np.sqrt(np.pi/2.0)*sr ### I don't think we should multiply by sqrt(pi/2)
     rSr, Sr = cv(rsr, sr, rsr, sr)
     rDr, Dr = cv(r, K1/(2.0*np.pi)*fr, rSr, Sr)
