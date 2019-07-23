@@ -499,7 +499,7 @@ def visualizeSpins(atoms,spins):
         matplotlib figure object with a quiver plot on 3d axes.        
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import axes3d
+    from mpl_toolkits.mplot3d import Axes3D
 
     xx,yy,zz=np.transpose(atoms)
     uu,vv,ww=np.transpose(spins)
@@ -507,8 +507,10 @@ def visualizeSpins(atoms,spins):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     for i in range(len(xx)):
-        x, y, z, u, v, w = xx[i], yy[i], zz[i], uu[i], vv[i], ww[i]
-        ax.quiver(x, y, z, u, v, w, pivot='middle')
+        x, y, z = 1.0*xx[i], 1.0*yy[i], 1.0*zz[i]
+        u, v, w = 1.0*uu[i], 1.0*vv[i], 1.0*ww[i]
+        lngth = np.sqrt(u**2+v**2+w**2)
+        ax.quiver(x, y, z, u, v, w, length=lngth, pivot='middle')
 
     xmin,xmax=ax.get_xlim3d()
     ax.set_xlim3d(np.min((-1,xmin)),np.max((1,xmax)))
