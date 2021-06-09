@@ -259,6 +259,47 @@ def getStdUnc(fitResult,data,dataErr=None,numConstraints=0):
     chisq = Rw**2/Rexp**2
     return pUnc,chisq
 
+def optimizedSubtraction(rhigh, dhigh, rlow, dlow):
+    '''
+    This routine stretches and broadens a low-temperature atomic PDF fit residual
+    to match a high-temperature fit residual as closely as possible. The idea is
+    to minimize thermal effects when doing the temperature subtraction so that
+    the mDPF can be obtained as cleanly as possible.
+    
+    rhigh = r array for high-temperature atomic PDF fit residual
+    dhigh = high-temperature atomic PDF fit residual
+    rlow = r array for low-temperature atomic PDF fit residual
+    dlow = low-temperature atomic PDF fit residual
+    Note: the high- and low-temperature fits should be over the same r range
+    '''
+
+    def gaussianSmooth(x,y,sig=0.1):
+        dr = np.mean((x - np.roll(x,1))[1:])
+        rs = np.arange(-10,10,dr)
+        s = np.exp(-rs**2/2.0/sig**2)
+        xsmooth, ysmooth = cv(x,y,rs,s)
+        ysmooth /= np.trapz(s,rs)
+        msk = np.logical_and(xsmooth>(x.min()-0.5*dr),xsmooth<(x.max()+0.5*dr))
+        return ysmooth[msk]
+
+    def residual(p,x,y,ycomp):
+        stretch, width = p
+        newx = stretch*x
+        newy = np.interp(newx,x,y)
+        newy = gaussianSmooth(newx,newy,width)
+        msk = (x <= x.max()/stretch)
+        return ycomp[msk]-newy[msk]
+
+    p0=[0.999,0.1] # typical starting guesses
+    opt = least_squares(residual,p0,args=(rlow,dlow,dhigh))
+    print(opt.x)
+    stretch = opt.x[0]
+    msk = (rlow <= rlow.max()/stretch)
+    newdllow = dhigh[msk]-residual(opt.x,rlow,dlow,dhigh)
+    diff = newdllow - dhigh[msk]
+    return rhigh[msk], diff
+
+
 def smoothData(xdata,ydata,qCutoff,func='sinc',gaussHeight=0.01):
     """Smooth out high-frequency contributions from the data.
 
@@ -403,8 +444,9 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcList=np.array([0]),
     s1 = np.zeros(len(r))
     s2 = np.zeros(len(r))
 
-    if calcList == 'all':
-        calcList = np.arange(len(xyz))
+    if type(calcList) is str:
+        if calcList == 'all':
+            calcList = np.arange(len(xyz))
 
     for uu in calcList:
         ri = xyz[uu]
