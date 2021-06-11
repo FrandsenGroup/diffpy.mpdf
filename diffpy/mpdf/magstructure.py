@@ -900,11 +900,16 @@ class MagStructure:
             spins in the magnetic structure corresponding to each species.
         verbose (boolean): If True, will print messages relating to the structure.
             Useful for troubleshooting. Default is False.
+        calcIdxs (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF. If given the string argument 'all', then every atom
+            will be used (potentially causing very long calculation times).
    """
 
     def __init__(self, struc=None, species=None, atoms=None, spins=None,
                  gfactors=None, rmaxAtoms=30.0, ffqgrid=None, ff=None,
-                 label='', K1=None, K2=None, fractions=None, verbose=False):
+                 label='', K1=None, K2=None, fractions=None, Uiso=0.01,
+                 calcIdxs=None, corrLength=0.0, verbose=False):
 
         self.rmaxAtoms = rmaxAtoms
         self.label = label
@@ -949,6 +954,12 @@ class MagStructure:
             self.fractions = {}
         else:
             self.fractions = fractions
+        if calcIdxs is None:
+            self.calcIdxs = [0]
+        else:
+            self.calcIdxs = calcIdxs
+        self.Uiso = Uiso
+        self.corrLength = corrLength        
         self.verbose = verbose
 
     def __repr__(self):
