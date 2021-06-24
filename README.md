@@ -7,7 +7,7 @@ This package aims to provide a convenient method for computing the magnetic PDF 
 
 ## Requirements
 
-This package requires Python 2.6 or 2.7 and the following software:
+This package requires Python 3.5 or greater and the following software:
 
 numpy, matplotlib, scipy, diffpy.Structure, diffpy.srreal
 
@@ -27,7 +27,7 @@ The recommended way to install this package is through conda. For help installin
 These commands tell conda to look through these channels on the Anaconda cloud server to find the appropriate software.
 
 #### Step 2 (recommended): Create and activate a conda environment for diffpy + diffpy.mpdf.
-    >>> conda create --name diffpy python=2.7
+    >>> conda create --name diffpy python=3
     >>> source activate diffpy
 Note that you can name the environment anything you choose by passing it a different name after the --name flag in the first command.
 

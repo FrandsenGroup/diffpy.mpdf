@@ -16,7 +16,7 @@ class spinsAtomsTest(unittest.TestCase):
         mstr=diffpy.mpdf.MagStructure()
         mstr.atoms=atoms
         mstr.spins=spins
-        testval=diffpy.mpdf.spinsFromAtoms(mstr,[1,0,0],fractional=False)[0][2]
+        testval=diffpy.mpdf.magutils.spinsFromAtoms(mstr,[1,0,0],fractional=False)[0][2]
         self.assertEqual(testval,-1)
 
     def testAtomsFromSpins(self):
@@ -25,7 +25,7 @@ class spinsAtomsTest(unittest.TestCase):
         mstr=diffpy.mpdf.MagStructure()
         mstr.atoms=atoms
         mstr.spins=spins
-        testval=diffpy.mpdf.atomsFromSpins(mstr,[0,0,-1],fractional=False)[0][0][0]
+        testval=diffpy.mpdf.magutils.atomsFromSpins(mstr,[0,0,-1],fractional=False)[0][0][0]
         self.assertEqual(testval,1)
 
 # End of class spinsAtomsTest
