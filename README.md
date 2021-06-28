@@ -19,35 +19,23 @@ Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit).
 
 ## Installation
 
-The recommended way to install this package is through conda. For help installing conda, please visit https://www.anaconda.com/download.  Once conda is installed, you can follow the simple steps below to install diffpy.mpdf. You will also install the full diffpy-cmi suite along the way.
+The recommended way to install this package is first to install diffpy-cmi through conda, then install diffpy.mpdf from source.
 
-#### Step 1: Add the appropriate conda channels to your conda configuration.
-    >>> conda config --add channels diffpy
-    >>> conda config --add channels benfrandsen
-These commands tell conda to look through these channels on the Anaconda cloud server to find the appropriate software.
-
-#### Step 2 (recommended): Create and activate a conda environment for diffpy + diffpy.mpdf.
+#### Step 1 (recommended): Create and activate a conda environment for diffpy + diffpy.mpdf.
     >>> conda create --name diffpy python=3
-    >>> source activate diffpy
+    >>> conda activate diffpy
 Note that you can name the environment anything you choose by passing it a different name after the --name flag in the first command.
 
+#### Step 2: Install diffpy-cmi through conda.
+    >>> conda install -c diffpy diffpy-cmi
+Make sure you are installing this in the environment you created in the previous step.
+
 #### Step 3: Install diffpy.mpdf
-    >>> conda install diffpy.mpdf
-Note that this will also install the full diffpy-cmi suite if it has not already been installed in this environment.
-
-#### Alternative option: Install from the python package index
-If you prefer to use the python package index and have pip installed, please install the prerequisite software and then use the command:
-
-    >>> pip install diffpy.mpdf
-
-#### Alternative option: Download and install from source
-If you prefer to install from source, you can also zip and download this entire github repository (see the Download Zip button in the upper right corner), then unzip the file and execute the following command from inside the unzipped directory:
-
+Clone or download this repository on your local machine. Navigate to the downloaded repository and run the following command (making sure that you are in the environment you created in Step 1):
     >>> python setup.py install
-Note that this will only work if all the dependencies are already properly installed.
 
 ## Documentation
-Please see http://pythonhosted.org/diffpy.mpdf/ for the documentation.
+Please see http://pythonhosted.org/diffpy.mpdf/ for the documentation. (Note as of June 2021: This documentation is out of date. New docs coming in the future.)
 
 ## Contributors
 
