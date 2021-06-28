@@ -31,7 +31,8 @@ Note that you can name the environment anything you choose by passing it a diffe
 Make sure you are installing this in the environment you created in the previous step.
 
 #### Step 3: Install diffpy.mpdf
-Clone or download this repository on your local machine. Navigate to the downloaded repository and run the following command (making sure that you are in the environment you created in Step 1):
+Clone or download this repository on your local machine. Navigate to the downloaded repository and run the following command (making sure that you are in the environment you created in Step 1).
+
     >>> python setup.py install
 
 ## Documentation
