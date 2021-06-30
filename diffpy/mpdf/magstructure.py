@@ -351,12 +351,19 @@ class MagStructure:
             magnitude of the correlation between two spins separated by a
             distance d is given by exp(-d/corrLength). If set to zero, the
             correlation length is assumed to be infinite.
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+
    """
 
     def __init__(self, struc=None, species=None, atoms=None, spins=None,
                  gfactors=None, rmaxAtoms=30.0, ffqgrid=None, ff=None,
                  label='', K1=None, K2=None, fractions=None, Uiso=0.01,
-                 calcIdxs=None, corrLength=0.0, verbose=False):
+                 calcIdxs=None, corrLength=0.0, verbose=False,
+                 netMag=0, rho0=0):
 
         self.rmaxAtoms = rmaxAtoms
         self.label = label
@@ -408,6 +415,8 @@ class MagStructure:
         self.Uiso = Uiso
         self.corrLength = corrLength        
         self.verbose = verbose
+        self.rho0 = rho0
+        self.netMag = netMag
 
     def __repr__(self):
         if self.label == '':
@@ -846,6 +855,26 @@ class MagStructure:
                             idxDict[key])
         calcIdxs = [ci for sublist in calcIdxs for ci in sublist]
         self.calcIdxs = calcIdxs
+
+    def calcAtomicDensity(self, volume=0, numSpins=0):
+        """Determine the number density of magnetic moments.
+        Sets the calculated number density equal to self.rho0.
+
+        Args:
+            volume (scalar): Volume of the MagStructure. If equal to the
+                default value of 0, then the volume will be calculated
+                assuming a sphere of radius rmaxAtoms.
+            numSpins (integer): number of magnetic moments in the volume
+                being considered. If equal to the default value of 0, then
+                the numSpins will be set to the length of the spins array.
+        """
+        if volume==0:
+            radius = self.rmaxAtoms + \
+                     np.linalg.norm(self.struc.lattice.stdbase.sum(axis=1))
+            volume = 1.33333*np.pi*radius**3
+        if numSpins==0:
+            numSpins = len(self.spins)
+        self.rho0 = numSpins / volume
 
     def copy(self):
         """Return a deep copy of the MagStructure object."""

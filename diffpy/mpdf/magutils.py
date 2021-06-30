@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from diffpy.srreal.bondcalculator import BondCalculator
 from scipy.signal import convolve, fftconvolve
+from scipy.optimize import least_squares
 
 def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
@@ -989,7 +990,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
-                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1)):
+                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
+                  rho0=0, netMag=0, corrLength=0, automaticLinearTerm=False):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -1026,7 +1028,20 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         ordScale (float): overall scale factor for the mPDF function f(r).
         K1 (float): A constant related to the total angular momentum quantum
             number and the average Lande splitting factor.
-
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+        corrLength (float): exponential magnetic correlation length of the
+            structure; default is 0, which is considered to be infinite.
+            This is important to get the linear term right for samples
+            with nonzero net magnetization.
+        automaticLinearTerm (boolean): if True, the slope of the linear
+            component will be determined by least-squares minimization of the
+            calculated mPDF, thereby ensuring that the mPDF oscillates around
+            zero, as it is supposed to.  If False, the slope will be
+            calculated from the values of rho0 and netMag. Default is False.
     Returns: numpy arrays for r and the mPDF fr, on the extended grid.
         """
     # check if g-factors have been provided
@@ -1101,8 +1116,30 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         r[0] = 0
     else:
         fr = s1 / r + r * (ss2[-1] - ss2)
+
+    ### Now include the linear term
+    if automaticLinearTerm:
+        if corrLength == 0:
+            def residual(p):
+                return fr - p[0] * r
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r
+        else:
+            def residual(p):
+                return fr - p[0] * r * np.exp(-r/corrLength)
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
+    else:
+        if corrLength == 0:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2
+        else:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength)
+    fr -= linearTerm
+
+    ### prefactor
     fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
 
+    ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:
