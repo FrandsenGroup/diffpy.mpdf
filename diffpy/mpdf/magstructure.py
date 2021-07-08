@@ -356,6 +356,7 @@ class MagStructure:
         netMag (float): net magnetization in Bohr magnetons per magnetic moment
             in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
             canted antiferromagnets.
+        magneticAtomRatio (float): ratio of magnetic atoms to total atoms.
 
    """
 
@@ -363,7 +364,7 @@ class MagStructure:
                  gfactors=None, rmaxAtoms=30.0, ffqgrid=None, ff=None,
                  label='', K1=None, K2=None, fractions=None, Uiso=0.01,
                  calcIdxs=None, corrLength=0.0, verbose=False,
-                 netMag=0, rho0=0):
+                 netMag=0, rho0=0, magneticAtomRatio=0):
 
         self.rmaxAtoms = rmaxAtoms
         self.label = label
@@ -417,6 +418,7 @@ class MagStructure:
         self.verbose = verbose
         self.rho0 = rho0
         self.netMag = netMag
+        self.magneticAtomRatio = magneticAtomRatio
 
     def __repr__(self):
         if self.label == '':
@@ -668,7 +670,7 @@ class MagStructure:
         self.makeKfactors()
         self.makeFF()
         self.makeCalcIdxs()
-        self.runChecks()
+        self.runChecks(doCalcIdxsCheck=True)
 
     def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
         """Return the spin vectors corresponding to specified atomic
@@ -760,7 +762,7 @@ class MagStructure:
         """
         return findAtomIndices(self,atomList)
 
-    def runChecks(self):
+    def runChecks(self, doCalcIdxsCheck=False):
         """Run some simple checks and raise a warning if a problem is found.
         """
         # do the MagSpecies checks
@@ -808,16 +810,17 @@ class MagStructure:
         flag = False
 
         ### check if calcIdxs may not be representative of all MagSpecies.
-        if len(self.calcIdxs) < len(self.species):
-            flag = True
-        if flag:
-            flagCount += 1
-            print('Warning: your calcIdxs may not be representative of all')
-            print('the magnetic species. calcIdxs should have the index of')
-            print('at least one spin from each species. Use')
-            print('magStruc.getSpeciesIdxs() to see starting indices for')
-            print('each species.\n')
-        flag = False
+        if doCalcIdxsCheck: # option to turn off this check e.g. when loading a MagSpecies
+            if len(self.calcIdxs) < len(self.species):
+                flag = True
+            if flag:
+                flagCount += 1
+                print('Warning: your calcIdxs may not be representative of all')
+                print('the magnetic species. calcIdxs should have the index of')
+                print('at least one spin from each species. Use')
+                print('magStruc.getSpeciesIdxs() to see starting indices for')
+                print('each species.\n')
+            flag = False
 
         ### check if calcIdxs has indices that exceed the spin array
         if self.atoms.shape[0]>0:
@@ -868,13 +871,38 @@ class MagStructure:
                 being considered. If equal to the default value of 0, then
                 the numSpins will be set to the length of the spins array.
         """
-        if volume==0:
-            radius = self.rmaxAtoms + \
-                     np.linalg.norm(self.struc.lattice.stdbase.sum(axis=1))
-            volume = 1.33333*np.pi*radius**3
-        if numSpins==0:
-            numSpins = len(self.spins)
-        self.rho0 = numSpins / volume
+        if self.struc != []:
+            volume = np.sqrt(np.linalg.det(self.struc.lattice.metrics))
+            for key in self.species:
+                #strucIdxs = self.species[key].strucIdxs
+                #numSpins += self.species[key].struc.occupancy[strucIdxs].sum()
+                numSpins += len(self.species[key].strucIdxs)
+            self.rho0 = numSpins / volume
+        else:
+            print('Please create a diffpy Structure object to use this feature')
+            # if volume==0:
+            #     radius = self.rmaxAtoms + \
+            #              np.linalg.norm(self.struc.lattice.stdbase.sum(axis=1))
+            #     volume = 1.33333*np.pi*radius**3
+            # if numSpins==0:
+            #     numSpins = len(self.spins)
+            # self.rho0 = numSpins / volume
+
+    def calcMagneticAtomRatio(self):
+        """Determine the ratio of magnetic atoms to total atoms.
+        Sets the calculated number equal to self.magneticAtomRatio.
+
+        """
+        occ = self.struc.occupancy
+        totalOcc = occ.sum()
+        numMagAtoms = 0
+        if self.struc != []:
+            for key in self.species:
+                strucIdxs = self.species[key].strucIdxs
+                numMagAtoms += occ[strucIdxs].sum()
+            self.magneticAtomRatio = numMagAtoms / totalOcc
+        else:
+            print('Please create a diffpy Structure object to use this feature')
 
     def copy(self):
         """Return a deep copy of the MagStructure object."""

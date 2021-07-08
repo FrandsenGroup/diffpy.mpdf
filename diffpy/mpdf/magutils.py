@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from diffpy.srreal.bondcalculator import BondCalculator
 from scipy.signal import convolve, fftconvolve
 from scipy.optimize import least_squares
+import periodictable as pt
 
 def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
@@ -986,6 +987,25 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         return np.array([0]), np.array([0])
 
 
+def calculateAvgB(struc):
+    """Calculate average coherent neutron scattering length.
+
+    Args:
+        struc: Diffpy Structure object
+
+    Returns:
+        bAvg: average coherent neutron scattering length.
+    """
+    totalOcc = struc.occupancy.sum()
+    bAvg = 0
+    for idx, atom in enumerate(struc):
+        el = re.findall("[a-zA-Z]+", atom.element)
+        b = getattr(pt, el[0]).neutron.b_c
+        bAvg += struc.occupancy[idx] * b
+    bAvg /= totalOcc
+    return bAvg
+
+
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
@@ -1117,6 +1137,9 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     else:
         fr = s1 / r + r * (ss2[-1] - ss2)
 
+    ### prefactor
+    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
+
     ### Now include the linear term
     if automaticLinearTerm:
         if corrLength == 0:
@@ -1131,13 +1154,13 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
             linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
     else:
         if corrLength == 0:
-            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2
+            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2 \
+                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
         else:
-            linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength)
+            linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength) \
+                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
     fr -= linearTerm
 
-    ### prefactor
-    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
 
     ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
