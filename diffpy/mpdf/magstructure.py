@@ -87,12 +87,15 @@ class MagSpecies:
             vectors and propagation vectors. Default is np.array([0,0,0]).
         verbose (boolean): If True, will print messages relating to the structure.
             Useful for troubleshooting. Default is False.
+        occ (scalar): Occupancy of the magnetic atom associated with
+            this MagSpecies. Default is 1.
     """
-    def __init__(self, struc=None, label='', strucIdxs=[0], atoms=None, spins=None,
+    def __init__(self, struc=None, label='', strucIdxs=None, atoms=None, spins=None,
                  calcIdxs=[0], rmaxAtoms=30.0, basisvecs=None, kvecs=None, S=0.5,
                  L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
-                 atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False):
+                 atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False,
+                 occ=None):
         self.label = label
         self.rmaxAtoms = rmaxAtoms
         self.S = S
@@ -165,6 +168,10 @@ class MagSpecies:
         else:
             self.spinOrigin = spinOrigin
         self.verbose = verbose
+        if occ is None:
+            self.occ = 1.0
+        else:
+            self.occ = occ
 
     def __repr__(self):
         if self.label == '':
@@ -191,9 +198,11 @@ class MagSpecies:
                structure. Must provide propagation vector(s) and basis
                vector(s).
         """
+        self.setOcc()
         if self.useDiffpyStruc:
             self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
                                           self.spinOrigin)
+            self.spins *= self.occ
         else:
             print('Since you are not using a diffpy Structure object,')
             print('the spins are generated from the makeAtoms() method.')
@@ -262,6 +271,15 @@ class MagSpecies:
             List of indices corresponding to the atomList.
         """
         return findAtomIndices(self,atomList)
+
+    def setOcc(self):
+        """Set the MagSpecies.occ attribute according to the Diffpy Structure.
+        """
+        if self.struc != []:
+            self.occ = np.mean(self.struc.occupancy[self.strucIdxs])
+        else:
+            self.occ *= 1
+
 
     def runChecks(self):
         """Run some simple checks and raise a warning if a problem is found.
@@ -428,7 +446,7 @@ class MagStructure:
 
     def makeSpecies(self, label, strucIdxs=None, atoms=None, spins=None,
                     basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None,
-                    gL=None, ffparamkey=None,ffqgrid=None, ff=None):
+                    gL=None, ffparamkey=None,ffqgrid=None, ff=None, occ=None):
         """Create a MagSpecies object and add it to the species dictionary.
 
         Args:
@@ -465,7 +483,7 @@ class MagStructure:
             self.species[label] = MagSpecies(self.struc, label, strucIdxs, atoms, spins,
                                              self.rmaxAtoms, basisvecs, kvecs, S, L,
                                              J, gS, gL, ffparamkey, ffqgrid, ff,
-                                             self.verbose)
+                                             self.verbose, occ)
             # update the list of fractions
             totatoms = 0.0
             for key in self.species:
@@ -903,6 +921,40 @@ class MagStructure:
             self.magneticAtomRatio = numMagAtoms / totalOcc
         else:
             print('Please create a diffpy Structure object to use this feature')
+
+    def calcNetMag(self,method='directCalculation'):
+        """Determine the net magnetization per spin.
+        Sets the calculated value equal to self.netMag.
+        
+        This method is only necessary for magnetic structures with a
+        net magnetic moment, such as a ferromagnet, ferrimagnet, or
+        canted antiferromagnet.
+        
+        Args:
+            method: How the net magnetization should be calculated.
+                'directCalculation': the mean of the entire structure is
+                calculated. May have slight inaccuracies due to edge effects.
+                'speciesCalculation': use the individual MagSpecies to find
+                the average magnetization per spin.
+
+        """
+        if method == 'directCalculation':
+            totalMag = np.sum(self.spins, axis=1)
+            self.netMag = totalMag / self.spins.shape[0]
+        if method == 'speciesCalculation':
+            mags = []
+            weights = []
+            if self.struc != []:
+                for key in self.species:
+                    mag = np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
+                    mags.append(mag)
+                    weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
+                    weights.append(weight)
+                mags = np.array(mags)
+                weights = np.array(weights)
+                self.netMag = np.sum(mags * weights)/np.sum(weights)
+            else:
+                print('Please create a diffpy Structure object to use this feature')
 
     def copy(self):
         """Return a deep copy of the MagStructure object."""
