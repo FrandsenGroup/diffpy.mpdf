@@ -1011,7 +1011,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
                   K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
-                  rho0=0, netMag=0, corrLength=0, automaticLinearTerm=False):
+                  rho0=0, netMag=0, corrLength=0, automaticLinearTerm=False,
+                  applyEnvelope=False):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -1062,6 +1063,9 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
             calculated mPDF, thereby ensuring that the mPDF oscillates around
             zero, as it is supposed to.  If False, the slope will be
             calculated from the values of rho0 and netMag. Default is False.
+        applyEnvelope (boolean): if True, an exponential damping envelope will
+            be applied to the calculated f(r) (not including the linear term).
+            The parameter corrLength is used to determine the envelope.
     Returns: numpy arrays for r and the mPDF fr, on the extended grid.
         """
     # check if g-factors have been provided
@@ -1139,6 +1143,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
 
     ### prefactor
     fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
+    if applyEnvelope and (corrLength != 0):
+        fr *= np.exp(-r/corrLength)
 
     ### Now include the linear term
     if automaticLinearTerm:

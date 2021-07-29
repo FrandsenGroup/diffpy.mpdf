@@ -99,7 +99,7 @@ class MPDFcalculator:
         else:
             return self.label+': MPDFcalculator() object'
 
-    def calc(self, normalized=True, both=False):
+    def calc(self, normalized=True, both=False, correlationMethod='simple'):
         """Calculate the magnetic PDF.
 
         Args:
@@ -107,12 +107,28 @@ class MPDFcalculator:
                 should be returned.
             both (boolean): indicates whether or not both normalized and
                 unnormalized mPDF quantities should be returned.
-
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                'simple'; exponential envelope is applied to the mPDF
+                'full'; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                'auto'; simple method is chosen if xi <= 5 A, full otherwise
+                Note that any other option will be converted to 'simple'
         Returns: numpy array giving the r grid of the calculation, as well as
             one or both of the mPDF quantities.
         """
         peakWidth = np.sqrt(self.magstruc.Uiso)
+        if correlationMethod not in ['simple', 'full', 'auto']:
+            correlationMethod = 'simple'  # convert non-standard inputs to simple
         xi = self.magstruc.corrLength
+        if correlationMethod == 'auto':  # convert to full or simple
+            if xi <= 5.0:
+                correlationMethod = 'full'
+            else:
+                correlationMethod = 'simple'
+
         if xi==0:
             calcIdxs = self.magstruc.calcIdxs
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
@@ -124,7 +140,7 @@ class MPDFcalculator:
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
                                           self.automaticLinearTerm)
-        else:
+        elif correlationMethod == 'full':  # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
                 distanceVecs = self.magstruc.atoms - self.magstruc.atoms[currentIdx]
@@ -146,6 +162,18 @@ class MPDFcalculator:
                     frcalc += frtemp
                 self.magstruc.spins = 1.0*originalSpins
             frcalc /= len(self.magstruc.calcIdxs)
+        else:  # simple method: apply exponential envelope
+            calcIdxs = self.magstruc.calcIdxs
+            rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, calcIdxs,
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          self.automaticLinearTerm, applyEnvelope=True)
+            #frcalc *= np.exp(-rcalc / xi) ### I think there's a problem with this for nonzero linear terms, since we already multiplied the linear term by the exponential envelope
         # create a mask to put the calculation on the desired grid
         mask = np.logical_and(rcalc > self.rmin - 0.5*self.rstep,
                               rcalc < self.rmax + 0.5*self.rstep)
