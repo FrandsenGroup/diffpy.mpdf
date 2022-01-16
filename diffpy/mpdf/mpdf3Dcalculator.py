@@ -34,11 +34,13 @@ class MPDF3Dcalculator:
         else:
             return self.label +  ": 3DMPDFcalculator() object"
 
-    def calc(self, verbose=False, dr=None):
+    def calc(self, verbose=False, dr=None, originIdx=0):
         """Calculate the 3D magnetic PDF
         Args:
             verbose (boolean): indicates whether to output progress 
             dr (float): the grid spacing to use
+            originIdx (int): index of spin to be used as origin
+                if a correlation length is being applied
         """
 
         if dr is not None:
@@ -49,9 +51,15 @@ class MPDF3Dcalculator:
         if verbose :
             print("Setting up point spins")
 
+        # Use the scaled spins if the correlation length has been set;
+        # otherwise, use the full magnitude spins
+        if self.magstruc.corrLength > 0.0:
+            spins = self.magstruc.generateScaledSpins(originIdx)
+        else:
+            spins = 1.0*self.magstruc.spins
         for i in range(len(self.magstruc.atoms)):
             idx = np.rint((self.magstruc.atoms[i] - self.rmin)/self.dr).astype(int) 
-            s_arr[idx[0],idx[1],idx[2]] = self.magstruc.spins[i]
+            s_arr[idx[0],idx[1],idx[2]] = spins[i]
 
         if verbose:
             print("Setting up filter grid")

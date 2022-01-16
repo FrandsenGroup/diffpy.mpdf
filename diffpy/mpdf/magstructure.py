@@ -847,6 +847,28 @@ class MagStructure:
         calcIdxs = [ci for sublist in calcIdxs for ci in sublist]
         self.calcIdxs = calcIdxs
 
+    def generateScaledSpins(self, originIdx=0):
+        """Apply a correlation length to the spin magnitudes.
+
+        Args:
+            originIdx (int): The index of the spin in magstructure.spins
+                that should be considered the origin.
+
+        Returns:
+            scaledSpins (np.array): An array with the same shape as the
+                self.spins array, where the magnitudes of the spins have
+                been scaled in accordance with the correlation length.
+        """
+        xi = self.corrLength
+        scaledSpins = 1.0*self.spins
+        if xi != 0.0:
+            distanceVecs = self.atoms - self.atoms[originIdx]
+            distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+            rescale = np.exp(-distances/xi)[:,np.newaxis] 
+            scaledSpins *= rescale 
+        return scaledSpins
+        
+
     def copy(self):
         """Return a deep copy of the MagStructure object."""
         return copy.deepcopy(self)

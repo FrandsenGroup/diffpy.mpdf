@@ -135,10 +135,7 @@ class MPDFcalculator:
         elif correlationMethod == 'full': # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
-                distanceVecs = self.magstruc.atoms - self.magstruc.atoms[currentIdx]
-                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
-                rescale = np.exp(-distances/xi)[:,np.newaxis] 
-                self.magstruc.spins *= rescale 
+                self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
                 rcalc, frtemp = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
                                               self.magstruc.gfactors, [currentIdx],
                                               self.rstep, self.rmin, self.rmax,
