@@ -143,10 +143,7 @@ class MPDFcalculator:
         elif correlationMethod == 'full':  # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
-                distanceVecs = self.magstruc.atoms - self.magstruc.atoms[currentIdx]
-                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
-                rescale = np.exp(-distances/xi)[:,np.newaxis] 
-                self.magstruc.spins *= rescale 
+                self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
                 rcalc, frtemp = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
                                               self.magstruc.gfactors, [currentIdx],
                                               self.rstep, self.rmin, self.rmax,
@@ -192,7 +189,8 @@ class MPDFcalculator:
                                  self.magstruc.K1, self.magstruc.K2)
             return rcalc[mask], frcalc[mask], Drcalc[mask]
 
-    def plot(self, normalized=True, both=False, scaled=True):
+    def plot(self, normalized=True, both=False, scaled=True,
+             correlationMethod='simple'):
         """Plot the magnetic PDF.
 
         Args:
@@ -200,21 +198,30 @@ class MPDFcalculator:
                 should be plotted.
             both (boolean): indicates whether or not both normalized and
                 unnormalized mPDF quantities should be plotted.
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                'simple'; exponential envelope is applied to the mPDF
+                'full'; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                'auto'; simple method is chosen if xi <= 5 A, full otherwise
+                Note that any other option will be converted to 'simple'
         """
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.set_xlabel(r'r ($\mathdefault{\AA}$)')
         ax.set_xlim(xmin=self.rmin, xmax=self.rmax)
         if normalized and not both:
-            rcalc, frcalc = self.calc(normalized, both)
+            rcalc, frcalc = self.calc(normalized, both, correlationMethod)
             ax.plot(rcalc, frcalc) 
             ax.set_ylabel(r'f ($\mathdefault{\AA^{-2}}$)')
         elif not normalized and not both:
-            rcalc, Drcalc = self.calc(normalized, both)
+            rcalc, Drcalc = self.calc(normalized, both, correlationMethod)
             ax.plot(rcalc, Drcalc)
             ax.set_ylabel(r'd ($\mathdefault{\AA^{-2}}$)')
         else:
-            rcalc, frcalc, Drcalc = self.calc(normalized, both)
+            rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod)
             if scaled:
                 frscl = np.max(np.abs(frcalc))
                 drscl = np.max(np.abs(Drcalc[rcalc>1.5]))

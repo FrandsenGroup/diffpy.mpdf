@@ -20,8 +20,9 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
 from diffpy.srreal.bondcalculator import BondCalculator
-from scipy.signal import convolve, fftconvolve
+from scipy.signal import convolve, fftconvolve, correlate
 from scipy.optimize import least_squares
 import periodictable as pt
 
@@ -1288,4 +1289,59 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
     else:
         print('Please specify a valid magnetic scattering type (sq or iq).')
         return 0 * r, 0 * fr
+
+
+def gauss(grid,s=0.5):
+    """Generate a gaussian kernel of arbitrary size and density
+    This function generates a 3D guassian kernel based on the input grid and the standard
+    deviation chosen. This is a simple replacement for the form factors that will be
+    implemented in the future.
+    Args:
+        grid (array): the 3D spatial coordinates for the gaussian kernel
+        s (float): The standard deviation for the gaussian kernel
+    """
+    g = lambda point: 1/(s*np.sqrt((2*np.pi*s)**3))*np.exp(-1/2*(np.linalg.norm(point)/s)**2)
+    return np.apply_along_axis(g,3,grid)
+
+def vec_ac(a1,a2,delta,corr_mode="same"):
+    """Correlate two 3D vector fields
+    This function computes the autocorrelation of two 3D vector fields on regular 
+    grids. The autocorrelation is computed for each vector component and then summed
+    Args:
+        a1 (array): The virst array to correlate
+        a2 (array): The second array to correlate
+        delta (float): the spacing between grid points
+        corr_mode (string): The mode to use for the scipy correlation function
+    """
+    ac = correlate(a1[:,:,:,0],a2[:,:,:,0],mode=corr_mode)*delta**3
+    ac += correlate(a1[:,:,:,1],a2[:,:,:,1],mode=corr_mode)*delta**3
+    ac += correlate(a1[:,:,:,2],a2[:,:,:,2],mode=corr_mode)*delta**3
+    return ac
+
+def vec_con(a1,a2,delta,conv_mode="same"):
+    """Implement convolution for 3D vector fields
+    This function implements a convolution function for 3D vector fields on regular 
+    grids. The convolution is computed for each component of the vector fields and summed
+    Args:
+        a1 (array): The first array to convolve
+        a2 (array): The second array to convolve
+        delta (float): The grid spacing
+        conv_mode (string): The mode to use for scipy convolution
+    """
+    con = convolve(a1[:,:,:,0],a2[:,:,:,0],mode=conv_mode)*delta**3
+    con += convolve(a1[:,:,:,1],a2[:,:,:,1],mode=conv_mode)*delta**3
+    con += convolve(a1[:,:,:,2],a2[:,:,:,2],mode=conv_mode)*delta**3
+    return con
+
+def ups(grid):
+    """A function to generat the Upsilon filter from Roth et.al. (2018)
+    This function computes an kernel using the upsilon function defined in Roth et.al.
+    (2018), https://doi.org/10.1107/S2052252518006590.
+    Args:
+        grid (array): the spatial grid over which the kernel is to be defined
+    """
+    g = lambda point: [0,0,0] if np.abs(np.linalg.norm(point)) <1e-6 else  point/np.linalg.norm(point)**4
+    return np.apply_along_axis(g,3,grid)
+
+
 
