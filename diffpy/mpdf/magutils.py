@@ -23,7 +23,8 @@ import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from diffpy.srreal.bondcalculator import BondCalculator
 from scipy.signal import convolve, fftconvolve, correlate
-
+from scipy.optimize import least_squares
+import periodictable as pt
 
 def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
@@ -987,11 +988,32 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         return np.array([0]), np.array([0])
 
 
+def calculateAvgB(struc):
+    """Calculate average coherent neutron scattering length.
+
+    Args:
+        struc: Diffpy Structure object
+
+    Returns:
+        bAvg: average coherent neutron scattering length.
+    """
+    totalOcc = struc.occupancy.sum()
+    bAvg = 0
+    for idx, atom in enumerate(struc):
+        el = re.findall("[a-zA-Z]+", atom.element)
+        b = getattr(pt, el[0]).neutron.b_c
+        bAvg += struc.occupancy[idx] * b
+    bAvg /= totalOcc
+    return bAvg
+
+
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
-                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1)):
+                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
+                  rho0=0, netMag=0, corrLength=0, automaticLinearTerm=False,
+                  applyEnvelope=False):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -1028,7 +1050,23 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         ordScale (float): overall scale factor for the mPDF function f(r).
         K1 (float): A constant related to the total angular momentum quantum
             number and the average Lande splitting factor.
-
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+        corrLength (float): exponential magnetic correlation length of the
+            structure; default is 0, which is considered to be infinite.
+            This is important to get the linear term right for samples
+            with nonzero net magnetization.
+        automaticLinearTerm (boolean): if True, the slope of the linear
+            component will be determined by least-squares minimization of the
+            calculated mPDF, thereby ensuring that the mPDF oscillates around
+            zero, as it is supposed to.  If False, the slope will be
+            calculated from the values of rho0 and netMag. Default is False.
+        applyEnvelope (boolean): if True, an exponential damping envelope will
+            be applied to the calculated f(r) (not including the linear term).
+            The parameter corrLength is used to determine the envelope.
     Returns: numpy arrays for r and the mPDF fr, on the extended grid.
         """
     # check if g-factors have been provided
@@ -1103,8 +1141,35 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         r[0] = 0
     else:
         fr = s1 / r + r * (ss2[-1] - ss2)
-    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
 
+    ### prefactor
+    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
+    if applyEnvelope and (corrLength != 0):
+        fr *= np.exp(-r/corrLength)
+
+    ### Now include the linear term
+    if automaticLinearTerm:
+        if corrLength == 0:
+            def residual(p):
+                return fr - p[0] * r
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r
+        else:
+            def residual(p):
+                return fr - p[0] * r * np.exp(-r/corrLength)
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
+    else:
+        if corrLength == 0:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2 \
+                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
+        else:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength) \
+                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
+    fr -= linearTerm
+
+
+    ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:

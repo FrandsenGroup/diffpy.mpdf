@@ -59,12 +59,18 @@ class MPDFcalculator:
         drtr (float): step size for r-grid used for calculating Fourier
             transform of magnetic form mactor.
         label (string): Optional descriptive string for the MPDFcalculator.
+        automaticLinearTerm (boolean): if True, the slope of the linear
+            component will be determined by least-squares minimization of the
+            calculated mPDF, thereby ensuring that the mPDF oscillates around
+            zero, as it is supposed to. If False, the slope will be
+            calculated from the values of MagStructure.rho0 and
+            MagStructure.netMag. Default is False.
         """
     def __init__(self, magstruc=None, extendedrmax=4.0,
                  extendedrmin=4.0, qdamp=0.0, qmin=0.0,
                  qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
                  ordScale=1.0, paraScale=1.0, rmintr=-5.0,
-                 rmaxtr=5.0, label=''):
+                 rmaxtr=5.0, label='', automaticLinearTerm=False):
         if magstruc is None:
             self.magstruc = []
         else:
@@ -85,6 +91,7 @@ class MPDFcalculator:
         self.rmintr = rmintr
         self.rmaxtr = rmaxtr
         self.label = label
+        self.automaticLinearTerm = automaticLinearTerm
 
     def __repr__(self):
         if self.label == '':
@@ -109,15 +116,14 @@ class MPDFcalculator:
                         rmax is beyond ~30 A)
                 'auto'; simple method is chosen if xi <= 5 A, full otherwise
                 Note that any other option will be converted to 'simple'
-
         Returns: numpy array giving the r grid of the calculation, as well as
             one or both of the mPDF quantities.
         """
         peakWidth = np.sqrt(self.magstruc.Uiso)
         if correlationMethod not in ['simple', 'full', 'auto']:
-            correlationMethod = 'simple' # convert non-standard inputs to simple
+            correlationMethod = 'simple'  # convert non-standard inputs to simple
         xi = self.magstruc.corrLength
-        if correlationMethod == 'auto': # convert to full or simple
+        if correlationMethod == 'auto':  # convert to full or simple
             if xi <= 5.0:
                 correlationMethod = 'full'
             else:
@@ -131,8 +137,10 @@ class MPDFcalculator:
                                           peakWidth, self.qmin, self.qmax,
                                           self.qdamp, self.extendedrmin,
                                           self.extendedrmax, self.ordScale,
-                                          self.magstruc.K1)
-        elif correlationMethod == 'full': # change magnitudes of the spins
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          self.automaticLinearTerm)
+        elif correlationMethod == 'full':  # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
                 self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
@@ -142,14 +150,16 @@ class MPDFcalculator:
                                               peakWidth, self.qmin, self.qmax,
                                               self.qdamp, self.extendedrmin,
                                               self.extendedrmax, self.ordScale,
-                                              self.magstruc.K1)
+                                              self.magstruc.K1, self.magstruc.rho0,
+                                              self.magstruc.netMag, xi,
+                                              self.automaticLinearTerm)
                 if i==0:
                     frcalc = 1.0*frtemp
                 else:
                     frcalc += frtemp
                 self.magstruc.spins = 1.0*originalSpins
             frcalc /= len(self.magstruc.calcIdxs)
-        else: # simple method: apply exponential envelope
+        else:  # simple method: apply exponential envelope
             calcIdxs = self.magstruc.calcIdxs
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
                                           self.magstruc.gfactors, calcIdxs,
@@ -157,9 +167,10 @@ class MPDFcalculator:
                                           peakWidth, self.qmin, self.qmax,
                                           self.qdamp, self.extendedrmin,
                                           self.extendedrmax, self.ordScale,
-                                          self.magstruc.K1)
-            frcalc *= np.exp(-rcalc / xi)
-
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          self.automaticLinearTerm, applyEnvelope=True)
+            #frcalc *= np.exp(-rcalc / xi) ### I think there's a problem with this for nonzero linear terms, since we already multiplied the linear term by the exponential envelope
         # create a mask to put the calculation on the desired grid
         mask = np.logical_and(rcalc > self.rmin - 0.5*self.rstep,
                               rcalc < self.rmax + 0.5*self.rstep)
