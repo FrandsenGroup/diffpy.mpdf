@@ -286,7 +286,10 @@ class MPDFcalculator:
 
     def rgrid(self):
         """Return the current r grid of the mPDF calculator."""
-        return np.arange(self.rmin, self.rmax+self.rstep, self.rstep)
+        r = np.arange(0,self.rmax+10,self.rstep)        
+        mask = np.logical_and(r > self.rmin - 0.5*self.rstep,
+                              r < self.rmax + 0.5*self.rstep)
+        return r[mask]
 
     def copy(self):
         """Return a deep copy of the MPDFcalculator object."""

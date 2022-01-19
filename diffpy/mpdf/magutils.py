@@ -18,6 +18,7 @@
 """functions to facilitate mPDF analysis."""
 
 import copy
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
@@ -1290,6 +1291,64 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
         print('Please specify a valid magnetic scattering type (sq or iq).')
         return 0 * r, 0 * fr
 
+
+def calculate_ordered_moment(mc,nucScale):
+    """
+    Calculate the ordered moment in Bohr magnetons determined from a fit.
+    This only works for a magnetic structure with a single magnetic species.
+    
+    Args:
+        mc: MPDFcalculator object used for the fit
+        nucScale (float): nuclear scale factor determined from atomic PDF fit
+
+    Returns: ordered moment in Bohr magnetons. If the correlation length is
+             finite, this yields the locally ordered moment at the nearest
+             neighbor level.
+    """
+    mstr = mc.magstruc
+    struc = mstr.struc
+    mstr.calcMagneticAtomRatio()
+    ns = mstr.magneticAtomRatio # fraction of total atoms that are magnetic
+    bAvg = calculateAvgB(struc) # average nuclear scattering length
+    g = mstr.gfactors[0] # g factor for the magnetic structrue
+    vectorMag = np.linalg.norm(mstr.spins[0]) # magnitude of spin vectors used in calculation
+    m = g * np.sqrt(mc.ordScale * bAvg**2 / (nucScale * ns)) * vectorMag
+    if mstr.corrLength != 0:
+        # find correlation length and nearest neighbor distance
+        xi = mstr.corrLength
+        rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, mstr.atoms[1:] - mstr.atoms[0]))
+        m *= np.exp(-rNN / 2.0 / xi)
+    return m
+
+def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
+    """
+    Calculate the ordered scale factor corresponding to a given ordered moment
+    in Bohr magnetons. This only works for a magnetic structure with a single
+    magnetic species. 
+    
+    Args:
+        magstruc: MagStructure object
+        orderedMoment (float): ordered moment in Bohr magnetons.
+        nucScale (float): nuclear scale factor determined from atomic PDF fit.
+                          Default value of 1.0
+        
+    Returns: Ordered scale factor corresponding to the given magnetic moment. If
+             the correlation length is finite, this corresponds to the locally
+             ordered moment at the nearest neighbor level.
+    """
+    struc = magstruc.struc
+    magstruc.calcMagneticAtomRatio()
+    ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
+    bAvg = calculateAvgB(struc) # average nuclear scattering length
+    g = magstruc.gfactors[0] # g factor for the magnetic structrue
+    vectorMag = np.linalg.norm(magstruc.spins[0]) # magnitude of spin vectors used in calculation
+    oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
+    if magstruc.corrLength != 0:
+        # find correlation length and nearest neighbor distance
+        xi = magstruc.corrLength
+        rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, magstruc.atoms[1:] - magstruc.atoms[0]))
+        oscl *= np.exp(rNN / xi)
+    return oscl
 
 def gauss(grid,s=0.5):
     """Generate a gaussian kernel of arbitrary size and density
