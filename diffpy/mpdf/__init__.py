@@ -25,5 +25,6 @@ from diffpy.mpdf.magstructure import *
 from diffpy.mpdf.mpdfcalculator import *
 from diffpy.mpdf.magutils import *
 from diffpy.mpdf.mpdf3Dcalculator import *
+from diffpy.mpdf.visualize3D import *
 
 # End of file
