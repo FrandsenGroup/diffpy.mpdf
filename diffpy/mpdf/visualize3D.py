@@ -117,8 +117,7 @@ class Visualize:
         self.b = np.append(self.b, len_b / 2)
         A,B = np.meshgrid(self.a, self.b)
         locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
-        # now move locations onto our
- two vectors, and add cen_pt to move slice into position
+        # now move locations onto our two vectors, and add cen_pt to move slice into position
         locations = Q.dot(locations).T + (cen_pt)
     
         # now we need to interpolate our 3Dmpdf function over this slice

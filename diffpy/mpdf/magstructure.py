@@ -18,6 +18,7 @@
 """classes to create magnetic structures for mPDF calculations."""
 
 import copy
+import random
 import numpy as np
 from diffpy.srreal.bondcalculator import BondCalculator
 from diffpy.mpdf.magutils import generateAtomsXYZ, generateFromUnitCell, \
@@ -38,6 +39,7 @@ class MagSpecies:
             cell of desired structure.
         label (string): label for this particular magnetic species. Should be
             different from the labels for any other magnetic species you make.
+            Default is a random 8-character hexadecimal string.
         strucIdxs (python list): list of integers giving indices of magnetic
             atoms in the unit cell
         atoms (numpy array): list of atomic coordinates of all the magnetic
@@ -90,13 +92,18 @@ class MagSpecies:
         occ (scalar): Occupancy of the magnetic atom associated with
             this MagSpecies. Default is 1.
     """
-    def __init__(self, struc=None, label='', strucIdxs=None, atoms=None, spins=None,
+    def __init__(self, struc=None, label=None, strucIdxs=None, atoms=None, spins=None,
                  calcIdxs=[0], rmaxAtoms=30.0, basisvecs=None, kvecs=None, S=0.5,
                  L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
                  atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False,
                  occ=None):
-        self.label = label
+        if label is None:
+            hex_string = '0123456789abcdef'
+            token = ''.join([random.choice(hex_string) for i in range(8)])
+            self.label = token
+        else:
+            self.label = label
         self.rmaxAtoms = rmaxAtoms
         self.S = S
         self.L = L
