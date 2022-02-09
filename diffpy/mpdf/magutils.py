@@ -1162,11 +1162,11 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
             linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
     else:
         if corrLength == 0:
-            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2 \
-                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
+            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2  \
+                         / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
         else:
             linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength) \
-                         * K1 / (1.913 * 2.81794 / 2.0) ** 2
+                          / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
     fr -= linearTerm
 
 

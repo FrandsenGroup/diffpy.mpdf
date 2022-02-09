@@ -967,14 +967,15 @@ class MagStructure:
 
         """
         if method == 'directCalculation':
-            totalMag = np.sum(self.spins, axis=1)
-            self.netMag = totalMag / self.spins.shape[0]
+            totalMag = np.sum(self.spins, axis=0) * np.mean(self.gfactors)
+            self.netMag = np.linalg.norm(totalMag) / self.spins.shape[0]
         if method == 'speciesCalculation':
             mags = []
             weights = []
             if self.struc != []:
                 for key in self.species:
-                    mag = np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
+                    g = self.species[key].gS + self.species[key].gL
+                    mag = g * np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
                     mags.append(mag)
                     weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
                     weights.append(weight)
