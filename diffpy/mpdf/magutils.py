@@ -84,7 +84,8 @@ def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
 
 
 def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
-                     basisvecs=np.array([[0, 0, 1]]), origin=np.array([0, 0, 0])):
+                     basisvecs=np.array([[0, 0, 1]]), origin=np.array([0, 0, 0]),
+                     avgmom=np.array([0, 0, 0])):
     """Generate array of 3-vectors representing the spins in a structure.
 
     Args:
@@ -92,6 +93,8 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
             cell of the desired structure
         atoms (numpy array): list of atomic coordinates of all the magnetic
             atoms of a given magnetic species in the structure
+        avgmom (numpy array): three-vector giving the average moment for the
+            magnetic species.
         kvecs (numpy array): list of three-vectors giving the propagation
             vector(s) of the magnetic structure
         basisvecs (numpy array): list of three-vectors describing the spin
@@ -121,6 +124,7 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
         kcart = kvec[0] * astar + kvec[1] * bstar + kvec[2] * cstar
         phasefac = np.exp(-2.0 * np.pi * i * np.dot(atoms - origin, kcart))
         cspins += basisvecs[idx] * phasefac[:, np.newaxis]
+    cspins += avgmom
     spins = np.real(cspins)
 
     if np.abs(np.imag(cspins)).max() > 0.0001:
