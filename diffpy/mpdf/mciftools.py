@@ -1,6 +1,4 @@
 import os, sys
-#sys.path.append('/home/byu.local/estubben/shares/quant/software/mcif_EricStubben')
-#sys.path.append('/opt/anaconda/envs/diffpy/lib/python3.7/site-packages/diffpy.structure-3.0.1-py3.7.egg')
 
 import re
 import shlex
@@ -22,15 +20,18 @@ from numpy.linalg import det, inv, norm
 from diffpy.mpdf.simpleparser import SimpleParser
 
 
-def load_mcif(mstruc,mcif):
+def create_from_mcif(mcif):
     """
-    Accepts a diffpy MagStructure object and mcif file as arguments and populates the structure with 
-    the magnetic and crystal information reported in the mcif. Returns true if successful.
+    Accepts an mcif file and createts a MagStructure with 
+    the magnetic and crystal information reported in the mcif.
     
     Note: The only acceptable incommensurate structures at the moment are 1-k structures with no
     Fourier harmonics (i.e. only coefficients for n = 1) and no atoms with nonzero average magnetic
     moment.
     """
+    # creates an empty MagStructure
+    mstruc = MagStructure()    
+
     #Flags whether the structure is incommensurate
     incomm = False
     
@@ -220,7 +221,8 @@ def load_mcif(mstruc,mcif):
         mstruc.atomic_struc = create_atomic_cell(mstruc,transform)
         mstruc.transform = transform
 
-    return True
+    print('MagStructure creation from mcif file successful.')
+    return mstruc
 
    
 #ATTENTION: This method should now work with diffpy, but testing still needs to be done
