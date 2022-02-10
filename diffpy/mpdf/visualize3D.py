@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf       by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2016 trustees of Columbia University in the City of
+#                           New York.
+#                      All rights reserved
+#
+# File coded by:    Jacob Christensen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
 """class to slice through three-dimensional data"""
 
 import numpy as np

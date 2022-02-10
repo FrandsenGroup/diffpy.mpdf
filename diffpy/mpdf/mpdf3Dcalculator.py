@@ -1,3 +1,21 @@
+#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf       by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2016 trustees of Columbia University in the City of
+#                           New York.
+#                      All rights reserved
+#
+# File coded by:    Parker Hamilton
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+"""class to perform 3D-mPDF calculations"""
+
 import copy
 import numpy as np
 from scipy.signal import convolve, correlate

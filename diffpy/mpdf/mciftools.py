@@ -1,8 +1,22 @@
-import os, sys
+#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf       by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2016 trustees of Columbia University in the City of
+#                           New York.
+#                      All rights reserved
+#
+# File coded by:    Eric Stubben
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+"""functions for creating magnetic structures from MCIF files."""
 
 import re
-import shlex
-import warnings
 
 from cmath import exp
 
