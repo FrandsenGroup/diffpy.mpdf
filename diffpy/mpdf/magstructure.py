@@ -95,6 +95,8 @@ class MagSpecies:
             vectors and propagation vectors. Default is np.array([0,0,0]).
         verbose (boolean): If True, will print messages relating to the structure.
             Useful for troubleshooting. Default is False.
+        useOcc (boolean): If True, atomic site occupancies will be used to scale
+            the magnetic moment vector. Default is False.
         occ (scalar): Occupancy of the magnetic atom associated with
             this MagSpecies. Default is 1.
     """
@@ -103,7 +105,7 @@ class MagSpecies:
                  L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
                  atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False,
-                 occ=None):
+                 useOcc=False, occ=None):
         if label is None:
             hex_string = '0123456789abcdef'
             token = ''.join([random.choice(hex_string) for i in range(8)])
@@ -185,6 +187,7 @@ class MagSpecies:
         else:
             self.spinOrigin = spinOrigin
         self.verbose = verbose
+        self.useOcc = useOcc
         if occ is None:
             self.occ = 1.0
         else:
@@ -215,11 +218,12 @@ class MagSpecies:
                structure. Must provide propagation vector(s) and basis
                vector(s).
         """
-        self.setOcc()
+        #self.setOcc()
         if self.useDiffpyStruc:
             self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
                                           self.spinOrigin, self.avgmom)
-            self.spins *= self.occ
+            if self.useOcc:
+                self.spins *= self.occ
         else:
             print('Since you are not using a diffpy Structure object,')
             print('the spins are generated from the makeAtoms() method.')

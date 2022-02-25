@@ -992,6 +992,31 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         print('This file format is not currently supported.')
         return np.array([0]), np.array([0])
 
+def read_fgr(fileName):
+    """Extract the PDF data and calculation from a .fgr file.
+
+    Args:
+        fileName (str): path to the .fgr file containing the fit
+
+    Returns:
+        r (numpy array): same r-grid as contained in the fit file
+        gobs (numpy array): experimental PDF data
+        gcalc (numpy array): the calculated PDF
+        gdiff (numpy array): the structural PDF fit residual
+    """
+    if fileName[-4:] == '.fgr':
+        lines = open(fileName).readlines()[:50]
+        for idx, line in enumerate(lines):
+            if 'start data' in line:
+                startLine = 1 * idx
+                break
+        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=startLine)
+        r, gcalc, gdiff = allcols[0], allcols[1], allcols[4]
+        gobs = gcalc + gdiff
+        return r, gobs, gcalc, gdiff
+    else:
+        print('Incompatible file type. Please provide a .fgr file from PDFgui.')
+        return None
 
 def calculateAvgB(struc):
     """Calculate average coherent neutron scattering length.
