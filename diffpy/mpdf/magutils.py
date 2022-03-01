@@ -1321,7 +1321,7 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
         return 0 * r, 0 * fr
 
 
-def calculate_ordered_moment(mc,nucScale):
+def calculate_ordered_moment(mc,nucScale,returnUncertainty=False,inputUnc=[]):
     """
     Calculate the ordered moment in Bohr magnetons determined from a fit.
     This only works for a magnetic structure with a single magnetic species.
@@ -1329,10 +1329,14 @@ def calculate_ordered_moment(mc,nucScale):
     Args:
         mc: MPDFcalculator object used for the fit
         nucScale (float): nuclear scale factor determined from atomic PDF fit
+        returnUncertainty (Boolean): If true, the uncertainty of the ordered
+            moment will be estimated and returned.
+        inputUnc (list): input uncertainties for mPDF ordered scale, nuclear
+            scale factor, and correlation length, in that order.
 
     Returns: ordered moment in Bohr magnetons. If the correlation length is
              finite, this yields the locally ordered moment at the nearest
-             neighbor level.
+             neighbor level. Also returns the estimated uncertainty if selected.
     """
     mstr = mc.magstruc
     struc = mstr.struc
@@ -1347,7 +1351,19 @@ def calculate_ordered_moment(mc,nucScale):
         xi = mstr.corrLength
         rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, mstr.atoms[1:] - mstr.atoms[0]))
         m *= np.exp(-rNN / 2.0 / xi)
-    return m
+    if returnUncertainty:
+        d_mscl, d_nscl, d_xi = inputUnc
+        # partial derivatives for error estimation
+        dmdmscl = bAvg/np.sqrt(nucScale*ns*mc.ordScale)
+        dmdnscl = -bAvg*np.sqrt(mc.ordScale/(ns*nucScale**3))
+        if mstr.corrLength != 0:
+            dmdxi = rNN*m/(2*xi**2)
+        else:
+            dmdxi = 0
+        dm = np.sqrt(dmdmscl**2*d_mscl**2+dmdnscl**2*d_nscl**2+dmdxi**2*d_xi**2)
+        return m, dm
+    else:
+        return m
 
 def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
     """
