@@ -397,6 +397,10 @@ class MagStructure:
             magnitude of the correlation between two spins separated by a
             distance d is given by exp(-d/corrLength). If set to zero, the
             correlation length is assumed to be infinite.
+        dampingMat (3x3 matrix): damping matrix that encodes anisotropic
+            correlation lengths. If nonzero, this supercedes the scalar
+            corrLength attribute (which can only be used for isotropic
+            correlation lengths).
         rho0 (float): number of magnetic moments per cubic Angstrom in the
             magnetic structure; default value is 0.
         netMag (float): net magnetization in Bohr magnetons per magnetic moment
@@ -409,8 +413,9 @@ class MagStructure:
     def __init__(self, struc=None, species=None, atoms=None, spins=None,
                  gfactors=None, rmaxAtoms=30.0, avgmom=None, ffqgrid=None, ff=None,
                  label='', K1=None, K2=None, fractions=None, Uiso=0.01,
-                 calcIdxs=None, corrLength=0.0, verbose=False, netMag=0,
-                 rho0=0, magneticAtomRatio=0, atomic_struc=None, transform=''):
+                 calcIdxs=None, corrLength=0.0, dampingMat=0.0, verbose=False,
+                 netMag=0, rho0=0, magneticAtomRatio=0, atomic_struc=None,
+                 transform=''):
 
         self.rmaxAtoms = rmaxAtoms
         self.label = label
@@ -465,7 +470,8 @@ class MagStructure:
         else:
             self.calcIdxs = calcIdxs
         self.Uiso = Uiso
-        self.corrLength = corrLength        
+        self.corrLength = corrLength
+        self.dampingMat = dampingMat
         self.verbose = verbose
         self.rho0 = rho0
         self.netMag = netMag
@@ -922,13 +928,32 @@ class MagStructure:
                 self.spins array, where the magnitudes of the spins have
                 been scaled in accordance with the correlation length.
         """
-        xi = self.corrLength
         scaledSpins = 1.0*self.spins
-        if xi != 0.0:
-            distanceVecs = self.atoms - self.atoms[originIdx]
-            distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
-            rescale = np.exp(-distances/xi)[:,np.newaxis] 
-            scaledSpins *= rescale 
+        if type(self.dampingMat) != np.ndarray: # isotropic correlation length
+            xi = self.corrLength
+            if xi != 0.0:
+                distanceVecs = self.atoms - self.atoms[originIdx]
+                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                scaledSpins *= rescale 
+        else:
+            dampingMat = self.dampingMat
+            # ensure that dampingMat is 3x3 symmetric matrix
+            if dampingMat.shape == (3, 3):
+                if np.allclose(dampingMat, dampingMat.T, rtol=1e-5, atol=1e-8):
+                    distanceVecs = self.atoms - self.atoms[originIdx]
+                    distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                    distanceVecsN = distanceVecs/np.apply_along_axis(np.linalg.norm,1,distanceVecs)[:,np.newaxis]
+                    mult1 = np.tensordot(dampingMat, distanceVecsN, axes=(0,1)).T
+                    xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, distanceVecsN*mult1))
+                    xi[originIdx] = 1.0 # avoid divide-by-zero problem
+                    rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                    scaledSpins *= rescale                     
+                else:
+                    print('Damping matrix is not symmetric. Spins will not be modified.')
+            else:
+                print('Damping matrix is not a 3x3 matrix. Spins will not be modified.')
+
         return scaledSpins
 
     def calcAtomicDensity(self, volume=0, numSpins=0):

@@ -123,13 +123,17 @@ class MPDFcalculator:
         if correlationMethod not in ['simple', 'full', 'auto']:
             correlationMethod = 'simple'  # convert non-standard inputs to simple
         xi = self.magstruc.corrLength
+        dampingMat = self.magstruc.dampingMat
         if correlationMethod == 'auto':  # convert to full or simple
             if xi <= 5.0:
                 correlationMethod = 'full'
             else:
                 correlationMethod = 'simple'
 
-        if xi==0:
+        if type(dampingMat) == np.ndarray and correlationMethod != 'full':
+            print("Warning: correlationMethod should be set to 'full' when using")
+            print("the damping matrix instead of a scalar correlation length.")
+        if (xi==0) and (type(dampingMat) != np.ndarray):
             calcIdxs = self.magstruc.calcIdxs
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
                                           self.magstruc.gfactors, calcIdxs,
@@ -170,7 +174,6 @@ class MPDFcalculator:
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
                                           self.automaticLinearTerm, applyEnvelope=True)
-            #frcalc *= np.exp(-rcalc / xi) ### I think there's a problem with this for nonzero linear terms, since we already multiplied the linear term by the exponential envelope
         # create a mask to put the calculation on the desired grid
         mask = np.logical_and(rcalc > self.rmin - 0.5*self.rstep,
                               rcalc < self.rmax + 0.5*self.rstep)
