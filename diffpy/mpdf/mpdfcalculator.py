@@ -20,7 +20,7 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve, fftconvolve
-from diffpy.mpdf.magutils import calculatemPDF, calculateDr
+from diffpy.mpdf.magutils import calculatemPDF, calculateDr, estimate_effective_xi
 
 class MPDFcalculator:
     """Create an MPDFcalculator object to help calculate mPDF functions.
@@ -59,18 +59,12 @@ class MPDFcalculator:
         drtr (float): step size for r-grid used for calculating Fourier
             transform of magnetic form mactor.
         label (string): Optional descriptive string for the MPDFcalculator.
-        automaticLinearTerm (boolean): if True, the slope of the linear
-            component will be determined by least-squares minimization of the
-            calculated mPDF, thereby ensuring that the mPDF oscillates around
-            zero, as it is supposed to. If False, the slope will be
-            calculated from the values of MagStructure.rho0 and
-            MagStructure.netMag. Default is False.
         """
     def __init__(self, magstruc=None, extendedrmax=4.0,
                  extendedrmin=4.0, qdamp=0.0, qmin=0.0,
                  qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
                  ordScale=1.0, paraScale=1.0, rmintr=-5.0,
-                 rmaxtr=5.0, label='', automaticLinearTerm=False):
+                 rmaxtr=5.0, label=''):
         if magstruc is None:
             self.magstruc = []
         else:
@@ -91,7 +85,6 @@ class MPDFcalculator:
         self.rmintr = rmintr
         self.rmaxtr = rmaxtr
         self.label = label
-        self.automaticLinearTerm = automaticLinearTerm
 
     def __repr__(self):
         if self.label == '':
@@ -99,7 +92,8 @@ class MPDFcalculator:
         else:
             return self.label+': MPDFcalculator() object'
 
-    def calc(self, normalized=True, both=False, correlationMethod='simple'):
+    def calc(self, normalized=True, both=False, correlationMethod='simple',
+             linearTermMethod='exact'):
         """Calculate the magnetic PDF.
 
         Args:
@@ -116,14 +110,30 @@ class MPDFcalculator:
                         rmax is beyond ~30 A)
                 'auto'; simple method is chosen if xi <= 5 A, full otherwise
                 Note that any other option will be converted to 'simple'
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                'exact'; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                'autoslope': slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                'fullauto': slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to 'exact'.
         Returns: numpy array giving the r grid of the calculation, as well as
             one or both of the mPDF quantities.
         """
         peakWidth = np.sqrt(self.magstruc.Uiso)
         if correlationMethod not in ['simple', 'full', 'auto']:
             correlationMethod = 'simple'  # convert non-standard inputs to simple
-        xi = self.magstruc.corrLength
+        if linearTermMethod not in ['exact', 'autoslope', 'fullauto']:
+            linearTermMethod = 'exact'  # convert non-standard inputs to simple
         dampingMat = self.magstruc.dampingMat
+        xi = self.magstruc.corrLength
         if correlationMethod == 'auto':  # convert to full or simple
             if xi <= 5.0:
                 correlationMethod = 'full'
@@ -133,6 +143,9 @@ class MPDFcalculator:
         if type(dampingMat) == np.ndarray and correlationMethod != 'full':
             print("Warning: correlationMethod should be set to 'full' when using")
             print("the damping matrix instead of a scalar correlation length.")
+        if type(dampingMat) != np.ndarray and linearTermMethod == 'fullauto':
+            print("Warning: 'fullauto' should only be used with an anisotropic")
+            print("correlation length as encoded in the damping matrix.")
         if (xi==0) and (type(dampingMat) != np.ndarray):
             calcIdxs = self.magstruc.calcIdxs
             rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
@@ -143,7 +156,7 @@ class MPDFcalculator:
                                           self.extendedrmax, self.ordScale,
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
-                                          self.automaticLinearTerm)
+                                          linearTermMethod)
         elif correlationMethod == 'full':  # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
@@ -156,7 +169,7 @@ class MPDFcalculator:
                                               self.extendedrmax, self.ordScale,
                                               self.magstruc.K1, self.magstruc.rho0,
                                               self.magstruc.netMag, xi,
-                                              self.automaticLinearTerm)
+                                              linearTermMethod)
                 if i==0:
                     frcalc = 1.0*frtemp
                 else:
@@ -173,7 +186,7 @@ class MPDFcalculator:
                                           self.extendedrmax, self.ordScale,
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
-                                          self.automaticLinearTerm, applyEnvelope=True)
+                                          linearTermMethod, applyEnvelope=True)
         # create a mask to put the calculation on the desired grid
         mask = np.logical_and(rcalc > self.rmin - 0.5*self.rstep,
                               rcalc < self.rmax + 0.5*self.rstep)

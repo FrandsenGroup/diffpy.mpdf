@@ -1042,7 +1042,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
                   K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
-                  rho0=0, netMag=0, corrLength=0, automaticLinearTerm=False,
+                  rho0=0, netMag=0, corrLength=0, linearTermMethod='exact',
                   applyEnvelope=False):
     """Calculate the normalized mPDF.
 
@@ -1089,11 +1089,20 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
             structure; default is 0, which is considered to be infinite.
             This is important to get the linear term right for samples
             with nonzero net magnetization.
-        automaticLinearTerm (boolean): if True, the slope of the linear
-            component will be determined by least-squares minimization of the
-            calculated mPDF, thereby ensuring that the mPDF oscillates around
-            zero, as it is supposed to.  If False, the slope will be
-            calculated from the values of rho0 and netMag. Default is False.
+        linearTermMethod (string): determines how the calculation will
+            handle the linear term present for magnetic structures with a net
+            magnetization. Options are:
+            'exact'; slope will be calculated from the values of
+                MagStructure.rho0 and MagStructure.netMag, damping set by
+                MagStructure.corrLength.
+            'autoslope': slope will be determined by least-squares
+                minimization of the calculated mPDF, thereby ensuring that
+                the mPDF oscillates around zero, as it is supposed to.
+                Damping set by MagStructure.corrLength.
+            'fullauto': slope and damping set by least-squares minimization.
+                This should only be used in the case of an anisotropic
+                correlation length.
+            Note that any other option will be converted to 'exact'.
         applyEnvelope (boolean): if True, an exponential damping envelope will
             be applied to the calculated f(r) (not including the linear term).
             The parameter corrLength is used to determine the envelope.
@@ -1178,7 +1187,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         fr *= np.exp(-r/corrLength)
 
     ### Now include the linear term
-    if automaticLinearTerm:
+    if linearTermMethod == 'autoslope':
         if corrLength == 0:
             def residual(p):
                 return fr - p[0] * r
@@ -1189,6 +1198,11 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                 return fr - p[0] * r * np.exp(-r/corrLength)
             opt = least_squares(residual, [0])
             linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
+    elif linearTermMethod == 'fullauto':    
+            def residual(p):
+                return fr - p[0] * r * np.exp(-r/p[1])
+            opt = least_squares(residual, [0, 100], bounds=[[-1e6,0], [1e6,1e6]])
+            linearTerm = opt.x[0] * r * np.exp(-r/opt.x[1])
     else:
         if corrLength == 0:
             linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2  \
@@ -1394,6 +1408,41 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
         rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, magstruc.atoms[1:] - magstruc.atoms[0]))
         oscl *= np.exp(rNN / xi)
     return oscl
+
+def estimate_effective_xi(dampingMat, N=1000):
+    """
+    Estimate the effective correlation length for a given damping matrix. 
+    
+    Determines the correlation length for a given number of randomly generated
+    direction vectors, then calculates the weighted average where the weights
+    are given by the volume of the damping matrix ellipsoid subtended by each
+    direction vector.
+    Note: This is somewhat of an experimental function, not yet rigorously
+    shown to be correct.
+
+    Args:
+        dampingMat (numpy array): 3x3 damping matrix corresponding to a
+            (potentially) anisotropic correlation length.
+        N (int): number of random directions to average over. Default is 1000.
+        
+    Returns: estimated effective correlation length.
+    """
+    # put matrix in diagonal form
+    ev = np.linalg.eig(dampingMat)[0]
+    dampingMat = np.array([[ev[0],0,0],[0,ev[1],0],[0,0,ev[2]]])
+    # generate uniform sampling of direction
+    ths = np.arccos(np.random.uniform(-1, 1, size=N))
+    phis = np.random.uniform(-np.pi, np.pi, size=N)
+    x = np.sin(ths)*np.cos(phis)
+    y = np.sin(ths)*np.sin(phis)
+    z = np.cos(ths)
+    randomVecs = np.transpose((x, y, z))
+    # calculate correlation length along each direction
+    mult1 = np.tensordot(dampingMat, randomVecs, axes=(0,1)).T
+    xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, randomVecs*mult1))
+    # generate weights according to volume subtended by each direction vector
+    weights = xi**5 * np.sin(ths)
+    return np.sum(weights * xi)/np.sum(weights)
 
 def gauss(grid,s=0.5):
     """Generate a gaussian kernel of arbitrary size and density
