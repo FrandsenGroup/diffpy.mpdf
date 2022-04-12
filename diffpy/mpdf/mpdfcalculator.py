@@ -206,7 +206,7 @@ class MPDFcalculator:
             return rcalc[mask], frcalc[mask], Drcalc[mask]
 
     def plot(self, normalized=True, both=False, scaled=True,
-             correlationMethod='simple'):
+             correlationMethod='simple', linearTermMethod='exact'):
         """Plot the magnetic PDF.
 
         Args:
@@ -223,21 +223,35 @@ class MPDFcalculator:
                         rmax is beyond ~30 A)
                 'auto'; simple method is chosen if xi <= 5 A, full otherwise
                 Note that any other option will be converted to 'simple'
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                'exact'; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                'autoslope': slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                'fullauto': slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to 'exact'.
         """
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.set_xlabel(r'r ($\mathdefault{\AA}$)')
         ax.set_xlim(xmin=self.rmin, xmax=self.rmax)
         if normalized and not both:
-            rcalc, frcalc = self.calc(normalized, both, correlationMethod)
+            rcalc, frcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
             ax.plot(rcalc, frcalc) 
             ax.set_ylabel(r'f ($\mathdefault{\AA^{-2}}$)')
         elif not normalized and not both:
-            rcalc, Drcalc = self.calc(normalized, both, correlationMethod)
+            rcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
             ax.plot(rcalc, Drcalc)
             ax.set_ylabel(r'd ($\mathdefault{\AA^{-2}}$)')
         else:
-            rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod)
+            rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
             if scaled:
                 frscl = np.max(np.abs(frcalc))
                 drscl = np.max(np.abs(Drcalc[rcalc>1.5]))

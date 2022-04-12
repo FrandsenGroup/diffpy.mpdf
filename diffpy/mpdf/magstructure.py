@@ -1023,6 +1023,7 @@ class MagStructure:
         if method == 'speciesCalculation':
             mags = []
             weights = []
+            netMag = np.array([0.0,0.0,0.0])
             if self.struc != []:
                 for key in self.species:
                     g = self.species[key].gS + self.species[key].gL
@@ -1030,9 +1031,11 @@ class MagStructure:
                     mags.append(mag)
                     weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
                     weights.append(weight)
+                    netMag += g * weight * self.species[key].spins[0] # assumes uniform spins within the species                    
                 mags = np.array(mags)
                 weights = np.array(weights)
-                self.netMag = np.sum(mags * weights)/np.sum(weights)
+                #self.netMag = np.sum(mags * weights)/np.sum(weights)
+                self.netMag = np.linalg.norm(netMag/np.sum(weights))
             else:
                 print('Please create a diffpy Structure object to use this feature')
 
