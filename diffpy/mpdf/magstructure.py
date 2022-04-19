@@ -90,7 +90,7 @@ class MagSpecies:
         spinBasis (numpy array): Provides the orientations of the spins in
             the unit cell, in the same order as atomBasis. Only useful if
             useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]]
-        spinOrigin (numpy array): Cartesian coordinates of the position that will
+        origin (numpy array): Cartesian coordinates of the position that will
             be considered the origin when generating spin directions from basis
             vectors and propagation vectors. Default is np.array([0,0,0]).
         verbose (boolean): If True, will print messages relating to the structure.
@@ -104,7 +104,7 @@ class MagSpecies:
                  calcIdxs=[0], rmaxAtoms=30.0, avgmom=None, basisvecs=None, kvecs=None, S=0.5,
                  L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
-                 atomBasis=None, spinBasis=None, spinOrigin=None, verbose=False,
+                 atomBasis=None, spinBasis=None, origin=None, verbose=False,
                  useOcc=False, occ=None):
         if label is None:
             hex_string = '0123456789abcdef'
@@ -182,10 +182,10 @@ class MagSpecies:
             self.spinBasis = np.array([[0, 0, 1]])
         else:
             self.spinBasis = spinBasis
-        if spinOrigin is None:
-            self.spinOrigin = np.array([[0, 0, 0]])
+        if origin is None:
+            self.origin = np.array([[0, 0, 0]])
         else:
-            self.spinOrigin = spinOrigin
+            self.origin = origin
         self.verbose = verbose
         self.useOcc = useOcc
         if occ is None:
@@ -221,7 +221,7 @@ class MagSpecies:
         #self.setOcc()
         if self.useDiffpyStruc:
             self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
-                                          self.spinOrigin, self.avgmom)
+                                          self.origin, self.avgmom)
             if self.useOcc:
                 self.spins *= self.occ
         else:
