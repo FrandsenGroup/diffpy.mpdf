@@ -219,7 +219,7 @@ def create_from_mcif(mcif, ffparamkey=None):
         new_mspec.label = symbols[idx]
         
         new_mspec.strucIdxs = [idx]
-        new_mspec.spinOrigin = all_pos[idx]
+        new_mspec.origin = all_pos[idx]
 
         new_mspec.kvecs = np.array([k])
         new_mspec.basisvecs = np.array([basis_vecs[idx]])
