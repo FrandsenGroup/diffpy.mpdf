@@ -71,10 +71,8 @@ class MPDF3Dcalculator:
 
         # Use the scaled spins if the correlation length has been set;
         # otherwise, use the full magnitude spins
-        if self.magstruc.corrLength > 0.0:
-            spins = self.magstruc.generateScaledSpins(originIdx)
-        else:
-            spins = 1.0*self.magstruc.spins
+        spins = self.magstruc.generateScaledSpins(originIdx)       
+
         for i in range(len(self.magstruc.atoms)):
             idx = np.rint((self.magstruc.atoms[i] - self.rmin)/self.dr).astype(int) 
             s_arr[idx[0],idx[1],idx[2]] = spins[i]

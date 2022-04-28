@@ -34,7 +34,7 @@ from numpy.linalg import det, inv, norm
 from diffpy.mpdf.simpleparser import SimpleParser
 
 
-def create_from_mcif(mcif, ffparamkey=None):
+def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
     """
     Accepts an mcif file and createts a MagStructure with 
     the magnetic and crystal information reported in the mcif.
@@ -213,7 +213,7 @@ def create_from_mcif(mcif, ffparamkey=None):
 
     #Creates a separate MagSpecies object for each magnetic atom in the unit cell
     for idx in mag_idx:
-        new_mspec = MagSpecies(ffparamkey=ffparamkey)
+        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms)
         
         new_mspec.struc = astruc
         new_mspec.label = symbols[idx]

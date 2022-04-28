@@ -18,8 +18,10 @@
 
 import numpy as np
 from scipy.interpolate import interpn
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import cm, imshow, contour, clabel, colorbar
 
-class Visualize:
+class Visualizer:
     """create object containing three-dimensional data
     
     Args:
@@ -28,7 +30,7 @@ class Visualize:
         y (numpy array): y-dimension coordinates (1D)
         z (numpy array): z-dimension coordinates (1D)
     """
-    def __init__(self, m=None, x=None, y=None, z=None):
+    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
             
         self.m = m
         self.x = x
@@ -36,6 +38,7 @@ class Visualize:
         self.z = z
         self.a = None # these two instance attributes will construct an arbitrary grid
         self.b = None
+        self.slice = None # this will become the data slice
         if m is None:
             self.m = np.array([])
         if x is None:
@@ -44,6 +47,7 @@ class Visualize:
             self.y = np.array([])
         if z is None:
             self.z = np.array([])
+        self.sliceAvailable = sliceAvailable
         
     def three_points(self, p1, p2, p3):
         """find normal vector to the plane created by the three given points
@@ -64,27 +68,29 @@ class Visualize:
         
         return normal, cen_pt
     
-    def make_slice(self, len_a=None, len_b=None, dr=None, use_norm=None, 
-                   cen_pt=None, normal=None, p1=None, p2=None, p3=None):
+    def make_slice(self, len_a=None, len_b=None, dr=None, use_normal=None, 
+                   cen_pt=None, normal=None, p1=None, p2=None, p3=None,
+                   returnSlice=False):
         """generate a slice through the dataset
         
         Args:
-            side_len (float): the side length of the square slice to be taken through the data
-            dr (float): determines the spacing of the grid (if dr=0.5, then there are 2 measurements every unit)
-            use_norm (boolean): when True, will create slice from a normal vector and center point. When
+            len_a, len_b (float): the side lengths in Angstroms of the rectangular slice to be taken through the data
+            dr (float): determines the spacing of the grid in Angstroms
+            use_normal (boolean): when True, will create slice from a normal vector and center point. When
                 False, will create slice from three points
-            cen_pt (numpy array): the center of the desired slice. Used when use_norm is True
-            normal (numpy array): the normal vector to desired plane. Used when use_norm is True
+            cen_pt (numpy array): the center of the desired slice. Used when use_normal is True
+            normal (numpy array): the normal vector to desired plane. Used when use_normal is True
             p1, p2, p3 (numpy array): three points in 3D space. The desired plane goes through these points.
-                Used when use_norm is False
+                Used when use_normal is False
+            returnSlice (boolean): If True, this function will return the slice and grid.
             
         Returns:
             2D array, along with space arrays, representing slice through 3D dataset
         """
         if dr is None:
             dr = 1
-        if use_norm is None:
-            use_norm = True
+        if use_normal is None:
+            use_normal = True
         if len_a is None:
             len_a = 10
         if len_b is None:
@@ -100,9 +106,9 @@ class Visualize:
         if p3 is None:
             p3 = np.array([0, 0, 1])
         
-        # First check if use_norm is False. If so, access three_points function 
+        # First check if use_normal is False. If so, access three_points function 
             # to calculate the normal and cen_pt of the desired plane
-        if use_norm is False:
+        if use_normal is False:
             normal, cen_pt = self.three_points(p1, p2, p3)
          
         # ensure that our basis vector v1 is not the same as normal
@@ -139,8 +145,31 @@ class Visualize:
         # now we need to interpolate our 3Dmpdf function over this slice
         points = (self.x, self.y, self.z)
         interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
-        slice1 = interp.reshape(len(self.b),len(self.a))
+        self.slice = interp.reshape(len(self.b),len(self.a))
         
-        return slice1, self.a, self.b
+        self.sliceAvailable = True
+        
+        if returnSlice:
+            return self.slice, self.a, self.b
+        
+    def visualize(self):
+        """Visualize the current slice.
+        """
+        if self.sliceAvailable:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.set_xlabel(r'$\mathdefault{\AA}$')
+            ax.set_ylabel(r'$\mathdefault{\AA}$')
+            amin, amax = min(self.a), max(self.a)
+            bmin, bmax = min(self.b), max(self.b)
+            im = ax.imshow(self.slice,
+                           extent=[amin, amax, bmin, bmax])
+            colorbar(im)
+            plt.tight_layout()
+            plt.show()
+            
+        else:
+            print('No data slice available for visualization.')
+            print('Please generate a slice using the makeSlice method.')
 
 
