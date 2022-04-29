@@ -1409,6 +1409,23 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
         oscl *= np.exp(rNN / xi)
     return oscl
 
+def generate_damping_matrix(e1, e2, e3, xi1, xi2, xi3):
+    """Generate the damping matrix from the eigenvectors and eigenvalues.
+    
+    Args:
+        e1, e2, e3 (numpy arrays): right orthonormal eigenvectors
+        xi1, xi2, xi3 (floats): correlation lengths along the directions
+            of the eigenvectors
+    
+    Returns:
+        dampingMat: 3x3 symmetric damping matrix.
+    """
+    m1 = np.array([e1,e2,e3]).T
+    m2 = np.array([[1.0/xi1**2, 0, 0], [0, 1.0/xi2**2, 0], [0, 0, 1.0/xi3**2]])
+    m3 = m1.T
+    dampingMat = np.matmul(np.matmul(m1, m2), m3)
+    return dampingMat
+
 def estimate_effective_xi(dampingMat, N=1000):
     """
     Estimate the effective correlation length for a given damping matrix. 
