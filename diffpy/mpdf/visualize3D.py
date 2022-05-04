@@ -14,7 +14,7 @@
 #
 ##############################################################################
 
-"""class to slice through three-dimensional data"""
+"""Generate 2D slices of 3D data for visualization."""
 
 import numpy as np
 from scipy.interpolate import interpn
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm, imshow, contour, clabel, colorbar
 
 class Visualizer:
-    """create object containing three-dimensional data
+    """Store and visualize three-dimensional data.
     
     Args:
         m (numpy array): signal array (3D)
@@ -71,17 +71,18 @@ class Visualizer:
     def make_slice(self, len_a=None, len_b=None, dr=None, use_normal=None, 
                    cen_pt=None, normal=None, p1=None, p2=None, p3=None,
                    returnSlice=False):
-        """generate a slice through the dataset
+        """generate a 2D slice through the dataset
         
         Args:
-            len_a, len_b (float): the side lengths in Angstroms of the rectangular slice to be taken through the data
+            len_a, len_b (float): the side lengths in Angstroms of the rectangular
+                slice to be taken through the data
             dr (float): determines the spacing of the grid in Angstroms
             use_normal (boolean): when True, will create slice from a normal vector and center point. When
                 False, will create slice from three points
             cen_pt (numpy array): the center of the desired slice. Used when use_normal is True
             normal (numpy array): the normal vector to desired plane. Used when use_normal is True
-            p1, p2, p3 (numpy array): three points in 3D space. The desired plane goes through these points.
-                Used when use_normal is False
+            p1, p2, p3 (numpy array): three points in 3D space. The desired plane
+                goes through these points. Used when use_normal is False.
             returnSlice (boolean): If True, this function will return the slice and grid.
             
         Returns:

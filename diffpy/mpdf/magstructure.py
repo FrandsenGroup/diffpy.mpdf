@@ -32,7 +32,8 @@ class MagSpecies:
     This class takes a diffpy.Structure object and uses it to generate spins
     based on a set of propagation vectors and basis vectors. For more info
     about magnetic propagation vectors, visit e.g.
-    http://andrewsteele.co.uk/physics/mmcalc/docs/magneticpropagationvector
+    http://dx.doi.org/10.1051/jp4:2001906 or Appendix B of Andrew Steele's
+    dissertation at https://andrewsteele.co.uk/physics/thesis .
 
     Args:
         struc (diffpy.Structure object): provides lattice parameters and unit
