@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.mpdf         by Billinge Group
-#                     Simon J. L. Billinge sb2896@columbia.edu
-#                     (c) 2016 trustees of Columbia University in the City of
-#                           New York.
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
 #                      All rights reserved
 #
-# File coded by:    Benjamin Frandsen
+# File coded by:    Benjamin Frandsen and Parker Hamilton
 #
 # See AUTHORS.txt for a list of people who contributed.
 # See LICENSE.txt for license information.

@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.mpdf       by Frandsen Group
+# diffpy.mpdf         by Frandsen Group
 #                     Benjamin A. Frandsen benfrandsen@byu.edu
-#                     (c) 2016 trustees of Columbia University in the City of
-#                           New York.
+#                     (c) 2022 Benjamin Allen Frandsen
 #                      All rights reserved
 #
 # File coded by:    Victor Velasco
