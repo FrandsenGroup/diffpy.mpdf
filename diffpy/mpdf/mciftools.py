@@ -35,12 +35,24 @@ from diffpy.mpdf.simpleparser import SimpleParser
 
 def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
     """
-    Accepts an mcif file and createts a MagStructure with 
-    the magnetic and crystal information reported in the mcif.
+    Creates a MagStructure object from an MCIF file.
     
-    Note: The only acceptable incommensurate structures at the moment are 1-k structures with no
-    Fourier harmonics (i.e. only coefficients for n = 1) and no atoms with nonzero average magnetic
-    moment.
+    Note: The only acceptable incommensurate structures at the moment are 1-k
+    structures with no     Fourier harmonics (i.e. only coefficients for
+    n = 1) and no atoms with nonzero average magnetic moment.
+
+    Args:
+    mcif (string): path to MCIF file for desired magnetic structure.
+    ffparamkey (string): optional; gives the appropriate key for getFFparams()
+        to generate the correct magnetic form factor.
+    rmaxAtoms (float): radius to which magnetic atoms should be generated.
+        Default is 20 Angstroms.
+
+    Returns: MagStructure object corresponding to the magnetic structure
+        encoded in the MCIF file. Note that the position and spin arrays
+        are not automatically populated when using this function, so
+        MagStructure.makeAll() will likely need to be called afterward.
+
     """
     # creates an empty MagStructure
     mstruc = MagStructure()    
@@ -238,13 +250,9 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
     return mstruc
 
    
-#ATTENTION: This method should now work with diffpy, but testing still needs to be done
 def create_atomic_cell(mstruc,transform):
     """
-    NOTE: This description is tentative, since some changes might later be made to the function's
-    input and output. However, the main body of the code should mostly stay as is.
-
-    Currently, this method accepts a MagStructure object that has already been loaded with an mcif file
+    This method accepts a MagStructure object that has already been loaded with an mcif file
     and a string containing the parent-child basis transformation information. The output will be a new
     diffpy.Structure object loaded with the atomic structure information related to the magnetic structure
     of the original sample.
@@ -315,7 +323,6 @@ def create_atomic_cell(mstruc,transform):
     return new_struc
 
 
-#ATTENTION: This method should now work with diffpy, but testing still needs to be done
 def create_magnetic_cell(astruc,transform):
     """
     Takes a diffpy.Structure object representing the atomic unit cell and a string containing information 
