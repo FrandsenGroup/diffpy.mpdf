@@ -1,4 +1,17 @@
 #!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
 
 # Installation script for diffpy.mpdf
 
@@ -81,13 +94,13 @@ setup_args = dict(
         test_suite = 'diffpy.mpdf.tests',
         include_package_data = True,
         zip_safe = False,
-        author = 'Simon J.L. Billinge group',
-        author_email = 'sb2896@columbia.edu',
+        author = 'Benjamin A. Frandsen group',
+        author_email = 'benfrandsen@byu.edu',
         maintainer = 'Benjamin Frandsen',
-        maintainer_email = 'benfrandsen@gmail.com',
+        maintainer_email = 'benfrandsen@byu.edu',
         description = "Tools for magnetic PDF analysis.",
-        license = 'BSD-style license',
-        url = "https://github.com/benfrandsen/diffpy.mpdf/",
+        license = 'BSD-3-clause',
+        url = "https://github.com/FrandsenGroup/diffpy.mpdf",
         keywords = "mPDF magnetic PDF",
         classifiers = [
             # List of possible values at
@@ -101,8 +114,7 @@ setup_args = dict(
             'Operating System :: Microsoft :: Windows',
             'Operating System :: POSIX',
             'Operating System :: Unix',
-            'Programming Language :: Python :: 2.6',
-            'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.5',
             'Topic :: Scientific/Engineering :: Physics',
         ],
 )

@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.magpdf       by Billinge Group
-#                     Simon J. L. Billinge sb2896@columbia.edu
-#                     (c) 2016 trustees of Columbia University in the City of
-#                           New York.
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
 #                      All rights reserved
 #
 # File coded by:    Benjamin Frandsen
@@ -24,5 +23,9 @@ from diffpy.mpdf.version import __version__
 from diffpy.mpdf.magstructure import *
 from diffpy.mpdf.mpdfcalculator import *
 from diffpy.mpdf.magutils import *
+from diffpy.mpdf.mpdf3Dcalculator import *
+from diffpy.mpdf.visualize3D import *
+from diffpy.mpdf.mciftools import *
+from diffpy.mpdf.simpleparser import *
 
 # End of file

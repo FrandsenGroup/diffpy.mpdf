@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# diffpy.mpdf         by Billinge Group
-#                     Simon J. L. Billinge sb2896@columbia.edu
-#                     (c) 2016 trustees of Columbia University in the City of
-#                           New York.
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
 #                      All rights reserved
 #
-# File coded by:    Benjamin Frandsen
+# File coded by:    Benjamin Frandsen and Parker Hamilton
 #
 # See AUTHORS.txt for a list of people who contributed.
 # See LICENSE.txt for license information.
@@ -18,11 +17,14 @@
 """functions to facilitate mPDF analysis."""
 
 import copy
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from diffpy.srreal.bondcalculator import BondCalculator
-from scipy.signal import convolve, fftconvolve
+from scipy.signal import convolve, fftconvolve, correlate
+from scipy.optimize import least_squares
+import periodictable as pt
 
 def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
@@ -81,7 +83,8 @@ def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
 
 
 def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
-                     basisvecs=np.array([[0, 0, 1]]), origin=np.array([0, 0, 0])):
+                     basisvecs=np.array([[0, 0, 1]]), origin=np.array([0, 0, 0]),
+                     avgmom=np.array([0, 0, 0])):
     """Generate array of 3-vectors representing the spins in a structure.
 
     Args:
@@ -89,6 +92,8 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
             cell of the desired structure
         atoms (numpy array): list of atomic coordinates of all the magnetic
             atoms of a given magnetic species in the structure
+        avgmom (numpy array): three-vector giving the average moment for the
+            magnetic species.
         kvecs (numpy array): list of three-vectors giving the propagation
             vector(s) of the magnetic structure
         basisvecs (numpy array): list of three-vectors describing the spin
@@ -118,6 +123,7 @@ def generateSpinsXYZ(struc, atoms=np.array([[]]), kvecs=np.array([[0, 0, 0]]),
         kcart = kvec[0] * astar + kvec[1] * bstar + kvec[2] * cstar
         phasefac = np.exp(-2.0 * np.pi * i * np.dot(atoms - origin, kcart))
         cspins += basisvecs[idx] * phasefac[:, np.newaxis]
+    cspins += avgmom
     spins = np.real(cspins)
 
     if np.abs(np.imag(cspins)).max() > 0.0001:
@@ -985,12 +991,58 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         print('This file format is not currently supported.')
         return np.array([0]), np.array([0])
 
+def read_fgr(fileName):
+    """Extract the PDF data and calculation from a .fgr file.
+
+    Args:
+        fileName (str): path to the .fgr file containing the fit
+
+    Returns:
+        r (numpy array): same r-grid as contained in the fit file
+        gobs (numpy array): experimental PDF data
+        gcalc (numpy array): the calculated PDF
+        gdiff (numpy array): the structural PDF fit residual
+    """
+    if fileName[-4:] == '.fgr':
+        lines = open(fileName).readlines()[:50]
+        for idx, line in enumerate(lines):
+            if 'start data' in line:
+                startLine = 1 * idx
+                break
+        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=startLine)
+        r, gcalc, gdiff = allcols[0], allcols[1], allcols[4]
+        gobs = gcalc + gdiff
+        return r, gobs, gcalc, gdiff
+    else:
+        print('Incompatible file type. Please provide a .fgr file from PDFgui.')
+        return None
+
+def calculateAvgB(struc):
+    """Calculate average coherent neutron scattering length.
+
+    Args:
+        struc: Diffpy Structure object
+
+    Returns:
+        bAvg: average coherent neutron scattering length.
+    """
+    totalOcc = struc.occupancy.sum()
+    bAvg = 0
+    for idx, atom in enumerate(struc):
+        el = re.findall("[a-zA-Z]+", atom.element)
+        b = getattr(pt, el[0]).neutron.b_c
+        bAvg += struc.occupancy[idx] * b
+    bAvg /= totalOcc
+    return bAvg
+
 
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
-                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1)):
+                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
+                  rho0=0, netMag=0, corrLength=0, linearTermMethod='exact',
+                  applyEnvelope=False):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -1027,7 +1079,32 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         ordScale (float): overall scale factor for the mPDF function f(r).
         K1 (float): A constant related to the total angular momentum quantum
             number and the average Lande splitting factor.
-
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+        corrLength (float): exponential magnetic correlation length of the
+            structure; default is 0, which is considered to be infinite.
+            This is important to get the linear term right for samples
+            with nonzero net magnetization.
+        linearTermMethod (string): determines how the calculation will
+            handle the linear term present for magnetic structures with a net
+            magnetization. Options are:
+            'exact'; slope will be calculated from the values of
+                MagStructure.rho0 and MagStructure.netMag, damping set by
+                MagStructure.corrLength.
+            'autoslope': slope will be determined by least-squares
+                minimization of the calculated mPDF, thereby ensuring that
+                the mPDF oscillates around zero, as it is supposed to.
+                Damping set by MagStructure.corrLength.
+            'fullauto': slope and damping set by least-squares minimization.
+                This should only be used in the case of an anisotropic
+                correlation length.
+            Note that any other option will be converted to 'exact'.
+        applyEnvelope (boolean): if True, an exponential damping envelope will
+            be applied to the calculated f(r) (not including the linear term).
+            The parameter corrLength is used to determine the envelope.
     Returns: numpy arrays for r and the mPDF fr, on the extended grid.
         """
     # check if g-factors have been provided
@@ -1102,8 +1179,40 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         r[0] = 0
     else:
         fr = s1 / r + r * (ss2[-1] - ss2)
-    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
 
+    ### prefactor
+    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
+    if applyEnvelope and (corrLength != 0):
+        fr *= np.exp(-r/corrLength)
+
+    ### Now include the linear term
+    if linearTermMethod == 'autoslope':
+        if corrLength == 0:
+            def residual(p):
+                return fr - p[0] * r
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r
+        else:
+            def residual(p):
+                return fr - p[0] * r * np.exp(-r/corrLength)
+            opt = least_squares(residual, [0])
+            linearTerm = opt.x[0] * r * np.exp(-r/corrLength)
+    elif linearTermMethod == 'fullauto':    
+            def residual(p):
+                return fr - p[0] * r * np.exp(-r/p[1])
+            opt = least_squares(residual, [0, 100], bounds=[[-1e6,0], [1e6,1e6]])
+            linearTerm = opt.x[0] * r * np.exp(-r/opt.x[1])
+    else:
+        if corrLength == 0:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2  \
+                         / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
+        else:
+            linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength) \
+                          / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
+    fr -= linearTerm
+
+
+    ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:
@@ -1223,4 +1332,185 @@ def calculateMagScatt(r, fr, qmin=0.0, qmax=20.0, qstep=0.01, quantity='sq'):
     else:
         print('Please specify a valid magnetic scattering type (sq or iq).')
         return 0 * r, 0 * fr
+
+
+def calculate_ordered_moment(mc,nucScale,returnUncertainty=False,inputUnc=[]):
+    """
+    Calculate the ordered moment in Bohr magnetons determined from a fit.
+    This only works for a magnetic structure with a single magnetic species.
+    
+    Args:
+        mc: MPDFcalculator object used for the fit
+        nucScale (float): nuclear scale factor determined from atomic PDF fit
+        returnUncertainty (Boolean): If true, the uncertainty of the ordered
+            moment will be estimated and returned.
+        inputUnc (list): input uncertainties for mPDF ordered scale, nuclear
+            scale factor, and correlation length, in that order.
+
+    Returns: ordered moment in Bohr magnetons. If the correlation length is
+             finite, this yields the locally ordered moment at the nearest
+             neighbor level. Also returns the estimated uncertainty if selected.
+    """
+    mstr = mc.magstruc
+    struc = mstr.struc
+    mstr.calcMagneticAtomRatio()
+    ns = mstr.magneticAtomRatio # fraction of total atoms that are magnetic
+    bAvg = calculateAvgB(struc) # average nuclear scattering length
+    g = mstr.gfactors[0] # g factor for the magnetic structrue
+    vectorMag = np.linalg.norm(mstr.spins[0]) # magnitude of spin vectors used in calculation
+    m = g * np.sqrt(mc.ordScale * bAvg**2 / (nucScale * ns)) * vectorMag
+    if mstr.corrLength != 0:
+        # find correlation length and nearest neighbor distance
+        xi = mstr.corrLength
+        rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, mstr.atoms[1:] - mstr.atoms[0]))
+        m *= np.exp(-rNN / 2.0 / xi)
+    if returnUncertainty:
+        d_mscl, d_nscl, d_xi = inputUnc
+        # partial derivatives for error estimation
+        dmdmscl = bAvg/np.sqrt(nucScale*ns*mc.ordScale)
+        dmdnscl = -bAvg*np.sqrt(mc.ordScale/(ns*nucScale**3))
+        if mstr.corrLength != 0:
+            dmdxi = rNN*m/(2*xi**2)
+        else:
+            dmdxi = 0
+        dm = np.sqrt(dmdmscl**2*d_mscl**2+dmdnscl**2*d_nscl**2+dmdxi**2*d_xi**2)
+        return m, dm
+    else:
+        return m
+
+def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
+    """
+    Calculate the ordered scale factor corresponding to a given ordered moment
+    in Bohr magnetons. This only works for a magnetic structure with a single
+    magnetic species. 
+    
+    Args:
+        magstruc: MagStructure object
+        orderedMoment (float): ordered moment in Bohr magnetons.
+        nucScale (float): nuclear scale factor determined from atomic PDF fit.
+                          Default value of 1.0
+        
+    Returns: Ordered scale factor corresponding to the given magnetic moment. If
+             the correlation length is finite, this corresponds to the locally
+             ordered moment at the nearest neighbor level.
+    """
+    struc = magstruc.struc
+    magstruc.calcMagneticAtomRatio()
+    ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
+    bAvg = calculateAvgB(struc) # average nuclear scattering length
+    g = magstruc.gfactors[0] # g factor for the magnetic structrue
+    vectorMag = np.linalg.norm(magstruc.spins[0]) # magnitude of spin vectors used in calculation
+    oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
+    if magstruc.corrLength != 0:
+        # find correlation length and nearest neighbor distance
+        xi = magstruc.corrLength
+        rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, magstruc.atoms[1:] - magstruc.atoms[0]))
+        oscl *= np.exp(rNN / xi)
+    return oscl
+
+def generate_damping_matrix(e1, e2, e3, xi1, xi2, xi3):
+    """Generate the damping matrix from the eigenvectors and eigenvalues.
+    
+    Args:
+        e1, e2, e3 (numpy arrays): right orthonormal eigenvectors
+        xi1, xi2, xi3 (floats): correlation lengths along the directions
+            of the eigenvectors
+    
+    Returns:
+        dampingMat: 3x3 symmetric damping matrix.
+    """
+    m1 = np.array([e1,e2,e3]).T
+    m2 = np.array([[1.0/xi1**2, 0, 0], [0, 1.0/xi2**2, 0], [0, 0, 1.0/xi3**2]])
+    m3 = m1.T
+    dampingMat = np.matmul(np.matmul(m1, m2), m3)
+    return dampingMat
+
+def estimate_effective_xi(dampingMat, N=1000):
+    """
+    Estimate the effective correlation length for a given damping matrix. 
+    
+    Determines the correlation length for a given number of randomly generated
+    direction vectors, then calculates the weighted average where the weights
+    are given by the volume of the damping matrix ellipsoid subtended by each
+    direction vector.
+    Note: This is somewhat of an experimental function, not yet rigorously
+    shown to be correct.
+
+    Args:
+        dampingMat (numpy array): 3x3 damping matrix corresponding to a
+            (potentially) anisotropic correlation length.
+        N (int): number of random directions to average over. Default is 1000.
+        
+    Returns: estimated effective correlation length.
+    """
+    # put matrix in diagonal form
+    ev = np.linalg.eig(dampingMat)[0]
+    dampingMat = np.array([[ev[0],0,0],[0,ev[1],0],[0,0,ev[2]]])
+    # generate uniform sampling of direction
+    ths = np.arccos(np.random.uniform(-1, 1, size=N))
+    phis = np.random.uniform(-np.pi, np.pi, size=N)
+    x = np.sin(ths)*np.cos(phis)
+    y = np.sin(ths)*np.sin(phis)
+    z = np.cos(ths)
+    randomVecs = np.transpose((x, y, z))
+    # calculate correlation length along each direction
+    mult1 = np.tensordot(dampingMat, randomVecs, axes=(0,1)).T
+    xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, randomVecs*mult1))
+    # generate weights according to volume subtended by each direction vector
+    weights = xi**5 * np.sin(ths)
+    return np.sum(weights * xi)/np.sum(weights)
+
+def gauss(grid,s=0.5):
+    """Generate a gaussian kernel of arbitrary size and density
+    This function generates a 3D guassian kernel based on the input grid and the standard
+    deviation chosen. This is a simple replacement for the form factors that will be
+    implemented in the future.
+    Args:
+        grid (array): the 3D spatial coordinates for the gaussian kernel
+        s (float): The standard deviation for the gaussian kernel
+    """
+    g = lambda point: 1/(s*np.sqrt((2*np.pi*s)**3))*np.exp(-1/2*(np.linalg.norm(point)/s)**2)
+    return np.apply_along_axis(g,3,grid)
+
+def vec_ac(a1,a2,delta,corr_mode="same"):
+    """Correlate two 3D vector fields
+    This function computes the autocorrelation of two 3D vector fields on regular 
+    grids. The autocorrelation is computed for each vector component and then summed
+    Args:
+        a1 (array): The virst array to correlate
+        a2 (array): The second array to correlate
+        delta (float): the spacing between grid points
+        corr_mode (string): The mode to use for the scipy correlation function
+    """
+    ac = correlate(a1[:,:,:,0],a2[:,:,:,0],mode=corr_mode)*delta**3
+    ac += correlate(a1[:,:,:,1],a2[:,:,:,1],mode=corr_mode)*delta**3
+    ac += correlate(a1[:,:,:,2],a2[:,:,:,2],mode=corr_mode)*delta**3
+    return ac
+
+def vec_con(a1,a2,delta,conv_mode="same"):
+    """Implement convolution for 3D vector fields
+    This function implements a convolution function for 3D vector fields on regular 
+    grids. The convolution is computed for each component of the vector fields and summed
+    Args:
+        a1 (array): The first array to convolve
+        a2 (array): The second array to convolve
+        delta (float): The grid spacing
+        conv_mode (string): The mode to use for scipy convolution
+    """
+    con = convolve(a1[:,:,:,0],a2[:,:,:,0],mode=conv_mode)*delta**3
+    con += convolve(a1[:,:,:,1],a2[:,:,:,1],mode=conv_mode)*delta**3
+    con += convolve(a1[:,:,:,2],a2[:,:,:,2],mode=conv_mode)*delta**3
+    return con
+
+def ups(grid):
+    """A function to generat the Upsilon filter from Roth et.al. (2018)
+    This function computes an kernel using the upsilon function defined in Roth et.al.
+    (2018), https://doi.org/10.1107/S2052252518006590.
+    Args:
+        grid (array): the spatial grid over which the kernel is to be defined
+    """
+    g = lambda point: [0,0,0] if np.abs(np.linalg.norm(point)) <1e-6 else  point/np.linalg.norm(point)**4
+    return np.apply_along_axis(g,3,grid)
+
+
 

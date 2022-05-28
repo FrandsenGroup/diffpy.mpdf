@@ -40,8 +40,8 @@ Please see http://pythonhosted.org/diffpy.mpdf/ for the documentation. (Note as 
 
 ## Contributors
 
-Benjamin Frandsen, Pavol Juhas, Xiaohao Yang, and Simon Billinge.
+Benjamin Frandsen, Parker Hamilton, Jacob Christensen, Eric Stubben, Victor Velasco, Pavol Juhas, Xiaohao Yang, and Simon Billinge.
 
 ## License
 
-Modified BSD License.
+3-Clause BSD License
