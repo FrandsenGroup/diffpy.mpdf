@@ -35,8 +35,10 @@ Clone or download this repository on your local machine. Navigate to the downloa
 
     >>> python setup.py install
 
-## Documentation
-Please see http://pythonhosted.org/diffpy.mpdf/ for the documentation. (Note as of June 2021: This documentation is out of date. New docs coming in the future.)
+## Documentation and Helpful Examples
+Complete documentation is available in the doc folder of this repository.
+
+Several examples to help you get started with mPDF analysis are available as jupyter notebooks at https://github.com/FrandsenGroup/mPDF-tutorial.
 
 ## Contributors
 
