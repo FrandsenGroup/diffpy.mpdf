@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>diffpy.mpdf.mpdfcalculator API documentation</title>
+<meta name="description" content="class to perform mPDF calculations" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>diffpy.mpdf.mpdfcalculator</code></h1>
+</header>
+<section id="section-intro">
+<p>class to perform mPDF calculations</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+&#34;&#34;&#34;class to perform mPDF calculations&#34;&#34;&#34;
+
+import copy
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import convolve, fftconvolve
+from diffpy.mpdf.magutils import calculatemPDF, calculateDr, estimate_effective_xi
+
+class MPDFcalculator:
+    &#34;&#34;&#34;Create an MPDFcalculator object to help calculate mPDF functions.
+
+    This class is loosely modelled after the PDFcalculator class in diffpy.
+    At minimum, it requires a magnetic structure with atoms and spins, and
+    it calculates the mPDF from that. Various other options can be specified
+    for the calculated mPDF.
+
+    Args:
+        magstruc (MagStructure object): provides information about the
+            magnetic structure. Must have arrays of atoms and spins.
+        extendedrmin (float): extension of the r-grid on which the mPDF is
+            calculated to properly account for contribution of pairs just
+            before the boundary. 4 A by default.
+        extendedrmax (float): extension of the r-grid on which the mPDF is
+            calculated to properly account for contribution of pairs just
+            outside the boundary. 4 A by default.
+        qdamp (float): usual PDF qdamp parameter. Turned off if set to zero.
+        qmin (float): minimum experimentally accessible q-value (to be used
+            for simulating termination ripples). If &lt;0, no termination effects
+            are included.
+        qmax (float): maximum experimentally accessible q-value (to be used
+            for simulating termination ripples). If &lt;0, no termination effects
+            are included.
+        rmin (float): minimum value of r for which mPDF should be calculated.
+        rmax (float): maximum value of r for which mPDF should be calculated.
+        rstep (float): step size for r-grid of calculated mPDF.
+        ordScale (float): overall scale factor for the mPDF function f(r).
+        paraScale (float): scale factor for the paramagnetic part of the
+            unnormalized mPDF function D(r).
+        rmintr (float): minimum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        rmaxtr (float): maximum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        drtr (float): step size for r-grid used for calculating Fourier
+            transform of magnetic form mactor.
+        label (string): Optional descriptive string for the MPDFcalculator.
+        &#34;&#34;&#34;
+    def __init__(self, magstruc=None, extendedrmax=4.0,
+                 extendedrmin=4.0, qdamp=0.0, qmin=0.0,
+                 qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
+                 ordScale=1.0, paraScale=1.0, rmintr=-5.0,
+                 rmaxtr=5.0, label=&#39;&#39;):
+        if magstruc is None:
+            self.magstruc = []
+        else:
+            self.magstruc = magstruc
+            if magstruc.rmaxAtoms &lt; rmax:
+                print(&#39;Warning: Your structure may not be big enough for your&#39;)
+                print(&#39;desired calculation range.&#39;)
+        self.extendedrmin = extendedrmin
+        self.extendedrmax = extendedrmax
+        self.qdamp = qdamp
+        self.qmin = qmin
+        self.qmax = qmax
+        self.rmin = rmin
+        self.rmax = rmax
+        self.rstep = rstep
+        self.ordScale = ordScale
+        self.paraScale = paraScale
+        self.rmintr = rmintr
+        self.rmaxtr = rmaxtr
+        self.label = label
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MPDFcalculator() object&#39;
+        else:
+            return self.label+&#39;: MPDFcalculator() object&#39;
+
+    def calc(self, normalized=True, both=False, correlationMethod=&#39;simple&#39;,
+             linearTermMethod=&#39;exact&#39;):
+        &#34;&#34;&#34;Calculate the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be returned.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be returned.
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                &#39;simple&#39;; exponential envelope is applied to the mPDF
+                &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+                Note that any other option will be converted to &#39;simple&#39;
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                &#39;exact&#39;; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                &#39;autoslope&#39;: slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to &#39;exact&#39;.
+        Returns: numpy array giving the r grid of the calculation, as well as
+            one or both of the mPDF quantities.
+        &#34;&#34;&#34;
+        peakWidth = np.sqrt(self.magstruc.Uiso)
+        if correlationMethod not in [&#39;simple&#39;, &#39;full&#39;, &#39;auto&#39;]:
+            correlationMethod = &#39;simple&#39;  # convert non-standard inputs to simple
+        if linearTermMethod not in [&#39;exact&#39;, &#39;autoslope&#39;, &#39;fullauto&#39;]:
+            linearTermMethod = &#39;exact&#39;  # convert non-standard inputs to simple
+        dampingMat = self.magstruc.dampingMat
+        xi = self.magstruc.corrLength
+        if correlationMethod == &#39;auto&#39;:  # convert to full or simple
+            if xi &lt;= 5.0:
+                correlationMethod = &#39;full&#39;
+            else:
+                correlationMethod = &#39;simple&#39;
+
+        if type(dampingMat) == np.ndarray and correlationMethod != &#39;full&#39;:
+            print(&#34;Warning: correlationMethod should be set to &#39;full&#39; when using&#34;)
+            print(&#34;the damping matrix instead of a scalar correlation length.&#34;)
+        if type(dampingMat) != np.ndarray and linearTermMethod == &#39;fullauto&#39;:
+            print(&#34;Warning: &#39;fullauto&#39; should only be used with an anisotropic&#34;)
+            print(&#34;correlation length as encoded in the damping matrix.&#34;)
+        if (xi==0) and (type(dampingMat) != np.ndarray):
+            calcIdxs = self.magstruc.calcIdxs
+            rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, calcIdxs,
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          linearTermMethod)
+        elif correlationMethod == &#39;full&#39;:  # change magnitudes of the spins
+            originalSpins = 1.0*self.magstruc.spins
+            for i, currentIdx in enumerate(self.magstruc.calcIdxs):
+                self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
+                rcalc, frtemp = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                              self.magstruc.gfactors, [currentIdx],
+                                              self.rstep, self.rmin, self.rmax,
+                                              peakWidth, self.qmin, self.qmax,
+                                              self.qdamp, self.extendedrmin,
+                                              self.extendedrmax, self.ordScale,
+                                              self.magstruc.K1, self.magstruc.rho0,
+                                              self.magstruc.netMag, xi,
+                                              linearTermMethod)
+                if i==0:
+                    frcalc = 1.0*frtemp
+                else:
+                    frcalc += frtemp
+                self.magstruc.spins = 1.0*originalSpins
+            frcalc /= len(self.magstruc.calcIdxs)
+        else:  # simple method: apply exponential envelope
+            calcIdxs = self.magstruc.calcIdxs
+            rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, calcIdxs,
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          linearTermMethod, applyEnvelope=True)
+        # create a mask to put the calculation on the desired grid
+        mask = np.logical_and(rcalc &gt; self.rmin - 0.5*self.rstep,
+                              rcalc &lt; self.rmax + 0.5*self.rstep)
+        if normalized and not both:
+            return rcalc[mask], frcalc[mask]
+        elif not normalized and not both:
+            Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                                 self.magstruc.ff, self.paraScale, self.rmintr,
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
+            return rcalc[mask], Drcalc[mask]
+        else:
+            Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                                 self.magstruc.ff, self.paraScale, self.rmintr,
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
+            return rcalc[mask], frcalc[mask], Drcalc[mask]
+
+    def plot(self, normalized=True, both=False, scaled=True,
+             correlationMethod=&#39;simple&#39;, linearTermMethod=&#39;exact&#39;):
+        &#34;&#34;&#34;Plot the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be plotted.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be plotted.
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                &#39;simple&#39;; exponential envelope is applied to the mPDF
+                &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+                Note that any other option will be converted to &#39;simple&#39;
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                &#39;exact&#39;; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                &#39;autoslope&#39;: slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to &#39;exact&#39;.
+        &#34;&#34;&#34;
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+        ax.set_xlim(xmin=self.rmin, xmax=self.rmax)
+        if normalized and not both:
+            rcalc, frcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            ax.plot(rcalc, frcalc) 
+            ax.set_ylabel(r&#39;f ($\mathdefault{\AA^{-2}}$)&#39;)
+        elif not normalized and not both:
+            rcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            ax.plot(rcalc, Drcalc)
+            ax.set_ylabel(r&#39;d ($\mathdefault{\AA^{-2}}$)&#39;)
+        else:
+            rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            if scaled:
+                frscl = np.max(np.abs(frcalc))
+                drscl = np.max(np.abs(Drcalc[rcalc&gt;1.5]))
+                scl = frscl / drscl
+            else:
+                scl = 1.0
+            ax.plot(rcalc, frcalc, &#39;b-&#39;, label=&#39;f(r)&#39;)
+            ax.plot(rcalc, scl * Drcalc, &#39;r-&#39;, label=&#39;d(r)&#39;)
+            ax.set_ylabel(r&#39;f, d ($\mathdefault{\AA^{-2}}$)&#39;)
+            plt.legend(loc=&#39;best&#39;)
+        plt.show()
+
+    def runChecks(self):
+        &#34;&#34;&#34;Run some quick checks to help with troubleshooting.
+        &#34;&#34;&#34;
+        print(&#39;Running checks on MPDFcalculator...\n&#39;)
+
+        flagCount = 0
+        flag = False
+
+        ### check if number of spins and atoms do not match
+        if self.magstruc.atoms.shape[0] != self.magstruc.spins.shape[0]:
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Number of atoms and spins do not match; try calling&#39;)
+            print(&#39;makeAtoms() and makeSpins() again on your MagStructure.\n&#39;)
+        flag = False
+
+        ### check for nan values in spin array
+        if np.any(np.isnan(self.magstruc.spins)):
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Spin array contains nan values (&#34;not a number&#34;).\n&#39;)
+        flag = False
+
+        ### check if rmax is too big for rmaxAtoms in structure
+        for key in self.magstruc.species:
+            if self.magstruc.species[key].rmaxAtoms &lt; self.rmax:
+                flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Warning: the atoms in your MagStructure may not fill a&#39;)
+            print(&#39;volume large enough for the desired rmax for the mPDF&#39;)
+            print(&#39;calculation. Adjust rmax and/or rmaxAtoms in the&#39;)
+            print(&#39;MagSpecies or MagStructure objects.\n&#39;)
+        flag = False
+
+        ### check for unphysical parameters like negative scale factors
+        if np.min((self.paraScale, self.ordScale)) &lt; 0:
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Warning: you have a negative scale factor.&#39;)
+            print((&#39;Paramagnetic scale = &#39;, self.paraScale))
+            print((&#39;Ordered scale = &#39;, self.ordScale))
+        flag = False
+
+        if flagCount == 0:
+            print(&#39;All checks passed. No obvious problems found.\n&#39;)
+
+    def rgrid(self):
+        &#34;&#34;&#34;Return the current r grid of the mPDF calculator.&#34;&#34;&#34;
+        r = np.arange(0,self.rmax+10,self.rstep)        
+        mask = np.logical_and(r &gt; self.rmin - 0.5*self.rstep,
+                              r &lt; self.rmax + 0.5*self.rstep)
+        return r[mask]
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MPDFcalculator object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator"><code class="flex name class">
+<span>class <span class="ident">MPDFcalculator</span></span>
+<span>(</span><span>magstruc=None, extendedrmax=4.0, extendedrmin=4.0, qdamp=0.0, qmin=0.0, qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01, ordScale=1.0, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0, label='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create an MPDFcalculator object to help calculate mPDF functions.</p>
+<p>This class is loosely modelled after the PDFcalculator class in diffpy.
+At minimum, it requires a magnetic structure with atoms and spins, and
+it calculates the mPDF from that. Various other options can be specified
+for the calculated mPDF.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magstruc</code></strong> :&ensp;<code>MagStructure object</code></dt>
+<dd>provides information about the
+magnetic structure. Must have arrays of atoms and spins.</dd>
+<dt><strong><code>extendedrmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>extension of the r-grid on which the mPDF is
+calculated to properly account for contribution of pairs just
+before the boundary. 4 A by default.</dd>
+<dt><strong><code>extendedrmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>extension of the r-grid on which the mPDF is
+calculated to properly account for contribution of pairs just
+outside the boundary. 4 A by default.</dd>
+<dt><strong><code>qdamp</code></strong> :&ensp;<code>float</code></dt>
+<dd>usual PDF qdamp parameter. Turned off if set to zero.</dd>
+<dt><strong><code>qmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>minimum experimentally accessible q-value (to be used
+for simulating termination ripples). If &lt;0, no termination effects
+are included.</dd>
+<dt><strong><code>qmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum experimentally accessible q-value (to be used
+for simulating termination ripples). If &lt;0, no termination effects
+are included.</dd>
+<dt><strong><code>rmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>minimum value of r for which mPDF should be calculated.</dd>
+<dt><strong><code>rmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum value of r for which mPDF should be calculated.</dd>
+<dt><strong><code>rstep</code></strong> :&ensp;<code>float</code></dt>
+<dd>step size for r-grid of calculated mPDF.</dd>
+<dt><strong><code>ordScale</code></strong> :&ensp;<code>float</code></dt>
+<dd>overall scale factor for the mPDF function f(r).</dd>
+<dt><strong><code>paraScale</code></strong> :&ensp;<code>float</code></dt>
+<dd>scale factor for the paramagnetic part of the
+unnormalized mPDF function D(r).</dd>
+<dt><strong><code>rmintr</code></strong> :&ensp;<code>float</code></dt>
+<dd>minimum value of r for the Fourier transform of the
+magnetic form factor required for unnormalized mPDF.</dd>
+<dt><strong><code>rmaxtr</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum value of r for the Fourier transform of the
+magnetic form factor required for unnormalized mPDF.</dd>
+<dt><strong><code>drtr</code></strong> :&ensp;<code>float</code></dt>
+<dd>step size for r-grid used for calculating Fourier
+transform of magnetic form mactor.</dd>
+<dt><strong><code>label</code></strong> :&ensp;<code>string</code></dt>
+<dd>Optional descriptive string for the MPDFcalculator.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MPDFcalculator:
+    &#34;&#34;&#34;Create an MPDFcalculator object to help calculate mPDF functions.
+
+    This class is loosely modelled after the PDFcalculator class in diffpy.
+    At minimum, it requires a magnetic structure with atoms and spins, and
+    it calculates the mPDF from that. Various other options can be specified
+    for the calculated mPDF.
+
+    Args:
+        magstruc (MagStructure object): provides information about the
+            magnetic structure. Must have arrays of atoms and spins.
+        extendedrmin (float): extension of the r-grid on which the mPDF is
+            calculated to properly account for contribution of pairs just
+            before the boundary. 4 A by default.
+        extendedrmax (float): extension of the r-grid on which the mPDF is
+            calculated to properly account for contribution of pairs just
+            outside the boundary. 4 A by default.
+        qdamp (float): usual PDF qdamp parameter. Turned off if set to zero.
+        qmin (float): minimum experimentally accessible q-value (to be used
+            for simulating termination ripples). If &lt;0, no termination effects
+            are included.
+        qmax (float): maximum experimentally accessible q-value (to be used
+            for simulating termination ripples). If &lt;0, no termination effects
+            are included.
+        rmin (float): minimum value of r for which mPDF should be calculated.
+        rmax (float): maximum value of r for which mPDF should be calculated.
+        rstep (float): step size for r-grid of calculated mPDF.
+        ordScale (float): overall scale factor for the mPDF function f(r).
+        paraScale (float): scale factor for the paramagnetic part of the
+            unnormalized mPDF function D(r).
+        rmintr (float): minimum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        rmaxtr (float): maximum value of r for the Fourier transform of the
+            magnetic form factor required for unnormalized mPDF.
+        drtr (float): step size for r-grid used for calculating Fourier
+            transform of magnetic form mactor.
+        label (string): Optional descriptive string for the MPDFcalculator.
+        &#34;&#34;&#34;
+    def __init__(self, magstruc=None, extendedrmax=4.0,
+                 extendedrmin=4.0, qdamp=0.0, qmin=0.0,
+                 qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
+                 ordScale=1.0, paraScale=1.0, rmintr=-5.0,
+                 rmaxtr=5.0, label=&#39;&#39;):
+        if magstruc is None:
+            self.magstruc = []
+        else:
+            self.magstruc = magstruc
+            if magstruc.rmaxAtoms &lt; rmax:
+                print(&#39;Warning: Your structure may not be big enough for your&#39;)
+                print(&#39;desired calculation range.&#39;)
+        self.extendedrmin = extendedrmin
+        self.extendedrmax = extendedrmax
+        self.qdamp = qdamp
+        self.qmin = qmin
+        self.qmax = qmax
+        self.rmin = rmin
+        self.rmax = rmax
+        self.rstep = rstep
+        self.ordScale = ordScale
+        self.paraScale = paraScale
+        self.rmintr = rmintr
+        self.rmaxtr = rmaxtr
+        self.label = label
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MPDFcalculator() object&#39;
+        else:
+            return self.label+&#39;: MPDFcalculator() object&#39;
+
+    def calc(self, normalized=True, both=False, correlationMethod=&#39;simple&#39;,
+             linearTermMethod=&#39;exact&#39;):
+        &#34;&#34;&#34;Calculate the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be returned.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be returned.
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                &#39;simple&#39;; exponential envelope is applied to the mPDF
+                &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+                Note that any other option will be converted to &#39;simple&#39;
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                &#39;exact&#39;; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                &#39;autoslope&#39;: slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to &#39;exact&#39;.
+        Returns: numpy array giving the r grid of the calculation, as well as
+            one or both of the mPDF quantities.
+        &#34;&#34;&#34;
+        peakWidth = np.sqrt(self.magstruc.Uiso)
+        if correlationMethod not in [&#39;simple&#39;, &#39;full&#39;, &#39;auto&#39;]:
+            correlationMethod = &#39;simple&#39;  # convert non-standard inputs to simple
+        if linearTermMethod not in [&#39;exact&#39;, &#39;autoslope&#39;, &#39;fullauto&#39;]:
+            linearTermMethod = &#39;exact&#39;  # convert non-standard inputs to simple
+        dampingMat = self.magstruc.dampingMat
+        xi = self.magstruc.corrLength
+        if correlationMethod == &#39;auto&#39;:  # convert to full or simple
+            if xi &lt;= 5.0:
+                correlationMethod = &#39;full&#39;
+            else:
+                correlationMethod = &#39;simple&#39;
+
+        if type(dampingMat) == np.ndarray and correlationMethod != &#39;full&#39;:
+            print(&#34;Warning: correlationMethod should be set to &#39;full&#39; when using&#34;)
+            print(&#34;the damping matrix instead of a scalar correlation length.&#34;)
+        if type(dampingMat) != np.ndarray and linearTermMethod == &#39;fullauto&#39;:
+            print(&#34;Warning: &#39;fullauto&#39; should only be used with an anisotropic&#34;)
+            print(&#34;correlation length as encoded in the damping matrix.&#34;)
+        if (xi==0) and (type(dampingMat) != np.ndarray):
+            calcIdxs = self.magstruc.calcIdxs
+            rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, calcIdxs,
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          linearTermMethod)
+        elif correlationMethod == &#39;full&#39;:  # change magnitudes of the spins
+            originalSpins = 1.0*self.magstruc.spins
+            for i, currentIdx in enumerate(self.magstruc.calcIdxs):
+                self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
+                rcalc, frtemp = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                              self.magstruc.gfactors, [currentIdx],
+                                              self.rstep, self.rmin, self.rmax,
+                                              peakWidth, self.qmin, self.qmax,
+                                              self.qdamp, self.extendedrmin,
+                                              self.extendedrmax, self.ordScale,
+                                              self.magstruc.K1, self.magstruc.rho0,
+                                              self.magstruc.netMag, xi,
+                                              linearTermMethod)
+                if i==0:
+                    frcalc = 1.0*frtemp
+                else:
+                    frcalc += frtemp
+                self.magstruc.spins = 1.0*originalSpins
+            frcalc /= len(self.magstruc.calcIdxs)
+        else:  # simple method: apply exponential envelope
+            calcIdxs = self.magstruc.calcIdxs
+            rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, calcIdxs,
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          linearTermMethod, applyEnvelope=True)
+        # create a mask to put the calculation on the desired grid
+        mask = np.logical_and(rcalc &gt; self.rmin - 0.5*self.rstep,
+                              rcalc &lt; self.rmax + 0.5*self.rstep)
+        if normalized and not both:
+            return rcalc[mask], frcalc[mask]
+        elif not normalized and not both:
+            Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                                 self.magstruc.ff, self.paraScale, self.rmintr,
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
+            return rcalc[mask], Drcalc[mask]
+        else:
+            Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                                 self.magstruc.ff, self.paraScale, self.rmintr,
+                                 self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                                 self.magstruc.K1, self.magstruc.K2)
+            return rcalc[mask], frcalc[mask], Drcalc[mask]
+
+    def plot(self, normalized=True, both=False, scaled=True,
+             correlationMethod=&#39;simple&#39;, linearTermMethod=&#39;exact&#39;):
+        &#34;&#34;&#34;Plot the magnetic PDF.
+
+        Args:
+            normalized (boolean): indicates whether or not the normalized mPDF
+                should be plotted.
+            both (boolean): indicates whether or not both normalized and
+                unnormalized mPDF quantities should be plotted.
+            correlationMethod (string): determines how the calculation should
+                be done if the correlation length is finite. Options are:
+                &#39;simple&#39;; exponential envelope is applied to the mPDF
+                &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                        correlation length; more accurate (especially for very
+                        short correlation lengths) but slower (especially if
+                        rmax is beyond ~30 A)
+                &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+                Note that any other option will be converted to &#39;simple&#39;
+            linearTermMethod (string): determines how the calculation will
+                handle the linear term present for magnetic structures with a net
+                magnetization. Options are:
+                &#39;exact&#39;; slope will be calculated from the values of
+                    MagStructure.rho0 and MagStructure.netMag, damping set by
+                    MagStructure.corrLength.
+                &#39;autoslope&#39;: slope will be determined by least-squares
+                    minimization of the calculated mPDF, thereby ensuring that
+                    the mPDF oscillates around zero, as it is supposed to.
+                    Damping set by MagStructure.corrLength.
+                &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                    This should only be used in the case of an anisotropic
+                    correlation length.
+                Note that any other option will be converted to &#39;exact&#39;.
+        &#34;&#34;&#34;
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+        ax.set_xlim(xmin=self.rmin, xmax=self.rmax)
+        if normalized and not both:
+            rcalc, frcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            ax.plot(rcalc, frcalc) 
+            ax.set_ylabel(r&#39;f ($\mathdefault{\AA^{-2}}$)&#39;)
+        elif not normalized and not both:
+            rcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            ax.plot(rcalc, Drcalc)
+            ax.set_ylabel(r&#39;d ($\mathdefault{\AA^{-2}}$)&#39;)
+        else:
+            rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+            if scaled:
+                frscl = np.max(np.abs(frcalc))
+                drscl = np.max(np.abs(Drcalc[rcalc&gt;1.5]))
+                scl = frscl / drscl
+            else:
+                scl = 1.0
+            ax.plot(rcalc, frcalc, &#39;b-&#39;, label=&#39;f(r)&#39;)
+            ax.plot(rcalc, scl * Drcalc, &#39;r-&#39;, label=&#39;d(r)&#39;)
+            ax.set_ylabel(r&#39;f, d ($\mathdefault{\AA^{-2}}$)&#39;)
+            plt.legend(loc=&#39;best&#39;)
+        plt.show()
+
+    def runChecks(self):
+        &#34;&#34;&#34;Run some quick checks to help with troubleshooting.
+        &#34;&#34;&#34;
+        print(&#39;Running checks on MPDFcalculator...\n&#39;)
+
+        flagCount = 0
+        flag = False
+
+        ### check if number of spins and atoms do not match
+        if self.magstruc.atoms.shape[0] != self.magstruc.spins.shape[0]:
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Number of atoms and spins do not match; try calling&#39;)
+            print(&#39;makeAtoms() and makeSpins() again on your MagStructure.\n&#39;)
+        flag = False
+
+        ### check for nan values in spin array
+        if np.any(np.isnan(self.magstruc.spins)):
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Spin array contains nan values (&#34;not a number&#34;).\n&#39;)
+        flag = False
+
+        ### check if rmax is too big for rmaxAtoms in structure
+        for key in self.magstruc.species:
+            if self.magstruc.species[key].rmaxAtoms &lt; self.rmax:
+                flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Warning: the atoms in your MagStructure may not fill a&#39;)
+            print(&#39;volume large enough for the desired rmax for the mPDF&#39;)
+            print(&#39;calculation. Adjust rmax and/or rmaxAtoms in the&#39;)
+            print(&#39;MagSpecies or MagStructure objects.\n&#39;)
+        flag = False
+
+        ### check for unphysical parameters like negative scale factors
+        if np.min((self.paraScale, self.ordScale)) &lt; 0:
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Warning: you have a negative scale factor.&#39;)
+            print((&#39;Paramagnetic scale = &#39;, self.paraScale))
+            print((&#39;Ordered scale = &#39;, self.ordScale))
+        flag = False
+
+        if flagCount == 0:
+            print(&#39;All checks passed. No obvious problems found.\n&#39;)
+
+    def rgrid(self):
+        &#34;&#34;&#34;Return the current r grid of the mPDF calculator.&#34;&#34;&#34;
+        r = np.arange(0,self.rmax+10,self.rstep)        
+        mask = np.logical_and(r &gt; self.rmin - 0.5*self.rstep,
+                              r &lt; self.rmax + 0.5*self.rstep)
+        return r[mask]
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MPDFcalculator object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator.calc"><code class="name flex">
+<span>def <span class="ident">calc</span></span>(<span>self, normalized=True, both=False, correlationMethod='simple', linearTermMethod='exact')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate the magnetic PDF.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>normalized</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>indicates whether or not the normalized mPDF
+should be returned.</dd>
+<dt><strong><code>both</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>indicates whether or not both normalized and
+unnormalized mPDF quantities should be returned.</dd>
+<dt><strong><code>correlationMethod</code></strong> :&ensp;<code>string</code></dt>
+<dd>determines how the calculation should
+be done if the correlation length is finite. Options are:
+'simple'; exponential envelope is applied to the mPDF
+'full'; actual spin magnitudes are adjusted according to the
+correlation length; more accurate (especially for very
+short correlation lengths) but slower (especially if
+rmax is beyond ~30 A)
+'auto'; simple method is chosen if xi &lt;= 5 A, full otherwise
+Note that any other option will be converted to 'simple'</dd>
+<dt><strong><code>linearTermMethod</code></strong> :&ensp;<code>string</code></dt>
+<dd>determines how the calculation will
+handle the linear term present for magnetic structures with a net
+magnetization. Options are:
+'exact'; slope will be calculated from the values of
+MagStructure.rho0 and MagStructure.netMag, damping set by
+MagStructure.corrLength.
+'autoslope': slope will be determined by least-squares
+minimization of the calculated mPDF, thereby ensuring that
+the mPDF oscillates around zero, as it is supposed to.
+Damping set by MagStructure.corrLength.
+'fullauto': slope and damping set by least-squares minimization.
+This should only be used in the case of an anisotropic
+correlation length.
+Note that any other option will be converted to 'exact'.</dd>
+</dl>
+<p>Returns: numpy array giving the r grid of the calculation, as well as
+one or both of the mPDF quantities.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc(self, normalized=True, both=False, correlationMethod=&#39;simple&#39;,
+         linearTermMethod=&#39;exact&#39;):
+    &#34;&#34;&#34;Calculate the magnetic PDF.
+
+    Args:
+        normalized (boolean): indicates whether or not the normalized mPDF
+            should be returned.
+        both (boolean): indicates whether or not both normalized and
+            unnormalized mPDF quantities should be returned.
+        correlationMethod (string): determines how the calculation should
+            be done if the correlation length is finite. Options are:
+            &#39;simple&#39;; exponential envelope is applied to the mPDF
+            &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                    correlation length; more accurate (especially for very
+                    short correlation lengths) but slower (especially if
+                    rmax is beyond ~30 A)
+            &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+            Note that any other option will be converted to &#39;simple&#39;
+        linearTermMethod (string): determines how the calculation will
+            handle the linear term present for magnetic structures with a net
+            magnetization. Options are:
+            &#39;exact&#39;; slope will be calculated from the values of
+                MagStructure.rho0 and MagStructure.netMag, damping set by
+                MagStructure.corrLength.
+            &#39;autoslope&#39;: slope will be determined by least-squares
+                minimization of the calculated mPDF, thereby ensuring that
+                the mPDF oscillates around zero, as it is supposed to.
+                Damping set by MagStructure.corrLength.
+            &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                This should only be used in the case of an anisotropic
+                correlation length.
+            Note that any other option will be converted to &#39;exact&#39;.
+    Returns: numpy array giving the r grid of the calculation, as well as
+        one or both of the mPDF quantities.
+    &#34;&#34;&#34;
+    peakWidth = np.sqrt(self.magstruc.Uiso)
+    if correlationMethod not in [&#39;simple&#39;, &#39;full&#39;, &#39;auto&#39;]:
+        correlationMethod = &#39;simple&#39;  # convert non-standard inputs to simple
+    if linearTermMethod not in [&#39;exact&#39;, &#39;autoslope&#39;, &#39;fullauto&#39;]:
+        linearTermMethod = &#39;exact&#39;  # convert non-standard inputs to simple
+    dampingMat = self.magstruc.dampingMat
+    xi = self.magstruc.corrLength
+    if correlationMethod == &#39;auto&#39;:  # convert to full or simple
+        if xi &lt;= 5.0:
+            correlationMethod = &#39;full&#39;
+        else:
+            correlationMethod = &#39;simple&#39;
+
+    if type(dampingMat) == np.ndarray and correlationMethod != &#39;full&#39;:
+        print(&#34;Warning: correlationMethod should be set to &#39;full&#39; when using&#34;)
+        print(&#34;the damping matrix instead of a scalar correlation length.&#34;)
+    if type(dampingMat) != np.ndarray and linearTermMethod == &#39;fullauto&#39;:
+        print(&#34;Warning: &#39;fullauto&#39; should only be used with an anisotropic&#34;)
+        print(&#34;correlation length as encoded in the damping matrix.&#34;)
+    if (xi==0) and (type(dampingMat) != np.ndarray):
+        calcIdxs = self.magstruc.calcIdxs
+        rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                      self.magstruc.gfactors, calcIdxs,
+                                      self.rstep, self.rmin, self.rmax,
+                                      peakWidth, self.qmin, self.qmax,
+                                      self.qdamp, self.extendedrmin,
+                                      self.extendedrmax, self.ordScale,
+                                      self.magstruc.K1, self.magstruc.rho0,
+                                      self.magstruc.netMag, xi,
+                                      linearTermMethod)
+    elif correlationMethod == &#39;full&#39;:  # change magnitudes of the spins
+        originalSpins = 1.0*self.magstruc.spins
+        for i, currentIdx in enumerate(self.magstruc.calcIdxs):
+            self.magstruc.spins = self.magstruc.generateScaledSpins(currentIdx)
+            rcalc, frtemp = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                          self.magstruc.gfactors, [currentIdx],
+                                          self.rstep, self.rmin, self.rmax,
+                                          peakWidth, self.qmin, self.qmax,
+                                          self.qdamp, self.extendedrmin,
+                                          self.extendedrmax, self.ordScale,
+                                          self.magstruc.K1, self.magstruc.rho0,
+                                          self.magstruc.netMag, xi,
+                                          linearTermMethod)
+            if i==0:
+                frcalc = 1.0*frtemp
+            else:
+                frcalc += frtemp
+            self.magstruc.spins = 1.0*originalSpins
+        frcalc /= len(self.magstruc.calcIdxs)
+    else:  # simple method: apply exponential envelope
+        calcIdxs = self.magstruc.calcIdxs
+        rcalc, frcalc = calculatemPDF(self.magstruc.atoms, self.magstruc.spins,
+                                      self.magstruc.gfactors, calcIdxs,
+                                      self.rstep, self.rmin, self.rmax,
+                                      peakWidth, self.qmin, self.qmax,
+                                      self.qdamp, self.extendedrmin,
+                                      self.extendedrmax, self.ordScale,
+                                      self.magstruc.K1, self.magstruc.rho0,
+                                      self.magstruc.netMag, xi,
+                                      linearTermMethod, applyEnvelope=True)
+    # create a mask to put the calculation on the desired grid
+    mask = np.logical_and(rcalc &gt; self.rmin - 0.5*self.rstep,
+                          rcalc &lt; self.rmax + 0.5*self.rstep)
+    if normalized and not both:
+        return rcalc[mask], frcalc[mask]
+    elif not normalized and not both:
+        Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                             self.magstruc.ff, self.paraScale, self.rmintr,
+                             self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                             self.magstruc.K1, self.magstruc.K2)
+        return rcalc[mask], Drcalc[mask]
+    else:
+        Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
+                             self.magstruc.ff, self.paraScale, self.rmintr,
+                             self.rmaxtr, self.rstep, self.qmin, self.qmax,
+                             self.magstruc.K1, self.magstruc.K2)
+        return rcalc[mask], frcalc[mask], Drcalc[mask]</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a deep copy of the MPDFcalculator object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    &#34;&#34;&#34;Return a deep copy of the MPDFcalculator object.&#34;&#34;&#34;
+    return copy.deepcopy(self)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, normalized=True, both=False, scaled=True, correlationMethod='simple', linearTermMethod='exact')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot the magnetic PDF.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>normalized</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>indicates whether or not the normalized mPDF
+should be plotted.</dd>
+<dt><strong><code>both</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>indicates whether or not both normalized and
+unnormalized mPDF quantities should be plotted.</dd>
+<dt><strong><code>correlationMethod</code></strong> :&ensp;<code>string</code></dt>
+<dd>determines how the calculation should
+be done if the correlation length is finite. Options are:
+'simple'; exponential envelope is applied to the mPDF
+'full'; actual spin magnitudes are adjusted according to the
+correlation length; more accurate (especially for very
+short correlation lengths) but slower (especially if
+rmax is beyond ~30 A)
+'auto'; simple method is chosen if xi &lt;= 5 A, full otherwise
+Note that any other option will be converted to 'simple'</dd>
+<dt><strong><code>linearTermMethod</code></strong> :&ensp;<code>string</code></dt>
+<dd>determines how the calculation will
+handle the linear term present for magnetic structures with a net
+magnetization. Options are:
+'exact'; slope will be calculated from the values of
+MagStructure.rho0 and MagStructure.netMag, damping set by
+MagStructure.corrLength.
+'autoslope': slope will be determined by least-squares
+minimization of the calculated mPDF, thereby ensuring that
+the mPDF oscillates around zero, as it is supposed to.
+Damping set by MagStructure.corrLength.
+'fullauto': slope and damping set by least-squares minimization.
+This should only be used in the case of an anisotropic
+correlation length.
+Note that any other option will be converted to 'exact'.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, normalized=True, both=False, scaled=True,
+         correlationMethod=&#39;simple&#39;, linearTermMethod=&#39;exact&#39;):
+    &#34;&#34;&#34;Plot the magnetic PDF.
+
+    Args:
+        normalized (boolean): indicates whether or not the normalized mPDF
+            should be plotted.
+        both (boolean): indicates whether or not both normalized and
+            unnormalized mPDF quantities should be plotted.
+        correlationMethod (string): determines how the calculation should
+            be done if the correlation length is finite. Options are:
+            &#39;simple&#39;; exponential envelope is applied to the mPDF
+            &#39;full&#39;; actual spin magnitudes are adjusted according to the
+                    correlation length; more accurate (especially for very
+                    short correlation lengths) but slower (especially if
+                    rmax is beyond ~30 A)
+            &#39;auto&#39;; simple method is chosen if xi &lt;= 5 A, full otherwise
+            Note that any other option will be converted to &#39;simple&#39;
+        linearTermMethod (string): determines how the calculation will
+            handle the linear term present for magnetic structures with a net
+            magnetization. Options are:
+            &#39;exact&#39;; slope will be calculated from the values of
+                MagStructure.rho0 and MagStructure.netMag, damping set by
+                MagStructure.corrLength.
+            &#39;autoslope&#39;: slope will be determined by least-squares
+                minimization of the calculated mPDF, thereby ensuring that
+                the mPDF oscillates around zero, as it is supposed to.
+                Damping set by MagStructure.corrLength.
+            &#39;fullauto&#39;: slope and damping set by least-squares minimization.
+                This should only be used in the case of an anisotropic
+                correlation length.
+            Note that any other option will be converted to &#39;exact&#39;.
+    &#34;&#34;&#34;
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+    ax.set_xlim(xmin=self.rmin, xmax=self.rmax)
+    if normalized and not both:
+        rcalc, frcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+        ax.plot(rcalc, frcalc) 
+        ax.set_ylabel(r&#39;f ($\mathdefault{\AA^{-2}}$)&#39;)
+    elif not normalized and not both:
+        rcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+        ax.plot(rcalc, Drcalc)
+        ax.set_ylabel(r&#39;d ($\mathdefault{\AA^{-2}}$)&#39;)
+    else:
+        rcalc, frcalc, Drcalc = self.calc(normalized, both, correlationMethod, linearTermMethod)
+        if scaled:
+            frscl = np.max(np.abs(frcalc))
+            drscl = np.max(np.abs(Drcalc[rcalc&gt;1.5]))
+            scl = frscl / drscl
+        else:
+            scl = 1.0
+        ax.plot(rcalc, frcalc, &#39;b-&#39;, label=&#39;f(r)&#39;)
+        ax.plot(rcalc, scl * Drcalc, &#39;r-&#39;, label=&#39;d(r)&#39;)
+        ax.set_ylabel(r&#39;f, d ($\mathdefault{\AA^{-2}}$)&#39;)
+        plt.legend(loc=&#39;best&#39;)
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator.rgrid"><code class="name flex">
+<span>def <span class="ident">rgrid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the current r grid of the mPDF calculator.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rgrid(self):
+    &#34;&#34;&#34;Return the current r grid of the mPDF calculator.&#34;&#34;&#34;
+    r = np.arange(0,self.rmax+10,self.rstep)        
+    mask = np.logical_and(r &gt; self.rmin - 0.5*self.rstep,
+                          r &lt; self.rmax + 0.5*self.rstep)
+    return r[mask]</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdfcalculator.MPDFcalculator.runChecks"><code class="name flex">
+<span>def <span class="ident">runChecks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run some quick checks to help with troubleshooting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def runChecks(self):
+    &#34;&#34;&#34;Run some quick checks to help with troubleshooting.
+    &#34;&#34;&#34;
+    print(&#39;Running checks on MPDFcalculator...\n&#39;)
+
+    flagCount = 0
+    flag = False
+
+    ### check if number of spins and atoms do not match
+    if self.magstruc.atoms.shape[0] != self.magstruc.spins.shape[0]:
+        flag = True
+    if flag:
+        flagCount += 1
+        print(&#39;Number of atoms and spins do not match; try calling&#39;)
+        print(&#39;makeAtoms() and makeSpins() again on your MagStructure.\n&#39;)
+    flag = False
+
+    ### check for nan values in spin array
+    if np.any(np.isnan(self.magstruc.spins)):
+        flag = True
+    if flag:
+        flagCount += 1
+        print(&#39;Spin array contains nan values (&#34;not a number&#34;).\n&#39;)
+    flag = False
+
+    ### check if rmax is too big for rmaxAtoms in structure
+    for key in self.magstruc.species:
+        if self.magstruc.species[key].rmaxAtoms &lt; self.rmax:
+            flag = True
+    if flag:
+        flagCount += 1
+        print(&#39;Warning: the atoms in your MagStructure may not fill a&#39;)
+        print(&#39;volume large enough for the desired rmax for the mPDF&#39;)
+        print(&#39;calculation. Adjust rmax and/or rmaxAtoms in the&#39;)
+        print(&#39;MagSpecies or MagStructure objects.\n&#39;)
+    flag = False
+
+    ### check for unphysical parameters like negative scale factors
+    if np.min((self.paraScale, self.ordScale)) &lt; 0:
+        flag = True
+    if flag:
+        flagCount += 1
+        print(&#39;Warning: you have a negative scale factor.&#39;)
+        print((&#39;Paramagnetic scale = &#39;, self.paraScale))
+        print((&#39;Ordered scale = &#39;, self.ordScale))
+    flag = False
+
+    if flagCount == 0:
+        print(&#39;All checks passed. No obvious problems found.\n&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="diffpy.mpdf" href="index.html">diffpy.mpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator">MPDFcalculator</a></code></h4>
+<ul class="">
+<li><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator.calc" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator.calc">calc</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator.copy" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator.copy">copy</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator.plot" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator.plot">plot</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator.rgrid" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator.rgrid">rgrid</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdfcalculator.MPDFcalculator.runChecks" href="#diffpy.mpdf.mpdfcalculator.MPDFcalculator.runChecks">runChecks</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

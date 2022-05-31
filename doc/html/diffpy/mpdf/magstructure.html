@@ -1,0 +1,3606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>diffpy.mpdf.magstructure API documentation</title>
+<meta name="description" content="classes to create magnetic structures for mPDF calculations." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>diffpy.mpdf.magstructure</code></h1>
+</header>
+<section id="section-intro">
+<p>classes to create magnetic structures for mPDF calculations.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+
+&#34;&#34;&#34;classes to create magnetic structures for mPDF calculations.&#34;&#34;&#34;
+
+import copy
+import random
+import numpy as np
+from diffpy.srreal.bondcalculator import BondCalculator
+from diffpy.mpdf.magutils import generateAtomsXYZ, generateFromUnitCell, \
+    generateSpinsXYZ, getFFparams, jCalc, spinsFromAtoms, atomsFromSpins, \
+    findAtomIndices, visualizeSpins
+
+class MagSpecies:
+    &#34;&#34;&#34;Store information for a single species of magnetic atom.
+
+
+    This class takes a diffpy.Structure object and uses it to generate spins
+    based on a set of propagation vectors and basis vectors. For more info
+    about magnetic propagation vectors, visit e.g.
+    http://dx.doi.org/10.1051/jp4:2001906 or Appendix B of Andrew Steele&#39;s
+    dissertation at https://andrewsteele.co.uk/physics/thesis .
+
+    Args:
+        struc (diffpy.Structure object): provides lattice parameters and unit
+            cell of desired structure.
+        label (string): label for this particular magnetic species. Should be
+            different from the labels for any other magnetic species you make.
+            Default is a random 8-character hexadecimal string.
+        strucIdxs (python list): list of integers giving indices of magnetic
+            atoms in the unit cell
+        atoms (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure; e.g. generated by generateAtomsXYZ()
+        spins (numpy array): triplets giving the spin vectors of all the
+            atoms, in the same order as the atoms array provided as input.
+            In units of hbar.
+        calcIdxs (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF. If given the string argument &#39;all&#39;, then every atom
+            will be used (potentially causing very long calculation times).
+            These indices are relative to the atoms array for this specific
+            MagSpecies, not relative to the atoms array for the
+            MagStructure as a whole.
+        rmaxAtoms (float): maximum distance from the origin of atomic
+            positions generated by the makeAtoms method.
+        avgmom (numpy array): three-vector giving the average magnetic moment
+            for this species of magnetic atom to generate the spins. Relevant
+            to incommensurate structures generated from an mcif.
+        avgmom (numpy array): three-vector giving the average magnetic moment
+            for this species of magnetic atom to generate the spins. Relevant
+            to incommensurate structures generated from an mcif.
+        basisvecs (numpy array): nested three-vector(s) giving the basis
+            vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+            phase factor should be included directly with the basisvecs.
+        kvecs (numpy array): nested three-vector(s) giving the propagation
+            vectors for the magnetic structure in r.l.u.,
+            e.g. np.array([[0.5, 0.5, 0.5]])
+        S (float): Spin angular momentum quantum number in units of hbar.
+        L (float): Orbital angular momentum quantum number in units of hbar.
+        J (float): Total angular momentum quantum number in units of hbar.
+        gS (float): spin component of the Lande g-factor (g = gS+gL)
+        gL (float): orbital component of the Lande g-factor
+        ffparamkey (string): gives the appropriate key for getFFparams()
+        ffqgrid (numpy array): grid of momentum transfer values used for
+            calculating the magnetic form factor.
+        ff (numpy array): magnetic form factor.
+        useDiffpyStruc (boolean): True if atoms/spins to be generated from
+            a diffpy structure object; False if a user-provided unit cell is
+            to be used. Note that there may be some problems with user-
+            provided unit cells with lattice angles strongly deviated from
+            90 degrees.
+        latVecs (numpy array): Provides the unit cell lattice vectors as
+            np.array([avec, bvec, cvec]). Only useful if useDiffpyStruc = False.
+        atomBasis (numpy array): Provides positions of the magnetic atoms
+            in fractional coordinates within the unit cell. Only useful if
+            useDiffpyStruc = False. Example: np.array([[0, 0, 0], [0.5, 0.5, 0.5]])
+        spinBasis (numpy array): Provides the orientations of the spins in
+            the unit cell, in the same order as atomBasis. Only useful if
+            useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]]
+        origin (numpy array): Cartesian coordinates of the position that will
+            be considered the origin when generating spin directions from basis
+            vectors and propagation vectors. Default is np.array([0,0,0]).
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
+        useOcc (boolean): If True, atomic site occupancies will be used to scale
+            the magnetic moment vector. Default is False.
+        occ (scalar): Occupancy of the magnetic atom associated with
+            this MagSpecies. Default is 1.
+    &#34;&#34;&#34;
+    def __init__(self, struc=None, label=None, strucIdxs=None, atoms=None, spins=None,
+                 calcIdxs=[0], rmaxAtoms=30.0, avgmom=None, basisvecs=None, kvecs=None, S=0.5,
+                 L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
+                 ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
+                 atomBasis=None, spinBasis=None, origin=None, verbose=False,
+                 useOcc=False, occ=None):
+        if label is None:
+            hex_string = &#39;0123456789abcdef&#39;
+            token = &#39;&#39;.join([random.choice(hex_string) for i in range(8)])
+            self.label = token
+        else:
+            self.label = label
+        self.rmaxAtoms = rmaxAtoms
+        self.S = S
+        self.L = L
+        if J is None:
+            J = S + L
+            self.J = J
+        else:
+            self.J = J
+        if gS is None:
+            self.gS = 1.0 + 1.0*(S*(S+1)-L*(L+1))/(J*(J+1))
+        else:
+            self.gS = gS
+        if gL is None:
+            self.gL = 0.5 + 1.0*(L*(L+1)-S*(S+1))/(2*J*(J+1))
+        else:
+            self.gL = gL
+        self.ffparamkey = ffparamkey
+        self.useDiffpyStruc = useDiffpyStruc
+        if strucIdxs is None:
+            self.strucIdxs = [0]
+        else:
+            self.strucIdxs = strucIdxs
+        if calcIdxs is None:
+            self.calcIdxs = [0]
+        else:
+            self.calcIdxs = calcIdxs
+        if struc is None:
+            self.struc = []
+        else:
+            self.struc = struc
+        if atoms is None:
+            self.atoms = np.array([])
+        else:
+            self.atoms = atoms
+        if spins is None:
+            self.spins = np.array([])
+        else:
+            self.spins = spins
+        if avgmom is None:
+            self.avgmom = np.array([0, 0, 0])
+        else:
+            self.avgmom = avgmom
+        if basisvecs is None:
+            self.basisvecs = np.array([[0, 0, 1]])
+        else:
+            self.basisvecs = basisvecs
+        if kvecs is None:
+            self.kvecs = np.array([[0, 0, 0]])
+        else:
+            self.kvecs = kvecs
+        if ff is None:
+            self.ff = np.array([])
+        else:
+            self.ff = ff
+        if ffqgrid is None:
+            self.ffqgrid = np.arange(0, 10.0, 0.01)
+        else:
+            self.ffqgrid = ffqgrid
+        if latVecs is None:
+            self.latVecs = np.array([[4., 0, 0], [0, 4., 0], [0, 0, 4.]])
+        else:
+            self.ff = latVecs
+        if atomBasis is None:
+            self.atomBasis = np.array([[0, 0, 0]])
+        else:
+            self.atomBasis = atomBasis
+        if spinBasis is None:
+            self.spinBasis = np.array([[0, 0, 1]])
+        else:
+            self.spinBasis = spinBasis
+        if origin is None:
+            self.origin = np.array([[0, 0, 0]])
+        else:
+            self.origin = origin
+        self.verbose = verbose
+        self.useOcc = useOcc
+        if occ is None:
+            self.occ = 1.0
+        else:
+            self.occ = occ
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MagSpecies() object&#39;
+        else:
+            return self.label+&#39;: MagSpecies() object&#39;
+
+    def makeAtoms(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+        &#34;&#34;&#34;
+        if self.useDiffpyStruc:
+            self.atoms = generateAtomsXYZ(self.struc, self.rmaxAtoms, self.strucIdxs)
+        else:
+            try:
+                self.atoms, self.spins = generateFromUnitCell(self.latVecs,
+                                                              self.atomBasis,
+                                                              self.spinBasis,
+                                                              self.rmaxAtoms)
+            except:
+                print(&#39;Please check latVecs, atomBasis, and spinBasis.&#39;)
+
+    def makeSpins(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+               structure. Must provide propagation vector(s) and basis
+               vector(s).
+        &#34;&#34;&#34;
+        #self.setOcc()
+        if self.useDiffpyStruc:
+            self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
+                                          self.origin, self.avgmom)
+            if self.useOcc:
+                self.spins *= self.occ
+        else:
+            print(&#39;Since you are not using a diffpy Structure object,&#39;)
+            print(&#39;the spins are generated from the makeAtoms() method.&#39;)
+            print(&#39;Please call that method if you have not already.&#39;)
+
+    def makeFF(self):
+        &#34;&#34;&#34;Generate the magnetic form factor.
+        &#34;&#34;&#34;
+        g = self.gS+self.gL
+        if getFFparams(self.ffparamkey) != [&#39;none&#39;]:
+            self.ff = (self.gS/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
+                       self.gL/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+        else:
+            print(&#39;Using generic magnetic form factor.&#39;)
+            self.ff = jCalc(self.ffqgrid)
+
+    def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+           positions.
+
+        This method calls the diffpy.mpdf.magutils.spinsFromAtoms() method.
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            positions (list or array): atomic positions for which the
+                corresponding spins should be returned.
+            fractional (boolean): set as True if the atomic positions are in
+                fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the spins will also be
+                returned.
+        Returns:
+            Array consisting of the spins corresponding to the atomic positions.
+        &#34;&#34;&#34;
+        return spinsFromAtoms(self,positions,fractional,returnIdxs)
+
+    def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+        This method calls the diffpy.mpdf.magutils.atomsFromSpins() method.
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            spinvecs (list or array): spin vectors for which the
+                corresponding atoms should be returned.
+            fractional (boolean): set as True if the atomic positions are to be
+                returned as fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the atoms will also be
+                returned.
+
+        Returns:
+            List of arrays of atoms corresponding to the spins.
+        &#34;&#34;&#34;
+        return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def findAtomIndices(self,atomList):
+        &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        &#34;&#34;&#34;
+        return findAtomIndices(self,atomList)
+
+    def setOcc(self):
+        &#34;&#34;&#34;Set the MagSpecies.occ attribute according to the Diffpy Structure.
+        &#34;&#34;&#34;
+        if self.struc != []:
+            self.occ = np.mean(self.struc.occupancy[self.strucIdxs])
+        else:
+            self.occ *= 1
+
+
+    def runChecks(self):
+        &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+        &#34;&#34;&#34;
+        if self.verbose:        
+            print((&#39;Running checks for &#39;+self.label+&#39; MagSpecies object...\n&#39;))
+
+        flagCount = 0
+        flag = False
+
+        if self.useDiffpyStruc:
+            # check that basisvecs and kvecs have same shape
+            if self.kvecs.shape != self.basisvecs.shape:
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;kvecs and basisvecs must have the same dimensions.&#39;)
+
+        else:
+            # check for improperlatVecs array
+            if self.latVecs.shape != (3, 3):
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;latVecs array does not have the correct dimensions.&#39;)
+                    print(&#39;It must be a 3 x 3 nested array.&#39;)
+                    print(&#39;Example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])&#39;)
+            flag = False
+
+            # check for mismatched number of atoms and spins in basis
+            if self.atomBasis.shape != self.spinBasis.shape:
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;atomBasis and spinBasis must have the same dimensions.&#39;)
+
+        # summarize results
+        if flagCount == 0:
+            if self.verbose:
+                print(&#39;All MagSpecies() checks passed. No obvious problems found.\n&#39;)
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MagSpecies object.
+        &#34;&#34;&#34;
+        return copy.deepcopy(self)
+
+class MagStructure:
+    &#34;&#34;&#34;Build on the diffpy.Structure class to include magnetic attributes.
+
+    This class takes a diffpy.Structure object and packages additional info
+    relating to magnetic structure, which can then be fed to an MPDFcalculator
+    object.
+
+    Args:
+        struc (diffpy.Structure object): provides lattice parameters and unit
+            cell of desired structure.
+        atomic_struc (diffpy.Structure object): provides atomic structure inferred
+            from the MCIF file. Only relevant if reading in MCIF file. If not initialized, it is
+            assumed that either the magnetic and atomic unit cells are equivalent
+            or spins were generated from the atomic unit cell using basis vectors.
+        transform (string): string describing the transformation from the atomic
+            cell basis vectors to the magnetic cell basis vector. Should be 
+            present whenever atomic_struc is.
+        species (python dictionary): dictionary of magnetic species in the
+            structure. The values are MagSpecies objects.
+        atoms (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure; e.g. generated by generateAtomsXYZ()
+        spins (numpy array): triplets giving the spin vectors of all the
+            atoms, in the same order as the atoms array provided as input.
+        gfactors (numpy array): Lande g-factors of the magnetic moments
+        rmaxAtoms (float): maximum distance from the origin of atomic
+            positions generated by the makeAtoms method.
+        ffqgrid (numpy array): grid of momentum transfer values used for
+            calculating the magnetic form factor.
+        ff (numpy array): magnetic form factor. Should be same shape as
+            ffqgrid.
+        label (string): Optional descriptive string for the MagStructure.
+        K1 (float): a constant used for calculating Dr; should be averaged
+            over all magnetic species. Important if physical information is
+            to be extracted from mPDF scale factors, e.g. moment size.
+        K2 (float): another constant used for calculating Dr.
+        fractions (python dictionary): Dictionary providing the fraction of
+            spins in the magnetic structure corresponding to each species.
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
+        calcIdxs (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF. If given the string argument &#39;all&#39;, then every atom
+            will be used (potentially causing very long calculation times).
+        corrLength (scalar): magnetic correlation length such that the
+            magnitude of the correlation between two spins separated by a
+            distance d is given by exp(-d/corrLength). If set to zero, the
+            correlation length is assumed to be infinite.
+        dampingMat (3x3 matrix): damping matrix that encodes anisotropic
+            correlation lengths. If nonzero, this supercedes the scalar
+            corrLength attribute (which can only be used for isotropic
+            correlation lengths).
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+        magneticAtomRatio (float): ratio of magnetic atoms to total atoms.
+
+   &#34;&#34;&#34;
+
+    def __init__(self, struc=None, species=None, atoms=None, spins=None,
+                 gfactors=None, rmaxAtoms=30.0, avgmom=None, ffqgrid=None, ff=None,
+                 label=&#39;&#39;, K1=None, K2=None, fractions=None, Uiso=0.01,
+                 calcIdxs=None, corrLength=0.0, dampingMat=0.0, verbose=False,
+                 netMag=0, rho0=0, magneticAtomRatio=0, atomic_struc=None,
+                 transform=&#39;&#39;):
+
+        self.rmaxAtoms = rmaxAtoms
+        self.label = label
+        self.transform = transform
+
+        if struc is None:
+            self.struc = []
+        else:
+            self.struc = struc
+        if atomic_struc is None:
+            self.atomic_struc = []
+        else:
+            self.atomic_struc = atomic_struc
+        if atoms is None:
+            self.atoms = np.array([])
+        else:
+            self.atoms = atoms
+        if spins is None:
+            self.spins = np.array([])
+        else:
+            self.spins = spins
+        if gfactors is None:
+            self.gfactors = np.array([2.0])
+        else:
+            self.gfactors = gfactors
+        if species is None:
+            self.species = {}
+        else:
+            self.species = species
+        if ffqgrid is None:
+            self.ffqgrid = np.arange(0, 10.0, 0.01)
+        else:
+            self.ffqgrid = ffqgrid
+        if ff is None:
+            self.ff = jCalc(self.ffqgrid)
+        else:
+            self.ff = ff
+        if K1 is None:
+            self.K1 = 0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)
+        else:
+            self.K1 = K1
+        if K2 is None:
+            self.K2 = self.K1
+        else:
+            self.K2 = K2
+        if fractions is None:
+            self.fractions = {}
+        else:
+            self.fractions = fractions
+        if calcIdxs is None:
+            self.calcIdxs = [0]
+        else:
+            self.calcIdxs = calcIdxs
+        self.Uiso = Uiso
+        self.corrLength = corrLength
+        self.dampingMat = dampingMat
+        self.verbose = verbose
+        self.rho0 = rho0
+        self.netMag = netMag
+        self.magneticAtomRatio = magneticAtomRatio
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MagStructure() object&#39;
+        else:
+            return self.label+&#39;: MagStructure() object&#39;
+
+    def makeSpecies(self, label, strucIdxs=None, atoms=None, spins=None,
+                    basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None,
+                    gL=None, ffparamkey=None,ffqgrid=None, ff=None, occ=None):
+        &#34;&#34;&#34;Create a MagSpecies object and add it to the species dictionary.
+
+        Args:
+            label (string): label for this particular magnetic species. Should be
+                different from the labels for any other magnetic species you make.
+            strucIdxs (python list): list of integers giving indices of magnetic
+                atoms in the unit cell
+            atoms (numpy array): list of atomic coordinates of all the magnetic
+                atoms in the structure; e.g. generated by generateAtomsXYZ()
+            spins (numpy array): triplets giving the spin vectors of all the
+                atoms, in the same order as the atoms array provided as input.
+            basisvecs (numpy array): nested three-vector(s) giving the basis
+                vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+                phase factor should be included directly with the basisvecs.
+            kvecs (numpy array): nested three-vector(s) giving the propagation
+                vectors for the magnetic structure in r.l.u.,
+                e.g. np.array([[0.5, 0.5, 0.5]])
+            gS (float): spin component of the Lande g-factor (g = gS+gL)
+            gL (float): orbital component of the Lande g-factor
+            ffparamkey (string): gives the appropriate key for getFFparams()
+            ffqgrid (numpy array): grid of momentum transfer values used for
+                calculating the magnetic form factor.
+            ff (numpy array): magnetic form factor.
+
+        &#34;&#34;&#34;
+        # check that the label is not a duplicate with any other mag species.
+        duplicate = False
+        for name in list(self.species.keys()):
+            if name == label:
+                duplicate = True
+        if not duplicate:
+            if ffqgrid is None:
+                ffqgrid = np.arange(0, 10.0, 0.01)
+            self.species[label] = MagSpecies(self.struc, label, strucIdxs, atoms, spins,
+                                             self.rmaxAtoms, basisvecs, kvecs, S, L,
+                                             J, gS, gL, ffparamkey, ffqgrid, ff,
+                                             self.verbose, occ)
+            # update the list of fractions
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+            self.runChecks()
+        else:
+            print(&#39;This label has already been assigned to another species in&#39;)
+            print(&#39;the structure. Please choose a new label.&#39;)
+
+    def getCoordsFromSpecies(self):
+        &#34;&#34;&#34;Read in atomic positions and spins from magnetic species.
+
+        This differs from makeSpins() and makeAtoms() because it simply loads
+        the atoms and spins from the species without re-generating them from 
+        the structure.
+        &#34;&#34;&#34;
+        tempA = np.array([[0, 0, 0]])
+        tempS = np.array([[0, 0, 0]])
+        for key in self.species:
+            na = self.species[key].atoms.shape[0]
+            ns = self.species[key].atoms.shape[0]
+            if (na &gt; 0) and (na == ns):            
+                tempA = np.concatenate((tempA, self.species[key].atoms))
+                tempS = np.concatenate((tempS, self.species[key].spins))
+            else:
+                if self.verbose:
+                    print((&#39;Coordinates of atoms and spins for &#39; + key))
+                    print(&#39;have not been loaded because they have not yet been&#39;)
+                    print(&#39;generated and/or do not match in shape.&#39;)
+        if tempA.shape != (1, 3):        
+            self.atoms = tempA[1:]
+            self.spins = tempS[1:]
+        elif len(self.species) == 0:
+            self.atoms = np.array([])
+            self.spins = np.array([])
+
+    def loadSpecies(self, magSpec):
+        &#34;&#34;&#34;Load in an already-existing MagSpecies object
+
+        Args:
+            magSpec (MagSpecies object): The magnetic species to be imported
+                into the structure.
+        &#34;&#34;&#34;
+        # check that the label is not a duplicate with any other mag species.
+        duplicate = False
+        for name in list(self.species.keys()):
+            if name == magSpec.label:
+                duplicate = True
+        if not duplicate:
+            self.species[magSpec.label] = magSpec
+            self.struc = magSpec.struc
+            self.getCoordsFromSpecies()
+            # update the list of fractions
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in list(self.species.keys()):
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+            self.runChecks()
+        else:
+            print(&#39;The label for this species has already been assigned to&#39;)
+            print(&#39;another species in the structure. Please choose a new label&#39;)
+            print(&#39;for this species.&#39;)
+
+    def removeSpecies(self, label, update=True):
+        &#34;&#34;&#34;Remove a magnetic species from the species dictionary.
+
+        Args:
+            label (string): key for the dictionary entry to be removed.
+            update (boolean): if True, the MagStructure will update its atoms
+                and spins with the removed species now excluded.
+        &#34;&#34;&#34;
+        try:
+            del self.species[label]
+            if update:
+                self.getCoordsFromSpecies()
+                # update the list of fractions
+                totatoms = 0.0
+                for key in self.species:
+                    totatoms += self.species[key].atoms.shape[0]
+                for key in self.species:                
+                    if totatoms == 0.0:
+                        totatoms = 1.0 # prevent divide by zero problems
+                    frac = float(self.species[key].atoms.shape[0])/totatoms
+                    self.fractions[key] = frac
+        except:
+            print(&#39;Species cannot be deleted. Check that you are using the&#39;)
+            print(&#39;correct species label.&#39;)
+
+    def makeAtoms(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+
+        Args:
+            fromUnitCell (boolean): True if atoms/spins to be generated from
+                a unit cell provided by the user; False if the diffpy structure
+                object is to be used.
+            unitcell (numpy array): Provides the unit cell lattice vectors as
+                np.array((avec, bvec, cvec)).
+            atombasis (numpy array): Provides positions of the magnetic atoms
+                in fractional coordinates within the unit cell.
+            spin cell (numpy array): Provides the orientations of the spins in
+                the unit cell, in the same order as atombasis
+        &#34;&#34;&#34;
+        temp = np.array([[0, 0, 0]])
+        for key in self.species:
+            self.species[key].makeAtoms()
+            temp = np.concatenate((temp, self.species[key].atoms))
+        self.atoms = temp[1:]
+
+    def makeSpins(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+               structure. Calls the makeSpins() method for each MagSpecies in
+               the species dictionary and concatenates them together.
+        &#34;&#34;&#34;
+        temp = np.array([[0, 0, 0]])
+        for key in self.species:
+            self.species[key].makeSpins()
+            temp = np.concatenate((temp, self.species[key].spins))
+        self.spins = temp[1:]
+
+    def makeGfactors(self):
+        &#34;&#34;&#34;Generate an array of Lande g-factors in the same order as the spins
+                in the MagStructure.
+        &#34;&#34;&#34;
+        temp = np.array([2.0])
+        for key in self.species:
+            temp = np.concatenate((temp,
+                                   (self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
+        self.gfactors = temp[1:]
+
+    def makeFractions(self):
+        &#34;&#34;&#34;Generate the fractions dictionary.
+        &#34;&#34;&#34;
+        try:
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:                
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+        except:
+            if len(self.species) == 0:
+                self.fractions = {}
+            else:
+                print(&#39;Check MagStructure.fractions dictionary for problems.&#39;)
+
+    def makeKfactors(self):
+        &#34;&#34;&#34;Set the factors K1 and K2 used for unnormalized mPDF. The fractions
+           dictionary must be accurate before running this method.
+        &#34;&#34;&#34;
+        K1, K2 = 0, 0        
+        for key in self.species:
+            gSa, gLa = self.species[key].gS, self.species[key].gL
+            ga = gSa + gLa
+            Ja = self.species[key].J
+            K1 += self.fractions[key]*ga*np.sqrt(Ja*(Ja+1))
+            K2 += self.fractions[key]*ga**2*Ja*(Ja+1)
+        K1 = K1**2
+        K1 *= (1.913*2.81794/2.0)**2*2.0/3.0
+        K2 *= (1.913*2.81794/2.0)**2*2.0/3.0
+        self.K1 = K1
+        self.K2 = K2
+
+    def makeFF(self):
+        &#34;&#34;&#34;Generate the properly weighted average magnetic form factor of all
+                the magnetic species in the structure.
+        &#34;&#34;&#34;
+        try:
+            self.ffqgrid = list(self.species.values())[0].ffqgrid
+            self.ff = np.zeros_like(self.ffqgrid)
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.species[key].makeFF()
+                self.ff += frac*self.species[key].ff
+        except:
+            if len(self.species) == 0:
+                self.ff = jCalc(self.ffqgrid)
+            else:
+                print(&#39;Check that all mag species have same q-grid.&#39;)
+
+    def makeAll(self):
+        &#34;&#34;&#34;Shortcut method to generate atoms, spins, g-factors, and form
+                factor for the magnetic structure all in one go.
+        &#34;&#34;&#34;
+        self.makeAtoms()
+        self.makeSpins()
+        self.makeGfactors()
+        self.makeFractions()
+        self.makeKfactors()
+        self.makeFF()
+        self.makeCalcIdxs()
+        self.runChecks(doCalcIdxsCheck=True)
+
+    def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+           positions.
+
+        This method calls the diffpy.mpdf.spinsFromAtoms() method. 
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            positions (list or array): atomic positions for which the
+                corresponding spins should be returned.
+            fractional (boolean): set as True if the atomic positions are in
+                fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the spins will also be
+                returned.
+        Returns:
+            Array consisting of the spins corresponding to the atomic positions.
+        &#34;&#34;&#34;
+        return spinsFromAtoms(self,positions,fractional,returnIdxs)
+
+    def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+        This method calls the diffpy.mpdf.atomsFromSpins() method. 
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            spinvecs (list or array): spin vectors for which the
+                corresponding atoms should be returned.
+            fractional (boolean): set as True if the atomic positions are to be
+                returned as fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the atoms will also be
+                returned.
+
+        Returns:
+            List of arrays of atoms corresponding to the spins.
+        &#34;&#34;&#34;
+        return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def visualize(self,atoms,spins,showcrystalaxes=False,
+                  axesorigin=np.array([0,0,0])):
+        &#34;&#34;&#34;Generate a crude 3-d plot to visualize the selected spins.
+
+        Args:
+            atoms (numpy array): array of atomic positions of spins to be
+                visualized.
+            spins (numpy array): array of spin vectors in same order as atoms.
+            showcrystalaxes (boolean): if True, will display the crystal axes
+                determined from the first magnetic species in the MagStructure
+            axesorigin (array): position at which the crystal axes should be
+                displayed
+        &#34;&#34;&#34;
+        import matplotlib.pyplot as plt        
+        from mpl_toolkits.mplot3d import axes3d
+
+        fig = visualizeSpins(atoms,spins)
+        if showcrystalaxes:
+            ax3d = fig.axes[0]
+            try:
+                mspec=list(self.species.items())[0][1]
+                if mspec.useDiffpyStruc:
+                    lat=mspec.struc.lattice
+                    a, b, c = lat.stdbase
+                else:
+                    a, b, c = mspec.latVecs
+                xo, yo, zo = axesorigin
+                ax3d.quiver(xo, yo, zo, a[0], a[1], a[2], pivot=&#39;tail&#39;, color=&#39;r&#39;)
+                ax3d.quiver(xo, yo, zo, b[0], b[1], b[2], pivot=&#39;tail&#39;, color=&#39;g&#39;)
+                ax3d.quiver(xo, yo, zo, c[0], c[1], c[2], pivot=&#39;tail&#39;, color=&#39;b&#39;)
+            except:
+                print(&#39;Please make sure your magnetic structure contains a&#39;)
+                print(&#39;magnetic species with MagSpecies.struc set to a diffpy&#39;)
+                print(&#39;structure or MagSpecies.latVecs provided and&#39;)
+                print(&#39;MagSpecies.useDiffpyStruc set to False.&#39;)
+        plt.show()
+
+    def findAtomIndices(self,atomList):
+        &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        &#34;&#34;&#34;
+        return findAtomIndices(self,atomList)
+
+    def runChecks(self, doCalcIdxsCheck=False):
+        &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+        &#34;&#34;&#34;
+        # do the MagSpecies checks
+        for key in self.species:
+            self.species[key].runChecks()
+
+        if self.verbose:        
+            print((&#39;Running checks for &#39;+self.label+&#39; MagStructure object...\n&#39;))
+
+        flag = False
+        flagCount = 0
+
+        # check for duplication among magnetic species
+        if len(self.species) &gt; 0:        
+            if list(self.species.values())[0].useDiffpyStruc:
+                idxs = []
+                for key in self.species:
+                    idxs.append(self.species[key].strucIdxs)
+                idxs = [item for sublist in idxs for item in sublist] # flatten the list
+                for idx in idxs:
+                    if idxs.count(idx) &gt; 1:
+                        flag = True
+                if flag:
+                    flagCount += 1
+                    if self.verbose:
+                        print(&#39;Warning: Magnetic species may have overlapping atoms.&#39;)
+                        print(&#39;Check the strucIdxs lists for your magnetic species.&#39;)
+                    flag = False
+
+        # check that the fractions are consistent
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in self.species:
+            if totatoms == 0.0:
+                totatoms = 1.0 # prevent divide by zero problems
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            if (frac &gt; 0) and (np.abs(frac - self.fractions[key])/frac &gt; 0.1):
+                flag = True
+        if flag:
+            flagCount += 1
+            if self.verbose:
+                print(&#39;Species fractions do not correspond to actual number of&#39;)
+                print(&#39;spins of each species in the structure.&#39;)
+        flag = False
+
+        ### check if calcIdxs may not be representative of all MagSpecies.
+        if doCalcIdxsCheck: # option to turn off this check e.g. when loading a MagSpecies
+            if len(self.calcIdxs) &lt; len(self.species):
+                flag = True
+            if flag:
+                flagCount += 1
+                print(&#39;Warning: your calcIdxs may not be representative of all&#39;)
+                print(&#39;the magnetic species. calcIdxs should have the index of&#39;)
+                print(&#39;at least one spin from each species. Use&#39;)
+                print(&#39;magStruc.getSpeciesIdxs() to see starting indices for&#39;)
+                print(&#39;each species.\n&#39;)
+            flag = False
+
+        ### check if calcIdxs has indices that exceed the spin array
+        if self.atoms.shape[0]&gt;0:
+            if (np.array(self.calcIdxs).max()+1) &gt; self.atoms.shape[0]:
+                flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;calcIdxs contains indices that are too large for the&#39;)
+            print(&#39;arrays of atoms and spins contained in the MagStructure.&#39;)
+        flag = False
+
+        # summarize results
+        if flagCount == 0:
+            if self.verbose:
+                print(&#39;All MagStructure checks passed. No obvious problems found.&#39;)
+
+    def getSpeciesIdxs(self):
+        &#34;&#34;&#34;Return a dictionary with the starting index in the atoms and spins
+           arrays corresponding to each magnetic species.
+        &#34;&#34;&#34;
+        idxDict = {}
+        startIdx = 0
+        for key in self.species:
+            idxDict[key] = startIdx
+            startIdx += self.species[key].atoms.shape[0]
+        return idxDict
+
+    def makeCalcIdxs(self):
+        &#34;&#34;&#34;Generate the indices of the atoms to be used for the calculation.
+        &#34;&#34;&#34;
+        idxDict = self.getSpeciesIdxs()
+        calcIdxs = []
+        for key in self.species:
+            calcIdxs.append(np.array(self.species[key].calcIdxs) +
+                            idxDict[key])
+        calcIdxs = [ci for sublist in calcIdxs for ci in sublist]
+        self.calcIdxs = calcIdxs
+
+    def generateScaledSpins(self, originIdx=0):
+        &#34;&#34;&#34;Apply a correlation length to the spin magnitudes.
+
+        Args:
+            originIdx (int): The index of the spin in magstructure.spins
+                that should be considered the origin.
+
+        Returns:
+            scaledSpins (np.array): An array with the same shape as the
+                self.spins array, where the magnitudes of the spins have
+                been scaled in accordance with the correlation length.
+        &#34;&#34;&#34;
+        scaledSpins = 1.0*self.spins
+        if type(self.dampingMat) != np.ndarray: # isotropic correlation length
+            xi = self.corrLength
+            if xi != 0.0:
+                distanceVecs = self.atoms - self.atoms[originIdx]
+                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                scaledSpins *= rescale 
+        else:
+            dampingMat = self.dampingMat
+            # ensure that dampingMat is 3x3 symmetric matrix
+            if dampingMat.shape == (3, 3):
+                if np.allclose(dampingMat, dampingMat.T, rtol=1e-5, atol=1e-8):
+                    distanceVecs = self.atoms - self.atoms[originIdx]
+                    distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                    distanceVecsN = distanceVecs/np.apply_along_axis(np.linalg.norm,1,distanceVecs)[:,np.newaxis]
+                    mult1 = np.tensordot(dampingMat, distanceVecsN, axes=(0,1)).T
+                    xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, distanceVecsN*mult1))
+                    xi[originIdx] = 1.0 # avoid divide-by-zero problem
+                    rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                    scaledSpins *= rescale                     
+                else:
+                    print(&#39;Damping matrix is not symmetric. Spins will not be modified.&#39;)
+            else:
+                print(&#39;Damping matrix is not a 3x3 matrix. Spins will not be modified.&#39;)
+
+        return scaledSpins
+
+    def calcAtomicDensity(self, volume=0, numSpins=0):
+        &#34;&#34;&#34;Determine the number density of magnetic moments.
+        Sets the calculated number density equal to self.rho0.
+
+        Args:
+            volume (scalar): Volume of the MagStructure. If equal to the
+                default value of 0, then the volume will be calculated
+                assuming a sphere of radius rmaxAtoms.
+            numSpins (integer): number of magnetic moments in the volume
+                being considered. If equal to the default value of 0, then
+                the numSpins will be set to the length of the spins array.
+        &#34;&#34;&#34;
+        if self.struc != []:
+            volume = np.sqrt(np.linalg.det(self.struc.lattice.metrics))
+            for key in self.species:
+                #strucIdxs = self.species[key].strucIdxs
+                #numSpins += self.species[key].struc.occupancy[strucIdxs].sum()
+                numSpins += len(self.species[key].strucIdxs)
+            self.rho0 = numSpins / volume
+        else:
+            print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+            # if volume==0:
+            #     radius = self.rmaxAtoms + \
+            #              np.linalg.norm(self.struc.lattice.stdbase.sum(axis=1))
+            #     volume = 1.33333*np.pi*radius**3
+            # if numSpins==0:
+            #     numSpins = len(self.spins)
+            # self.rho0 = numSpins / volume
+
+    def calcMagneticAtomRatio(self):
+        &#34;&#34;&#34;Determine the ratio of magnetic atoms to total atoms.
+        Sets the calculated number equal to self.magneticAtomRatio.
+
+        &#34;&#34;&#34;
+        occ = self.struc.occupancy
+        totalOcc = occ.sum()
+        numMagAtoms = 0
+        if self.struc != []:
+            for key in self.species:
+                strucIdxs = self.species[key].strucIdxs
+                numMagAtoms += occ[strucIdxs].sum()
+            self.magneticAtomRatio = numMagAtoms / totalOcc
+        else:
+            print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+
+    def calcNetMag(self,method=&#39;directCalculation&#39;):
+        &#34;&#34;&#34;Determine the net magnetization per spin.
+        Sets the calculated value equal to self.netMag.
+        
+        This method is only necessary for magnetic structures with a
+        net magnetic moment, such as a ferromagnet, ferrimagnet, or
+        canted antiferromagnet.
+        
+        Args:
+            method: How the net magnetization should be calculated.
+                &#39;directCalculation&#39;: the mean of the entire structure is
+                calculated. May have slight inaccuracies due to edge effects.
+                &#39;speciesCalculation&#39;: use the individual MagSpecies to find
+                the average magnetization per spin.
+
+        &#34;&#34;&#34;
+        if method == &#39;directCalculation&#39;:
+            totalMag = np.sum(self.spins, axis=0) * np.mean(self.gfactors)
+            self.netMag = np.linalg.norm(totalMag) / self.spins.shape[0]
+        if method == &#39;speciesCalculation&#39;:
+            mags = []
+            weights = []
+            netMag = np.array([0.0,0.0,0.0])
+            if self.struc != []:
+                for key in self.species:
+                    g = self.species[key].gS + self.species[key].gL
+                    mag = g * np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
+                    mags.append(mag)
+                    weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
+                    weights.append(weight)
+                    netMag += g * weight * self.species[key].spins[0] # assumes uniform spins within the species                    
+                mags = np.array(mags)
+                weights = np.array(weights)
+                #self.netMag = np.sum(mags * weights)/np.sum(weights)
+                self.netMag = np.linalg.norm(netMag/np.sum(weights))
+            else:
+                print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MagStructure object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="diffpy.mpdf.magstructure.MagSpecies"><code class="flex name class">
+<span>class <span class="ident">MagSpecies</span></span>
+<span>(</span><span>struc=None, label=None, strucIdxs=None, atoms=None, spins=None, calcIdxs=[0], rmaxAtoms=30.0, avgmom=None, basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None, gL=None, ffparamkey=None, ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None, atomBasis=None, spinBasis=None, origin=None, verbose=False, useOcc=False, occ=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Store information for a single species of magnetic atom.</p>
+<p>This class takes a diffpy.Structure object and uses it to generate spins
+based on a set of propagation vectors and basis vectors. For more info
+about magnetic propagation vectors, visit e.g.
+<a href="http://dx.doi.org/10.1051/jp4:2001906">http://dx.doi.org/10.1051/jp4:2001906</a> or Appendix B of Andrew Steele's
+dissertation at <a href="https://andrewsteele.co.uk/physics/thesis">https://andrewsteele.co.uk/physics/thesis</a> .</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>struc</code></strong> :&ensp;<code>diffpy.Structure object</code></dt>
+<dd>provides lattice parameters and unit
+cell of desired structure.</dd>
+<dt><strong><code>label</code></strong> :&ensp;<code>string</code></dt>
+<dd>label for this particular magnetic species. Should be
+different from the labels for any other magnetic species you make.
+Default is a random 8-character hexadecimal string.</dd>
+<dt><strong><code>strucIdxs</code></strong> :&ensp;<code>python list</code></dt>
+<dd>list of integers giving indices of magnetic
+atoms in the unit cell</dd>
+<dt><strong><code>atoms</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>list of atomic coordinates of all the magnetic
+atoms in the structure; e.g. generated by generateAtomsXYZ()</dd>
+<dt><strong><code>spins</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>triplets giving the spin vectors of all the
+atoms, in the same order as the atoms array provided as input.
+In units of hbar.</dd>
+<dt><strong><code>calcIdxs</code></strong> :&ensp;<code>python list</code></dt>
+<dd>list giving the indices of the atoms array
+specifying the atoms to be used as the origin when calculating
+the mPDF. If given the string argument 'all', then every atom
+will be used (potentially causing very long calculation times).
+These indices are relative to the atoms array for this specific
+MagSpecies, not relative to the atoms array for the
+MagStructure as a whole.</dd>
+<dt><strong><code>rmaxAtoms</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum distance from the origin of atomic
+positions generated by the makeAtoms method.</dd>
+<dt><strong><code>avgmom</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>three-vector giving the average magnetic moment
+for this species of magnetic atom to generate the spins. Relevant
+to incommensurate structures generated from an mcif.</dd>
+<dt><strong><code>avgmom</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>three-vector giving the average magnetic moment
+for this species of magnetic atom to generate the spins. Relevant
+to incommensurate structures generated from an mcif.</dd>
+<dt><strong><code>basisvecs</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>nested three-vector(s) giving the basis
+vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+phase factor should be included directly with the basisvecs.</dd>
+<dt><strong><code>kvecs</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>nested three-vector(s) giving the propagation
+vectors for the magnetic structure in r.l.u.,
+e.g. np.array([[0.5, 0.5, 0.5]])</dd>
+<dt><strong><code>S</code></strong> :&ensp;<code>float</code></dt>
+<dd>Spin angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>L</code></strong> :&ensp;<code>float</code></dt>
+<dd>Orbital angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>J</code></strong> :&ensp;<code>float</code></dt>
+<dd>Total angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>gS</code></strong> :&ensp;<code>float</code></dt>
+<dd>spin component of the Lande g-factor (g = gS+gL)</dd>
+<dt><strong><code>gL</code></strong> :&ensp;<code>float</code></dt>
+<dd>orbital component of the Lande g-factor</dd>
+<dt><strong><code>ffparamkey</code></strong> :&ensp;<code>string</code></dt>
+<dd>gives the appropriate key for getFFparams()</dd>
+<dt><strong><code>ffqgrid</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>grid of momentum transfer values used for
+calculating the magnetic form factor.</dd>
+<dt><strong><code>ff</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>magnetic form factor.</dd>
+<dt><strong><code>useDiffpyStruc</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>True if atoms/spins to be generated from
+a diffpy structure object; False if a user-provided unit cell is
+to be used. Note that there may be some problems with user-
+provided unit cells with lattice angles strongly deviated from
+90 degrees.</dd>
+<dt><strong><code>latVecs</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Provides the unit cell lattice vectors as
+np.array([avec, bvec, cvec]). Only useful if useDiffpyStruc = False.</dd>
+<dt><strong><code>atomBasis</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Provides positions of the magnetic atoms
+in fractional coordinates within the unit cell. Only useful if
+useDiffpyStruc = False. Example: np.array([[0, 0, 0], [0.5, 0.5, 0.5]])</dd>
+<dt><strong><code>spinBasis</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Provides the orientations of the spins in
+the unit cell, in the same order as atomBasis. Only useful if
+useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]]</dd>
+<dt><strong><code>origin</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Cartesian coordinates of the position that will
+be considered the origin when generating spin directions from basis
+vectors and propagation vectors. Default is np.array([0,0,0]).</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>If True, will print messages relating to the structure.
+Useful for troubleshooting. Default is False.</dd>
+<dt><strong><code>useOcc</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>If True, atomic site occupancies will be used to scale
+the magnetic moment vector. Default is False.</dd>
+<dt><strong><code>occ</code></strong> :&ensp;<code>scalar</code></dt>
+<dd>Occupancy of the magnetic atom associated with
+this MagSpecies. Default is 1.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MagSpecies:
+    &#34;&#34;&#34;Store information for a single species of magnetic atom.
+
+
+    This class takes a diffpy.Structure object and uses it to generate spins
+    based on a set of propagation vectors and basis vectors. For more info
+    about magnetic propagation vectors, visit e.g.
+    http://dx.doi.org/10.1051/jp4:2001906 or Appendix B of Andrew Steele&#39;s
+    dissertation at https://andrewsteele.co.uk/physics/thesis .
+
+    Args:
+        struc (diffpy.Structure object): provides lattice parameters and unit
+            cell of desired structure.
+        label (string): label for this particular magnetic species. Should be
+            different from the labels for any other magnetic species you make.
+            Default is a random 8-character hexadecimal string.
+        strucIdxs (python list): list of integers giving indices of magnetic
+            atoms in the unit cell
+        atoms (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure; e.g. generated by generateAtomsXYZ()
+        spins (numpy array): triplets giving the spin vectors of all the
+            atoms, in the same order as the atoms array provided as input.
+            In units of hbar.
+        calcIdxs (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF. If given the string argument &#39;all&#39;, then every atom
+            will be used (potentially causing very long calculation times).
+            These indices are relative to the atoms array for this specific
+            MagSpecies, not relative to the atoms array for the
+            MagStructure as a whole.
+        rmaxAtoms (float): maximum distance from the origin of atomic
+            positions generated by the makeAtoms method.
+        avgmom (numpy array): three-vector giving the average magnetic moment
+            for this species of magnetic atom to generate the spins. Relevant
+            to incommensurate structures generated from an mcif.
+        avgmom (numpy array): three-vector giving the average magnetic moment
+            for this species of magnetic atom to generate the spins. Relevant
+            to incommensurate structures generated from an mcif.
+        basisvecs (numpy array): nested three-vector(s) giving the basis
+            vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+            phase factor should be included directly with the basisvecs.
+        kvecs (numpy array): nested three-vector(s) giving the propagation
+            vectors for the magnetic structure in r.l.u.,
+            e.g. np.array([[0.5, 0.5, 0.5]])
+        S (float): Spin angular momentum quantum number in units of hbar.
+        L (float): Orbital angular momentum quantum number in units of hbar.
+        J (float): Total angular momentum quantum number in units of hbar.
+        gS (float): spin component of the Lande g-factor (g = gS+gL)
+        gL (float): orbital component of the Lande g-factor
+        ffparamkey (string): gives the appropriate key for getFFparams()
+        ffqgrid (numpy array): grid of momentum transfer values used for
+            calculating the magnetic form factor.
+        ff (numpy array): magnetic form factor.
+        useDiffpyStruc (boolean): True if atoms/spins to be generated from
+            a diffpy structure object; False if a user-provided unit cell is
+            to be used. Note that there may be some problems with user-
+            provided unit cells with lattice angles strongly deviated from
+            90 degrees.
+        latVecs (numpy array): Provides the unit cell lattice vectors as
+            np.array([avec, bvec, cvec]). Only useful if useDiffpyStruc = False.
+        atomBasis (numpy array): Provides positions of the magnetic atoms
+            in fractional coordinates within the unit cell. Only useful if
+            useDiffpyStruc = False. Example: np.array([[0, 0, 0], [0.5, 0.5, 0.5]])
+        spinBasis (numpy array): Provides the orientations of the spins in
+            the unit cell, in the same order as atomBasis. Only useful if
+            useDiffpyStruc = False. Example: np.array([[0, 0, 1], [0, 0, -1]]
+        origin (numpy array): Cartesian coordinates of the position that will
+            be considered the origin when generating spin directions from basis
+            vectors and propagation vectors. Default is np.array([0,0,0]).
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
+        useOcc (boolean): If True, atomic site occupancies will be used to scale
+            the magnetic moment vector. Default is False.
+        occ (scalar): Occupancy of the magnetic atom associated with
+            this MagSpecies. Default is 1.
+    &#34;&#34;&#34;
+    def __init__(self, struc=None, label=None, strucIdxs=None, atoms=None, spins=None,
+                 calcIdxs=[0], rmaxAtoms=30.0, avgmom=None, basisvecs=None, kvecs=None, S=0.5,
+                 L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
+                 ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
+                 atomBasis=None, spinBasis=None, origin=None, verbose=False,
+                 useOcc=False, occ=None):
+        if label is None:
+            hex_string = &#39;0123456789abcdef&#39;
+            token = &#39;&#39;.join([random.choice(hex_string) for i in range(8)])
+            self.label = token
+        else:
+            self.label = label
+        self.rmaxAtoms = rmaxAtoms
+        self.S = S
+        self.L = L
+        if J is None:
+            J = S + L
+            self.J = J
+        else:
+            self.J = J
+        if gS is None:
+            self.gS = 1.0 + 1.0*(S*(S+1)-L*(L+1))/(J*(J+1))
+        else:
+            self.gS = gS
+        if gL is None:
+            self.gL = 0.5 + 1.0*(L*(L+1)-S*(S+1))/(2*J*(J+1))
+        else:
+            self.gL = gL
+        self.ffparamkey = ffparamkey
+        self.useDiffpyStruc = useDiffpyStruc
+        if strucIdxs is None:
+            self.strucIdxs = [0]
+        else:
+            self.strucIdxs = strucIdxs
+        if calcIdxs is None:
+            self.calcIdxs = [0]
+        else:
+            self.calcIdxs = calcIdxs
+        if struc is None:
+            self.struc = []
+        else:
+            self.struc = struc
+        if atoms is None:
+            self.atoms = np.array([])
+        else:
+            self.atoms = atoms
+        if spins is None:
+            self.spins = np.array([])
+        else:
+            self.spins = spins
+        if avgmom is None:
+            self.avgmom = np.array([0, 0, 0])
+        else:
+            self.avgmom = avgmom
+        if basisvecs is None:
+            self.basisvecs = np.array([[0, 0, 1]])
+        else:
+            self.basisvecs = basisvecs
+        if kvecs is None:
+            self.kvecs = np.array([[0, 0, 0]])
+        else:
+            self.kvecs = kvecs
+        if ff is None:
+            self.ff = np.array([])
+        else:
+            self.ff = ff
+        if ffqgrid is None:
+            self.ffqgrid = np.arange(0, 10.0, 0.01)
+        else:
+            self.ffqgrid = ffqgrid
+        if latVecs is None:
+            self.latVecs = np.array([[4., 0, 0], [0, 4., 0], [0, 0, 4.]])
+        else:
+            self.ff = latVecs
+        if atomBasis is None:
+            self.atomBasis = np.array([[0, 0, 0]])
+        else:
+            self.atomBasis = atomBasis
+        if spinBasis is None:
+            self.spinBasis = np.array([[0, 0, 1]])
+        else:
+            self.spinBasis = spinBasis
+        if origin is None:
+            self.origin = np.array([[0, 0, 0]])
+        else:
+            self.origin = origin
+        self.verbose = verbose
+        self.useOcc = useOcc
+        if occ is None:
+            self.occ = 1.0
+        else:
+            self.occ = occ
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MagSpecies() object&#39;
+        else:
+            return self.label+&#39;: MagSpecies() object&#39;
+
+    def makeAtoms(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+        &#34;&#34;&#34;
+        if self.useDiffpyStruc:
+            self.atoms = generateAtomsXYZ(self.struc, self.rmaxAtoms, self.strucIdxs)
+        else:
+            try:
+                self.atoms, self.spins = generateFromUnitCell(self.latVecs,
+                                                              self.atomBasis,
+                                                              self.spinBasis,
+                                                              self.rmaxAtoms)
+            except:
+                print(&#39;Please check latVecs, atomBasis, and spinBasis.&#39;)
+
+    def makeSpins(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+               structure. Must provide propagation vector(s) and basis
+               vector(s).
+        &#34;&#34;&#34;
+        #self.setOcc()
+        if self.useDiffpyStruc:
+            self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
+                                          self.origin, self.avgmom)
+            if self.useOcc:
+                self.spins *= self.occ
+        else:
+            print(&#39;Since you are not using a diffpy Structure object,&#39;)
+            print(&#39;the spins are generated from the makeAtoms() method.&#39;)
+            print(&#39;Please call that method if you have not already.&#39;)
+
+    def makeFF(self):
+        &#34;&#34;&#34;Generate the magnetic form factor.
+        &#34;&#34;&#34;
+        g = self.gS+self.gL
+        if getFFparams(self.ffparamkey) != [&#39;none&#39;]:
+            self.ff = (self.gS/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
+                       self.gL/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+        else:
+            print(&#39;Using generic magnetic form factor.&#39;)
+            self.ff = jCalc(self.ffqgrid)
+
+    def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+           positions.
+
+        This method calls the diffpy.mpdf.magutils.spinsFromAtoms() method.
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            positions (list or array): atomic positions for which the
+                corresponding spins should be returned.
+            fractional (boolean): set as True if the atomic positions are in
+                fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the spins will also be
+                returned.
+        Returns:
+            Array consisting of the spins corresponding to the atomic positions.
+        &#34;&#34;&#34;
+        return spinsFromAtoms(self,positions,fractional,returnIdxs)
+
+    def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+        This method calls the diffpy.mpdf.magutils.atomsFromSpins() method.
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            spinvecs (list or array): spin vectors for which the
+                corresponding atoms should be returned.
+            fractional (boolean): set as True if the atomic positions are to be
+                returned as fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the atoms will also be
+                returned.
+
+        Returns:
+            List of arrays of atoms corresponding to the spins.
+        &#34;&#34;&#34;
+        return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def findAtomIndices(self,atomList):
+        &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        &#34;&#34;&#34;
+        return findAtomIndices(self,atomList)
+
+    def setOcc(self):
+        &#34;&#34;&#34;Set the MagSpecies.occ attribute according to the Diffpy Structure.
+        &#34;&#34;&#34;
+        if self.struc != []:
+            self.occ = np.mean(self.struc.occupancy[self.strucIdxs])
+        else:
+            self.occ *= 1
+
+
+    def runChecks(self):
+        &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+        &#34;&#34;&#34;
+        if self.verbose:        
+            print((&#39;Running checks for &#39;+self.label+&#39; MagSpecies object...\n&#39;))
+
+        flagCount = 0
+        flag = False
+
+        if self.useDiffpyStruc:
+            # check that basisvecs and kvecs have same shape
+            if self.kvecs.shape != self.basisvecs.shape:
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;kvecs and basisvecs must have the same dimensions.&#39;)
+
+        else:
+            # check for improperlatVecs array
+            if self.latVecs.shape != (3, 3):
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;latVecs array does not have the correct dimensions.&#39;)
+                    print(&#39;It must be a 3 x 3 nested array.&#39;)
+                    print(&#39;Example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])&#39;)
+            flag = False
+
+            # check for mismatched number of atoms and spins in basis
+            if self.atomBasis.shape != self.spinBasis.shape:
+                flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;atomBasis and spinBasis must have the same dimensions.&#39;)
+
+        # summarize results
+        if flagCount == 0:
+            if self.verbose:
+                print(&#39;All MagSpecies() checks passed. No obvious problems found.\n&#39;)
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MagSpecies object.
+        &#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.atomsFromSpins"><code class="name flex">
+<span>def <span class="ident">atomsFromSpins</span></span>(<span>self, spinvecs, fractional=True, returnIdxs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the atomic positions corresponding to specified spins.</p>
+<p>This method calls the diffpy.mpdf.magutils.atomsFromSpins() method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magstruc</code></strong></dt>
+<dd>MagSpecies or MagStructure object containing atoms and spins</dd>
+<dt><strong><code>spinvecs</code></strong> :&ensp;<code>list</code> or <code>array</code></dt>
+<dd>spin vectors for which the
+corresponding atoms should be returned.</dd>
+<dt><strong><code>fractional</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>set as True if the atomic positions are to be
+returned as fractional coordinates of the crystallographic lattice
+vectors.</dd>
+<dt><strong><code>returnIdxs</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, the indices of the atoms will also be
+returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of arrays of atoms corresponding to the spins.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+    &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+    This method calls the diffpy.mpdf.magutils.atomsFromSpins() method.
+
+    Args:
+        magstruc: MagSpecies or MagStructure object containing atoms and spins
+        spinvecs (list or array): spin vectors for which the
+            corresponding atoms should be returned.
+        fractional (boolean): set as True if the atomic positions are to be
+            returned as fractional coordinates of the crystallographic lattice
+            vectors.
+        returnIdxs (boolean): if True, the indices of the atoms will also be
+            returned.
+
+    Returns:
+        List of arrays of atoms corresponding to the spins.
+    &#34;&#34;&#34;
+    return atomsFromSpins(self,spinvecs,fractional,returnIdxs)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a deep copy of the MagSpecies object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    &#34;&#34;&#34;Return a deep copy of the MagSpecies object.
+    &#34;&#34;&#34;
+    return copy.deepcopy(self)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.findAtomIndices"><code class="name flex">
+<span>def <span class="ident">findAtomIndices</span></span>(<span>self, atomList)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return list of indices corresponding to input list of atomic coordinates.</p>
+<p>This method calls the diffpy.mpdf.findAtomIndices() method. </p>
+<h2 id="args">Args</h2>
+<p>atomList (numpy array of atomic coordinates)</p>
+<h2 id="returns">Returns</h2>
+<p>List of indices corresponding to the atomList.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findAtomIndices(self,atomList):
+    &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+    This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+    Args:
+        atomList (numpy array of atomic coordinates)
+
+    Returns:
+        List of indices corresponding to the atomList.
+    &#34;&#34;&#34;
+    return findAtomIndices(self,atomList)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.makeAtoms"><code class="name flex">
+<span>def <span class="ident">makeAtoms</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the Cartesian coordinates of the atoms for this species.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeAtoms(self):
+    &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+    &#34;&#34;&#34;
+    if self.useDiffpyStruc:
+        self.atoms = generateAtomsXYZ(self.struc, self.rmaxAtoms, self.strucIdxs)
+    else:
+        try:
+            self.atoms, self.spins = generateFromUnitCell(self.latVecs,
+                                                          self.atomBasis,
+                                                          self.spinBasis,
+                                                          self.rmaxAtoms)
+        except:
+            print(&#39;Please check latVecs, atomBasis, and spinBasis.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.makeFF"><code class="name flex">
+<span>def <span class="ident">makeFF</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the magnetic form factor.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeFF(self):
+    &#34;&#34;&#34;Generate the magnetic form factor.
+    &#34;&#34;&#34;
+    g = self.gS+self.gL
+    if getFFparams(self.ffparamkey) != [&#39;none&#39;]:
+        self.ff = (self.gS/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
+                   self.gL/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+    else:
+        print(&#39;Using generic magnetic form factor.&#39;)
+        self.ff = jCalc(self.ffqgrid)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.makeSpins"><code class="name flex">
+<span>def <span class="ident">makeSpins</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the Cartesian coordinates of the spin vectors in the
+structure. Must provide propagation vector(s) and basis
+vector(s).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeSpins(self):
+    &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+           structure. Must provide propagation vector(s) and basis
+           vector(s).
+    &#34;&#34;&#34;
+    #self.setOcc()
+    if self.useDiffpyStruc:
+        self.spins = generateSpinsXYZ(self.struc, self.atoms, self.kvecs, self.basisvecs, 
+                                      self.origin, self.avgmom)
+        if self.useOcc:
+            self.spins *= self.occ
+    else:
+        print(&#39;Since you are not using a diffpy Structure object,&#39;)
+        print(&#39;the spins are generated from the makeAtoms() method.&#39;)
+        print(&#39;Please call that method if you have not already.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.runChecks"><code class="name flex">
+<span>def <span class="ident">runChecks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run some simple checks and raise a warning if a problem is found.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def runChecks(self):
+    &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+    &#34;&#34;&#34;
+    if self.verbose:        
+        print((&#39;Running checks for &#39;+self.label+&#39; MagSpecies object...\n&#39;))
+
+    flagCount = 0
+    flag = False
+
+    if self.useDiffpyStruc:
+        # check that basisvecs and kvecs have same shape
+        if self.kvecs.shape != self.basisvecs.shape:
+            flag = True
+        if flag:
+            flagCount += 1
+            if self.verbose:
+                print(&#39;kvecs and basisvecs must have the same dimensions.&#39;)
+
+    else:
+        # check for improperlatVecs array
+        if self.latVecs.shape != (3, 3):
+            flag = True
+        if flag:
+            flagCount += 1
+            if self.verbose:
+                print(&#39;latVecs array does not have the correct dimensions.&#39;)
+                print(&#39;It must be a 3 x 3 nested array.&#39;)
+                print(&#39;Example: np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])&#39;)
+        flag = False
+
+        # check for mismatched number of atoms and spins in basis
+        if self.atomBasis.shape != self.spinBasis.shape:
+            flag = True
+        if flag:
+            flagCount += 1
+            if self.verbose:
+                print(&#39;atomBasis and spinBasis must have the same dimensions.&#39;)
+
+    # summarize results
+    if flagCount == 0:
+        if self.verbose:
+            print(&#39;All MagSpecies() checks passed. No obvious problems found.\n&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.setOcc"><code class="name flex">
+<span>def <span class="ident">setOcc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the MagSpecies.occ attribute according to the Diffpy Structure.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setOcc(self):
+    &#34;&#34;&#34;Set the MagSpecies.occ attribute according to the Diffpy Structure.
+    &#34;&#34;&#34;
+    if self.struc != []:
+        self.occ = np.mean(self.struc.occupancy[self.strucIdxs])
+    else:
+        self.occ *= 1</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagSpecies.spinsFromAtoms"><code class="name flex">
+<span>def <span class="ident">spinsFromAtoms</span></span>(<span>self, positions, fractional=True, returnIdxs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the spin vectors corresponding to specified atomic
+positions.</p>
+<p>This method calls the diffpy.mpdf.magutils.spinsFromAtoms() method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magstruc</code></strong></dt>
+<dd>MagSpecies or MagStructure object containing atoms and spins</dd>
+<dt><strong><code>positions</code></strong> :&ensp;<code>list</code> or <code>array</code></dt>
+<dd>atomic positions for which the
+corresponding spins should be returned.</dd>
+<dt><strong><code>fractional</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>set as True if the atomic positions are in
+fractional coordinates of the crystallographic lattice
+vectors.</dd>
+<dt><strong><code>returnIdxs</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, the indices of the spins will also be
+returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Array consisting of the spins corresponding to the atomic positions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+    &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+       positions.
+
+    This method calls the diffpy.mpdf.magutils.spinsFromAtoms() method.
+
+    Args:
+        magstruc: MagSpecies or MagStructure object containing atoms and spins
+        positions (list or array): atomic positions for which the
+            corresponding spins should be returned.
+        fractional (boolean): set as True if the atomic positions are in
+            fractional coordinates of the crystallographic lattice
+            vectors.
+        returnIdxs (boolean): if True, the indices of the spins will also be
+            returned.
+    Returns:
+        Array consisting of the spins corresponding to the atomic positions.
+    &#34;&#34;&#34;
+    return spinsFromAtoms(self,positions,fractional,returnIdxs)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure"><code class="flex name class">
+<span>class <span class="ident">MagStructure</span></span>
+<span>(</span><span>struc=None, species=None, atoms=None, spins=None, gfactors=None, rmaxAtoms=30.0, avgmom=None, ffqgrid=None, ff=None, label='', K1=None, K2=None, fractions=None, Uiso=0.01, calcIdxs=None, corrLength=0.0, dampingMat=0.0, verbose=False, netMag=0, rho0=0, magneticAtomRatio=0, atomic_struc=None, transform='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build on the diffpy.Structure class to include magnetic attributes.</p>
+<p>This class takes a diffpy.Structure object and packages additional info
+relating to magnetic structure, which can then be fed to an MPDFcalculator
+object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>struc</code></strong> :&ensp;<code>diffpy.Structure object</code></dt>
+<dd>provides lattice parameters and unit
+cell of desired structure.</dd>
+<dt><strong><code>atomic_struc</code></strong> :&ensp;<code>diffpy.Structure object</code></dt>
+<dd>provides atomic structure inferred
+from the MCIF file. Only relevant if reading in MCIF file. If not initialized, it is
+assumed that either the magnetic and atomic unit cells are equivalent
+or spins were generated from the atomic unit cell using basis vectors.</dd>
+<dt><strong><code>transform</code></strong> :&ensp;<code>string</code></dt>
+<dd>string describing the transformation from the atomic
+cell basis vectors to the magnetic cell basis vector. Should be
+present whenever atomic_struc is.</dd>
+<dt><strong><code>species</code></strong> :&ensp;<code>python dictionary</code></dt>
+<dd>dictionary of magnetic species in the
+structure. The values are MagSpecies objects.</dd>
+<dt><strong><code>atoms</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>list of atomic coordinates of all the magnetic
+atoms in the structure; e.g. generated by generateAtomsXYZ()</dd>
+<dt><strong><code>spins</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>triplets giving the spin vectors of all the
+atoms, in the same order as the atoms array provided as input.</dd>
+<dt><strong><code>gfactors</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Lande g-factors of the magnetic moments</dd>
+<dt><strong><code>rmaxAtoms</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum distance from the origin of atomic
+positions generated by the makeAtoms method.</dd>
+<dt><strong><code>ffqgrid</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>grid of momentum transfer values used for
+calculating the magnetic form factor.</dd>
+<dt><strong><code>ff</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>magnetic form factor. Should be same shape as
+ffqgrid.</dd>
+<dt><strong><code>label</code></strong> :&ensp;<code>string</code></dt>
+<dd>Optional descriptive string for the MagStructure.</dd>
+<dt><strong><code>K1</code></strong> :&ensp;<code>float</code></dt>
+<dd>a constant used for calculating Dr; should be averaged
+over all magnetic species. Important if physical information is
+to be extracted from mPDF scale factors, e.g. moment size.</dd>
+<dt><strong><code>K2</code></strong> :&ensp;<code>float</code></dt>
+<dd>another constant used for calculating Dr.</dd>
+<dt><strong><code>fractions</code></strong> :&ensp;<code>python dictionary</code></dt>
+<dd>Dictionary providing the fraction of
+spins in the magnetic structure corresponding to each species.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>If True, will print messages relating to the structure.
+Useful for troubleshooting. Default is False.</dd>
+<dt><strong><code>calcIdxs</code></strong> :&ensp;<code>python list</code></dt>
+<dd>list giving the indices of the atoms array
+specifying the atoms to be used as the origin when calculating
+the mPDF. If given the string argument 'all', then every atom
+will be used (potentially causing very long calculation times).</dd>
+<dt><strong><code>corrLength</code></strong> :&ensp;<code>scalar</code></dt>
+<dd>magnetic correlation length such that the
+magnitude of the correlation between two spins separated by a
+distance d is given by exp(-d/corrLength). If set to zero, the
+correlation length is assumed to be infinite.</dd>
+<dt><strong><code>dampingMat</code></strong> :&ensp;<code>3x3 matrix</code></dt>
+<dd>damping matrix that encodes anisotropic
+correlation lengths. If nonzero, this supercedes the scalar
+corrLength attribute (which can only be used for isotropic
+correlation lengths).</dd>
+<dt><strong><code>rho0</code></strong> :&ensp;<code>float</code></dt>
+<dd>number of magnetic moments per cubic Angstrom in the
+magnetic structure; default value is 0.</dd>
+<dt><strong><code>netMag</code></strong> :&ensp;<code>float</code></dt>
+<dd>net magnetization in Bohr magnetons per magnetic moment
+in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+canted antiferromagnets.</dd>
+<dt><strong><code>magneticAtomRatio</code></strong> :&ensp;<code>float</code></dt>
+<dd>ratio of magnetic atoms to total atoms.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MagStructure:
+    &#34;&#34;&#34;Build on the diffpy.Structure class to include magnetic attributes.
+
+    This class takes a diffpy.Structure object and packages additional info
+    relating to magnetic structure, which can then be fed to an MPDFcalculator
+    object.
+
+    Args:
+        struc (diffpy.Structure object): provides lattice parameters and unit
+            cell of desired structure.
+        atomic_struc (diffpy.Structure object): provides atomic structure inferred
+            from the MCIF file. Only relevant if reading in MCIF file. If not initialized, it is
+            assumed that either the magnetic and atomic unit cells are equivalent
+            or spins were generated from the atomic unit cell using basis vectors.
+        transform (string): string describing the transformation from the atomic
+            cell basis vectors to the magnetic cell basis vector. Should be 
+            present whenever atomic_struc is.
+        species (python dictionary): dictionary of magnetic species in the
+            structure. The values are MagSpecies objects.
+        atoms (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure; e.g. generated by generateAtomsXYZ()
+        spins (numpy array): triplets giving the spin vectors of all the
+            atoms, in the same order as the atoms array provided as input.
+        gfactors (numpy array): Lande g-factors of the magnetic moments
+        rmaxAtoms (float): maximum distance from the origin of atomic
+            positions generated by the makeAtoms method.
+        ffqgrid (numpy array): grid of momentum transfer values used for
+            calculating the magnetic form factor.
+        ff (numpy array): magnetic form factor. Should be same shape as
+            ffqgrid.
+        label (string): Optional descriptive string for the MagStructure.
+        K1 (float): a constant used for calculating Dr; should be averaged
+            over all magnetic species. Important if physical information is
+            to be extracted from mPDF scale factors, e.g. moment size.
+        K2 (float): another constant used for calculating Dr.
+        fractions (python dictionary): Dictionary providing the fraction of
+            spins in the magnetic structure corresponding to each species.
+        verbose (boolean): If True, will print messages relating to the structure.
+            Useful for troubleshooting. Default is False.
+        calcIdxs (python list): list giving the indices of the atoms array
+            specifying the atoms to be used as the origin when calculating
+            the mPDF. If given the string argument &#39;all&#39;, then every atom
+            will be used (potentially causing very long calculation times).
+        corrLength (scalar): magnetic correlation length such that the
+            magnitude of the correlation between two spins separated by a
+            distance d is given by exp(-d/corrLength). If set to zero, the
+            correlation length is assumed to be infinite.
+        dampingMat (3x3 matrix): damping matrix that encodes anisotropic
+            correlation lengths. If nonzero, this supercedes the scalar
+            corrLength attribute (which can only be used for isotropic
+            correlation lengths).
+        rho0 (float): number of magnetic moments per cubic Angstrom in the
+            magnetic structure; default value is 0.
+        netMag (float): net magnetization in Bohr magnetons per magnetic moment
+            in the sample; default is 0. Only nonzero for ferro/ferrimagnets or
+            canted antiferromagnets.
+        magneticAtomRatio (float): ratio of magnetic atoms to total atoms.
+
+   &#34;&#34;&#34;
+
+    def __init__(self, struc=None, species=None, atoms=None, spins=None,
+                 gfactors=None, rmaxAtoms=30.0, avgmom=None, ffqgrid=None, ff=None,
+                 label=&#39;&#39;, K1=None, K2=None, fractions=None, Uiso=0.01,
+                 calcIdxs=None, corrLength=0.0, dampingMat=0.0, verbose=False,
+                 netMag=0, rho0=0, magneticAtomRatio=0, atomic_struc=None,
+                 transform=&#39;&#39;):
+
+        self.rmaxAtoms = rmaxAtoms
+        self.label = label
+        self.transform = transform
+
+        if struc is None:
+            self.struc = []
+        else:
+            self.struc = struc
+        if atomic_struc is None:
+            self.atomic_struc = []
+        else:
+            self.atomic_struc = atomic_struc
+        if atoms is None:
+            self.atoms = np.array([])
+        else:
+            self.atoms = atoms
+        if spins is None:
+            self.spins = np.array([])
+        else:
+            self.spins = spins
+        if gfactors is None:
+            self.gfactors = np.array([2.0])
+        else:
+            self.gfactors = gfactors
+        if species is None:
+            self.species = {}
+        else:
+            self.species = species
+        if ffqgrid is None:
+            self.ffqgrid = np.arange(0, 10.0, 0.01)
+        else:
+            self.ffqgrid = ffqgrid
+        if ff is None:
+            self.ff = jCalc(self.ffqgrid)
+        else:
+            self.ff = ff
+        if K1 is None:
+            self.K1 = 0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)
+        else:
+            self.K1 = K1
+        if K2 is None:
+            self.K2 = self.K1
+        else:
+            self.K2 = K2
+        if fractions is None:
+            self.fractions = {}
+        else:
+            self.fractions = fractions
+        if calcIdxs is None:
+            self.calcIdxs = [0]
+        else:
+            self.calcIdxs = calcIdxs
+        self.Uiso = Uiso
+        self.corrLength = corrLength
+        self.dampingMat = dampingMat
+        self.verbose = verbose
+        self.rho0 = rho0
+        self.netMag = netMag
+        self.magneticAtomRatio = magneticAtomRatio
+
+    def __repr__(self):
+        if self.label == &#39;&#39;:
+            return &#39;MagStructure() object&#39;
+        else:
+            return self.label+&#39;: MagStructure() object&#39;
+
+    def makeSpecies(self, label, strucIdxs=None, atoms=None, spins=None,
+                    basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None,
+                    gL=None, ffparamkey=None,ffqgrid=None, ff=None, occ=None):
+        &#34;&#34;&#34;Create a MagSpecies object and add it to the species dictionary.
+
+        Args:
+            label (string): label for this particular magnetic species. Should be
+                different from the labels for any other magnetic species you make.
+            strucIdxs (python list): list of integers giving indices of magnetic
+                atoms in the unit cell
+            atoms (numpy array): list of atomic coordinates of all the magnetic
+                atoms in the structure; e.g. generated by generateAtomsXYZ()
+            spins (numpy array): triplets giving the spin vectors of all the
+                atoms, in the same order as the atoms array provided as input.
+            basisvecs (numpy array): nested three-vector(s) giving the basis
+                vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+                phase factor should be included directly with the basisvecs.
+            kvecs (numpy array): nested three-vector(s) giving the propagation
+                vectors for the magnetic structure in r.l.u.,
+                e.g. np.array([[0.5, 0.5, 0.5]])
+            gS (float): spin component of the Lande g-factor (g = gS+gL)
+            gL (float): orbital component of the Lande g-factor
+            ffparamkey (string): gives the appropriate key for getFFparams()
+            ffqgrid (numpy array): grid of momentum transfer values used for
+                calculating the magnetic form factor.
+            ff (numpy array): magnetic form factor.
+
+        &#34;&#34;&#34;
+        # check that the label is not a duplicate with any other mag species.
+        duplicate = False
+        for name in list(self.species.keys()):
+            if name == label:
+                duplicate = True
+        if not duplicate:
+            if ffqgrid is None:
+                ffqgrid = np.arange(0, 10.0, 0.01)
+            self.species[label] = MagSpecies(self.struc, label, strucIdxs, atoms, spins,
+                                             self.rmaxAtoms, basisvecs, kvecs, S, L,
+                                             J, gS, gL, ffparamkey, ffqgrid, ff,
+                                             self.verbose, occ)
+            # update the list of fractions
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+            self.runChecks()
+        else:
+            print(&#39;This label has already been assigned to another species in&#39;)
+            print(&#39;the structure. Please choose a new label.&#39;)
+
+    def getCoordsFromSpecies(self):
+        &#34;&#34;&#34;Read in atomic positions and spins from magnetic species.
+
+        This differs from makeSpins() and makeAtoms() because it simply loads
+        the atoms and spins from the species without re-generating them from 
+        the structure.
+        &#34;&#34;&#34;
+        tempA = np.array([[0, 0, 0]])
+        tempS = np.array([[0, 0, 0]])
+        for key in self.species:
+            na = self.species[key].atoms.shape[0]
+            ns = self.species[key].atoms.shape[0]
+            if (na &gt; 0) and (na == ns):            
+                tempA = np.concatenate((tempA, self.species[key].atoms))
+                tempS = np.concatenate((tempS, self.species[key].spins))
+            else:
+                if self.verbose:
+                    print((&#39;Coordinates of atoms and spins for &#39; + key))
+                    print(&#39;have not been loaded because they have not yet been&#39;)
+                    print(&#39;generated and/or do not match in shape.&#39;)
+        if tempA.shape != (1, 3):        
+            self.atoms = tempA[1:]
+            self.spins = tempS[1:]
+        elif len(self.species) == 0:
+            self.atoms = np.array([])
+            self.spins = np.array([])
+
+    def loadSpecies(self, magSpec):
+        &#34;&#34;&#34;Load in an already-existing MagSpecies object
+
+        Args:
+            magSpec (MagSpecies object): The magnetic species to be imported
+                into the structure.
+        &#34;&#34;&#34;
+        # check that the label is not a duplicate with any other mag species.
+        duplicate = False
+        for name in list(self.species.keys()):
+            if name == magSpec.label:
+                duplicate = True
+        if not duplicate:
+            self.species[magSpec.label] = magSpec
+            self.struc = magSpec.struc
+            self.getCoordsFromSpecies()
+            # update the list of fractions
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in list(self.species.keys()):
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+            self.runChecks()
+        else:
+            print(&#39;The label for this species has already been assigned to&#39;)
+            print(&#39;another species in the structure. Please choose a new label&#39;)
+            print(&#39;for this species.&#39;)
+
+    def removeSpecies(self, label, update=True):
+        &#34;&#34;&#34;Remove a magnetic species from the species dictionary.
+
+        Args:
+            label (string): key for the dictionary entry to be removed.
+            update (boolean): if True, the MagStructure will update its atoms
+                and spins with the removed species now excluded.
+        &#34;&#34;&#34;
+        try:
+            del self.species[label]
+            if update:
+                self.getCoordsFromSpecies()
+                # update the list of fractions
+                totatoms = 0.0
+                for key in self.species:
+                    totatoms += self.species[key].atoms.shape[0]
+                for key in self.species:                
+                    if totatoms == 0.0:
+                        totatoms = 1.0 # prevent divide by zero problems
+                    frac = float(self.species[key].atoms.shape[0])/totatoms
+                    self.fractions[key] = frac
+        except:
+            print(&#39;Species cannot be deleted. Check that you are using the&#39;)
+            print(&#39;correct species label.&#39;)
+
+    def makeAtoms(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+
+        Args:
+            fromUnitCell (boolean): True if atoms/spins to be generated from
+                a unit cell provided by the user; False if the diffpy structure
+                object is to be used.
+            unitcell (numpy array): Provides the unit cell lattice vectors as
+                np.array((avec, bvec, cvec)).
+            atombasis (numpy array): Provides positions of the magnetic atoms
+                in fractional coordinates within the unit cell.
+            spin cell (numpy array): Provides the orientations of the spins in
+                the unit cell, in the same order as atombasis
+        &#34;&#34;&#34;
+        temp = np.array([[0, 0, 0]])
+        for key in self.species:
+            self.species[key].makeAtoms()
+            temp = np.concatenate((temp, self.species[key].atoms))
+        self.atoms = temp[1:]
+
+    def makeSpins(self):
+        &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+               structure. Calls the makeSpins() method for each MagSpecies in
+               the species dictionary and concatenates them together.
+        &#34;&#34;&#34;
+        temp = np.array([[0, 0, 0]])
+        for key in self.species:
+            self.species[key].makeSpins()
+            temp = np.concatenate((temp, self.species[key].spins))
+        self.spins = temp[1:]
+
+    def makeGfactors(self):
+        &#34;&#34;&#34;Generate an array of Lande g-factors in the same order as the spins
+                in the MagStructure.
+        &#34;&#34;&#34;
+        temp = np.array([2.0])
+        for key in self.species:
+            temp = np.concatenate((temp,
+                                   (self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
+        self.gfactors = temp[1:]
+
+    def makeFractions(self):
+        &#34;&#34;&#34;Generate the fractions dictionary.
+        &#34;&#34;&#34;
+        try:
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:                
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+        except:
+            if len(self.species) == 0:
+                self.fractions = {}
+            else:
+                print(&#39;Check MagStructure.fractions dictionary for problems.&#39;)
+
+    def makeKfactors(self):
+        &#34;&#34;&#34;Set the factors K1 and K2 used for unnormalized mPDF. The fractions
+           dictionary must be accurate before running this method.
+        &#34;&#34;&#34;
+        K1, K2 = 0, 0        
+        for key in self.species:
+            gSa, gLa = self.species[key].gS, self.species[key].gL
+            ga = gSa + gLa
+            Ja = self.species[key].J
+            K1 += self.fractions[key]*ga*np.sqrt(Ja*(Ja+1))
+            K2 += self.fractions[key]*ga**2*Ja*(Ja+1)
+        K1 = K1**2
+        K1 *= (1.913*2.81794/2.0)**2*2.0/3.0
+        K2 *= (1.913*2.81794/2.0)**2*2.0/3.0
+        self.K1 = K1
+        self.K2 = K2
+
+    def makeFF(self):
+        &#34;&#34;&#34;Generate the properly weighted average magnetic form factor of all
+                the magnetic species in the structure.
+        &#34;&#34;&#34;
+        try:
+            self.ffqgrid = list(self.species.values())[0].ffqgrid
+            self.ff = np.zeros_like(self.ffqgrid)
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.species[key].makeFF()
+                self.ff += frac*self.species[key].ff
+        except:
+            if len(self.species) == 0:
+                self.ff = jCalc(self.ffqgrid)
+            else:
+                print(&#39;Check that all mag species have same q-grid.&#39;)
+
+    def makeAll(self):
+        &#34;&#34;&#34;Shortcut method to generate atoms, spins, g-factors, and form
+                factor for the magnetic structure all in one go.
+        &#34;&#34;&#34;
+        self.makeAtoms()
+        self.makeSpins()
+        self.makeGfactors()
+        self.makeFractions()
+        self.makeKfactors()
+        self.makeFF()
+        self.makeCalcIdxs()
+        self.runChecks(doCalcIdxsCheck=True)
+
+    def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+           positions.
+
+        This method calls the diffpy.mpdf.spinsFromAtoms() method. 
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            positions (list or array): atomic positions for which the
+                corresponding spins should be returned.
+            fractional (boolean): set as True if the atomic positions are in
+                fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the spins will also be
+                returned.
+        Returns:
+            Array consisting of the spins corresponding to the atomic positions.
+        &#34;&#34;&#34;
+        return spinsFromAtoms(self,positions,fractional,returnIdxs)
+
+    def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+        &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+        This method calls the diffpy.mpdf.atomsFromSpins() method. 
+
+        Args:
+            magstruc: MagSpecies or MagStructure object containing atoms and spins
+            spinvecs (list or array): spin vectors for which the
+                corresponding atoms should be returned.
+            fractional (boolean): set as True if the atomic positions are to be
+                returned as fractional coordinates of the crystallographic lattice
+                vectors.
+            returnIdxs (boolean): if True, the indices of the atoms will also be
+                returned.
+
+        Returns:
+            List of arrays of atoms corresponding to the spins.
+        &#34;&#34;&#34;
+        return atomsFromSpins(self,spinvecs,fractional,returnIdxs)
+
+    def visualize(self,atoms,spins,showcrystalaxes=False,
+                  axesorigin=np.array([0,0,0])):
+        &#34;&#34;&#34;Generate a crude 3-d plot to visualize the selected spins.
+
+        Args:
+            atoms (numpy array): array of atomic positions of spins to be
+                visualized.
+            spins (numpy array): array of spin vectors in same order as atoms.
+            showcrystalaxes (boolean): if True, will display the crystal axes
+                determined from the first magnetic species in the MagStructure
+            axesorigin (array): position at which the crystal axes should be
+                displayed
+        &#34;&#34;&#34;
+        import matplotlib.pyplot as plt        
+        from mpl_toolkits.mplot3d import axes3d
+
+        fig = visualizeSpins(atoms,spins)
+        if showcrystalaxes:
+            ax3d = fig.axes[0]
+            try:
+                mspec=list(self.species.items())[0][1]
+                if mspec.useDiffpyStruc:
+                    lat=mspec.struc.lattice
+                    a, b, c = lat.stdbase
+                else:
+                    a, b, c = mspec.latVecs
+                xo, yo, zo = axesorigin
+                ax3d.quiver(xo, yo, zo, a[0], a[1], a[2], pivot=&#39;tail&#39;, color=&#39;r&#39;)
+                ax3d.quiver(xo, yo, zo, b[0], b[1], b[2], pivot=&#39;tail&#39;, color=&#39;g&#39;)
+                ax3d.quiver(xo, yo, zo, c[0], c[1], c[2], pivot=&#39;tail&#39;, color=&#39;b&#39;)
+            except:
+                print(&#39;Please make sure your magnetic structure contains a&#39;)
+                print(&#39;magnetic species with MagSpecies.struc set to a diffpy&#39;)
+                print(&#39;structure or MagSpecies.latVecs provided and&#39;)
+                print(&#39;MagSpecies.useDiffpyStruc set to False.&#39;)
+        plt.show()
+
+    def findAtomIndices(self,atomList):
+        &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+        This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+        Args:
+            atomList (numpy array of atomic coordinates)
+
+        Returns:
+            List of indices corresponding to the atomList.
+        &#34;&#34;&#34;
+        return findAtomIndices(self,atomList)
+
+    def runChecks(self, doCalcIdxsCheck=False):
+        &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+        &#34;&#34;&#34;
+        # do the MagSpecies checks
+        for key in self.species:
+            self.species[key].runChecks()
+
+        if self.verbose:        
+            print((&#39;Running checks for &#39;+self.label+&#39; MagStructure object...\n&#39;))
+
+        flag = False
+        flagCount = 0
+
+        # check for duplication among magnetic species
+        if len(self.species) &gt; 0:        
+            if list(self.species.values())[0].useDiffpyStruc:
+                idxs = []
+                for key in self.species:
+                    idxs.append(self.species[key].strucIdxs)
+                idxs = [item for sublist in idxs for item in sublist] # flatten the list
+                for idx in idxs:
+                    if idxs.count(idx) &gt; 1:
+                        flag = True
+                if flag:
+                    flagCount += 1
+                    if self.verbose:
+                        print(&#39;Warning: Magnetic species may have overlapping atoms.&#39;)
+                        print(&#39;Check the strucIdxs lists for your magnetic species.&#39;)
+                    flag = False
+
+        # check that the fractions are consistent
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in self.species:
+            if totatoms == 0.0:
+                totatoms = 1.0 # prevent divide by zero problems
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            if (frac &gt; 0) and (np.abs(frac - self.fractions[key])/frac &gt; 0.1):
+                flag = True
+        if flag:
+            flagCount += 1
+            if self.verbose:
+                print(&#39;Species fractions do not correspond to actual number of&#39;)
+                print(&#39;spins of each species in the structure.&#39;)
+        flag = False
+
+        ### check if calcIdxs may not be representative of all MagSpecies.
+        if doCalcIdxsCheck: # option to turn off this check e.g. when loading a MagSpecies
+            if len(self.calcIdxs) &lt; len(self.species):
+                flag = True
+            if flag:
+                flagCount += 1
+                print(&#39;Warning: your calcIdxs may not be representative of all&#39;)
+                print(&#39;the magnetic species. calcIdxs should have the index of&#39;)
+                print(&#39;at least one spin from each species. Use&#39;)
+                print(&#39;magStruc.getSpeciesIdxs() to see starting indices for&#39;)
+                print(&#39;each species.\n&#39;)
+            flag = False
+
+        ### check if calcIdxs has indices that exceed the spin array
+        if self.atoms.shape[0]&gt;0:
+            if (np.array(self.calcIdxs).max()+1) &gt; self.atoms.shape[0]:
+                flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;calcIdxs contains indices that are too large for the&#39;)
+            print(&#39;arrays of atoms and spins contained in the MagStructure.&#39;)
+        flag = False
+
+        # summarize results
+        if flagCount == 0:
+            if self.verbose:
+                print(&#39;All MagStructure checks passed. No obvious problems found.&#39;)
+
+    def getSpeciesIdxs(self):
+        &#34;&#34;&#34;Return a dictionary with the starting index in the atoms and spins
+           arrays corresponding to each magnetic species.
+        &#34;&#34;&#34;
+        idxDict = {}
+        startIdx = 0
+        for key in self.species:
+            idxDict[key] = startIdx
+            startIdx += self.species[key].atoms.shape[0]
+        return idxDict
+
+    def makeCalcIdxs(self):
+        &#34;&#34;&#34;Generate the indices of the atoms to be used for the calculation.
+        &#34;&#34;&#34;
+        idxDict = self.getSpeciesIdxs()
+        calcIdxs = []
+        for key in self.species:
+            calcIdxs.append(np.array(self.species[key].calcIdxs) +
+                            idxDict[key])
+        calcIdxs = [ci for sublist in calcIdxs for ci in sublist]
+        self.calcIdxs = calcIdxs
+
+    def generateScaledSpins(self, originIdx=0):
+        &#34;&#34;&#34;Apply a correlation length to the spin magnitudes.
+
+        Args:
+            originIdx (int): The index of the spin in magstructure.spins
+                that should be considered the origin.
+
+        Returns:
+            scaledSpins (np.array): An array with the same shape as the
+                self.spins array, where the magnitudes of the spins have
+                been scaled in accordance with the correlation length.
+        &#34;&#34;&#34;
+        scaledSpins = 1.0*self.spins
+        if type(self.dampingMat) != np.ndarray: # isotropic correlation length
+            xi = self.corrLength
+            if xi != 0.0:
+                distanceVecs = self.atoms - self.atoms[originIdx]
+                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                scaledSpins *= rescale 
+        else:
+            dampingMat = self.dampingMat
+            # ensure that dampingMat is 3x3 symmetric matrix
+            if dampingMat.shape == (3, 3):
+                if np.allclose(dampingMat, dampingMat.T, rtol=1e-5, atol=1e-8):
+                    distanceVecs = self.atoms - self.atoms[originIdx]
+                    distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                    distanceVecsN = distanceVecs/np.apply_along_axis(np.linalg.norm,1,distanceVecs)[:,np.newaxis]
+                    mult1 = np.tensordot(dampingMat, distanceVecsN, axes=(0,1)).T
+                    xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, distanceVecsN*mult1))
+                    xi[originIdx] = 1.0 # avoid divide-by-zero problem
+                    rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                    scaledSpins *= rescale                     
+                else:
+                    print(&#39;Damping matrix is not symmetric. Spins will not be modified.&#39;)
+            else:
+                print(&#39;Damping matrix is not a 3x3 matrix. Spins will not be modified.&#39;)
+
+        return scaledSpins
+
+    def calcAtomicDensity(self, volume=0, numSpins=0):
+        &#34;&#34;&#34;Determine the number density of magnetic moments.
+        Sets the calculated number density equal to self.rho0.
+
+        Args:
+            volume (scalar): Volume of the MagStructure. If equal to the
+                default value of 0, then the volume will be calculated
+                assuming a sphere of radius rmaxAtoms.
+            numSpins (integer): number of magnetic moments in the volume
+                being considered. If equal to the default value of 0, then
+                the numSpins will be set to the length of the spins array.
+        &#34;&#34;&#34;
+        if self.struc != []:
+            volume = np.sqrt(np.linalg.det(self.struc.lattice.metrics))
+            for key in self.species:
+                #strucIdxs = self.species[key].strucIdxs
+                #numSpins += self.species[key].struc.occupancy[strucIdxs].sum()
+                numSpins += len(self.species[key].strucIdxs)
+            self.rho0 = numSpins / volume
+        else:
+            print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+            # if volume==0:
+            #     radius = self.rmaxAtoms + \
+            #              np.linalg.norm(self.struc.lattice.stdbase.sum(axis=1))
+            #     volume = 1.33333*np.pi*radius**3
+            # if numSpins==0:
+            #     numSpins = len(self.spins)
+            # self.rho0 = numSpins / volume
+
+    def calcMagneticAtomRatio(self):
+        &#34;&#34;&#34;Determine the ratio of magnetic atoms to total atoms.
+        Sets the calculated number equal to self.magneticAtomRatio.
+
+        &#34;&#34;&#34;
+        occ = self.struc.occupancy
+        totalOcc = occ.sum()
+        numMagAtoms = 0
+        if self.struc != []:
+            for key in self.species:
+                strucIdxs = self.species[key].strucIdxs
+                numMagAtoms += occ[strucIdxs].sum()
+            self.magneticAtomRatio = numMagAtoms / totalOcc
+        else:
+            print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+
+    def calcNetMag(self,method=&#39;directCalculation&#39;):
+        &#34;&#34;&#34;Determine the net magnetization per spin.
+        Sets the calculated value equal to self.netMag.
+        
+        This method is only necessary for magnetic structures with a
+        net magnetic moment, such as a ferromagnet, ferrimagnet, or
+        canted antiferromagnet.
+        
+        Args:
+            method: How the net magnetization should be calculated.
+                &#39;directCalculation&#39;: the mean of the entire structure is
+                calculated. May have slight inaccuracies due to edge effects.
+                &#39;speciesCalculation&#39;: use the individual MagSpecies to find
+                the average magnetization per spin.
+
+        &#34;&#34;&#34;
+        if method == &#39;directCalculation&#39;:
+            totalMag = np.sum(self.spins, axis=0) * np.mean(self.gfactors)
+            self.netMag = np.linalg.norm(totalMag) / self.spins.shape[0]
+        if method == &#39;speciesCalculation&#39;:
+            mags = []
+            weights = []
+            netMag = np.array([0.0,0.0,0.0])
+            if self.struc != []:
+                for key in self.species:
+                    g = self.species[key].gS + self.species[key].gL
+                    mag = g * np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
+                    mags.append(mag)
+                    weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
+                    weights.append(weight)
+                    netMag += g * weight * self.species[key].spins[0] # assumes uniform spins within the species                    
+                mags = np.array(mags)
+                weights = np.array(weights)
+                #self.netMag = np.sum(mags * weights)/np.sum(weights)
+                self.netMag = np.linalg.norm(netMag/np.sum(weights))
+            else:
+                print(&#39;Please create a diffpy Structure object to use this feature&#39;)
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MagStructure object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="diffpy.mpdf.magstructure.MagStructure.atomsFromSpins"><code class="name flex">
+<span>def <span class="ident">atomsFromSpins</span></span>(<span>self, spinvecs, fractional=True, returnIdxs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the atomic positions corresponding to specified spins.</p>
+<p>This method calls the diffpy.mpdf.atomsFromSpins() method. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magstruc</code></strong></dt>
+<dd>MagSpecies or MagStructure object containing atoms and spins</dd>
+<dt><strong><code>spinvecs</code></strong> :&ensp;<code>list</code> or <code>array</code></dt>
+<dd>spin vectors for which the
+corresponding atoms should be returned.</dd>
+<dt><strong><code>fractional</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>set as True if the atomic positions are to be
+returned as fractional coordinates of the crystallographic lattice
+vectors.</dd>
+<dt><strong><code>returnIdxs</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, the indices of the atoms will also be
+returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of arrays of atoms corresponding to the spins.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def atomsFromSpins(self,spinvecs,fractional=True,returnIdxs=False):
+    &#34;&#34;&#34;Return the atomic positions corresponding to specified spins.
+
+    This method calls the diffpy.mpdf.atomsFromSpins() method. 
+
+    Args:
+        magstruc: MagSpecies or MagStructure object containing atoms and spins
+        spinvecs (list or array): spin vectors for which the
+            corresponding atoms should be returned.
+        fractional (boolean): set as True if the atomic positions are to be
+            returned as fractional coordinates of the crystallographic lattice
+            vectors.
+        returnIdxs (boolean): if True, the indices of the atoms will also be
+            returned.
+
+    Returns:
+        List of arrays of atoms corresponding to the spins.
+    &#34;&#34;&#34;
+    return atomsFromSpins(self,spinvecs,fractional,returnIdxs)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.calcAtomicDensity"><code class="name flex">
+<span>def <span class="ident">calcAtomicDensity</span></span>(<span>self, volume=0, numSpins=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine the number density of magnetic moments.
+Sets the calculated number density equal to self.rho0.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>volume</code></strong> :&ensp;<code>scalar</code></dt>
+<dd>Volume of the MagStructure. If equal to the
+default value of 0, then the volume will be calculated
+assuming a sphere of radius rmaxAtoms.</dd>
+<dt><strong><code>numSpins</code></strong> :&ensp;<code>integer</code></dt>
+<dd>number of magnetic moments in the volume
+being considered. If equal to the default value of 0, then
+the numSpins will be set to the length of the spins array.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calcAtomicDensity(self, volume=0, numSpins=0):
+    &#34;&#34;&#34;Determine the number density of magnetic moments.
+    Sets the calculated number density equal to self.rho0.
+
+    Args:
+        volume (scalar): Volume of the MagStructure. If equal to the
+            default value of 0, then the volume will be calculated
+            assuming a sphere of radius rmaxAtoms.
+        numSpins (integer): number of magnetic moments in the volume
+            being considered. If equal to the default value of 0, then
+            the numSpins will be set to the length of the spins array.
+    &#34;&#34;&#34;
+    if self.struc != []:
+        volume = np.sqrt(np.linalg.det(self.struc.lattice.metrics))
+        for key in self.species:
+            #strucIdxs = self.species[key].strucIdxs
+            #numSpins += self.species[key].struc.occupancy[strucIdxs].sum()
+            numSpins += len(self.species[key].strucIdxs)
+        self.rho0 = numSpins / volume
+    else:
+        print(&#39;Please create a diffpy Structure object to use this feature&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.calcMagneticAtomRatio"><code class="name flex">
+<span>def <span class="ident">calcMagneticAtomRatio</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine the ratio of magnetic atoms to total atoms.
+Sets the calculated number equal to self.magneticAtomRatio.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calcMagneticAtomRatio(self):
+    &#34;&#34;&#34;Determine the ratio of magnetic atoms to total atoms.
+    Sets the calculated number equal to self.magneticAtomRatio.
+
+    &#34;&#34;&#34;
+    occ = self.struc.occupancy
+    totalOcc = occ.sum()
+    numMagAtoms = 0
+    if self.struc != []:
+        for key in self.species:
+            strucIdxs = self.species[key].strucIdxs
+            numMagAtoms += occ[strucIdxs].sum()
+        self.magneticAtomRatio = numMagAtoms / totalOcc
+    else:
+        print(&#39;Please create a diffpy Structure object to use this feature&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.calcNetMag"><code class="name flex">
+<span>def <span class="ident">calcNetMag</span></span>(<span>self, method='directCalculation')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine the net magnetization per spin.
+Sets the calculated value equal to self.netMag.</p>
+<p>This method is only necessary for magnetic structures with a
+net magnetic moment, such as a ferromagnet, ferrimagnet, or
+canted antiferromagnet.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>How the net magnetization should be calculated.
+'directCalculation': the mean of the entire structure is
+calculated. May have slight inaccuracies due to edge effects.
+'speciesCalculation': use the individual MagSpecies to find
+the average magnetization per spin.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calcNetMag(self,method=&#39;directCalculation&#39;):
+    &#34;&#34;&#34;Determine the net magnetization per spin.
+    Sets the calculated value equal to self.netMag.
+    
+    This method is only necessary for magnetic structures with a
+    net magnetic moment, such as a ferromagnet, ferrimagnet, or
+    canted antiferromagnet.
+    
+    Args:
+        method: How the net magnetization should be calculated.
+            &#39;directCalculation&#39;: the mean of the entire structure is
+            calculated. May have slight inaccuracies due to edge effects.
+            &#39;speciesCalculation&#39;: use the individual MagSpecies to find
+            the average magnetization per spin.
+
+    &#34;&#34;&#34;
+    if method == &#39;directCalculation&#39;:
+        totalMag = np.sum(self.spins, axis=0) * np.mean(self.gfactors)
+        self.netMag = np.linalg.norm(totalMag) / self.spins.shape[0]
+    if method == &#39;speciesCalculation&#39;:
+        mags = []
+        weights = []
+        netMag = np.array([0.0,0.0,0.0])
+        if self.struc != []:
+            for key in self.species:
+                g = self.species[key].gS + self.species[key].gL
+                mag = g * np.linalg.norm(self.species[key].spins[0]) # assumes constant magnitude of spins
+                mags.append(mag)
+                weight = np.sum(self.struc.occupancy[self.species[key].strucIdxs])
+                weights.append(weight)
+                netMag += g * weight * self.species[key].spins[0] # assumes uniform spins within the species                    
+            mags = np.array(mags)
+            weights = np.array(weights)
+            #self.netMag = np.sum(mags * weights)/np.sum(weights)
+            self.netMag = np.linalg.norm(netMag/np.sum(weights))
+        else:
+            print(&#39;Please create a diffpy Structure object to use this feature&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a deep copy of the MagStructure object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    &#34;&#34;&#34;Return a deep copy of the MagStructure object.&#34;&#34;&#34;
+    return copy.deepcopy(self)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.findAtomIndices"><code class="name flex">
+<span>def <span class="ident">findAtomIndices</span></span>(<span>self, atomList)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return list of indices corresponding to input list of atomic coordinates.</p>
+<p>This method calls the diffpy.mpdf.findAtomIndices() method. </p>
+<h2 id="args">Args</h2>
+<p>atomList (numpy array of atomic coordinates)</p>
+<h2 id="returns">Returns</h2>
+<p>List of indices corresponding to the atomList.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findAtomIndices(self,atomList):
+    &#34;&#34;&#34;Return list of indices corresponding to input list of atomic coordinates.
+
+    This method calls the diffpy.mpdf.findAtomIndices() method. 
+
+    Args:
+        atomList (numpy array of atomic coordinates)
+
+    Returns:
+        List of indices corresponding to the atomList.
+    &#34;&#34;&#34;
+    return findAtomIndices(self,atomList)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.generateScaledSpins"><code class="name flex">
+<span>def <span class="ident">generateScaledSpins</span></span>(<span>self, originIdx=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply a correlation length to the spin magnitudes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>originIdx</code></strong> :&ensp;<code>int</code></dt>
+<dd>The index of the spin in magstructure.spins
+that should be considered the origin.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>scaledSpins (np.array): An array with the same shape as the
+self.spins array, where the magnitudes of the spins have
+been scaled in accordance with the correlation length.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generateScaledSpins(self, originIdx=0):
+    &#34;&#34;&#34;Apply a correlation length to the spin magnitudes.
+
+    Args:
+        originIdx (int): The index of the spin in magstructure.spins
+            that should be considered the origin.
+
+    Returns:
+        scaledSpins (np.array): An array with the same shape as the
+            self.spins array, where the magnitudes of the spins have
+            been scaled in accordance with the correlation length.
+    &#34;&#34;&#34;
+    scaledSpins = 1.0*self.spins
+    if type(self.dampingMat) != np.ndarray: # isotropic correlation length
+        xi = self.corrLength
+        if xi != 0.0:
+            distanceVecs = self.atoms - self.atoms[originIdx]
+            distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+            rescale = np.exp(-distances/xi)[:,np.newaxis] 
+            scaledSpins *= rescale 
+    else:
+        dampingMat = self.dampingMat
+        # ensure that dampingMat is 3x3 symmetric matrix
+        if dampingMat.shape == (3, 3):
+            if np.allclose(dampingMat, dampingMat.T, rtol=1e-5, atol=1e-8):
+                distanceVecs = self.atoms - self.atoms[originIdx]
+                distances = np.apply_along_axis(np.linalg.norm, 1, distanceVecs)
+                distanceVecsN = distanceVecs/np.apply_along_axis(np.linalg.norm,1,distanceVecs)[:,np.newaxis]
+                mult1 = np.tensordot(dampingMat, distanceVecsN, axes=(0,1)).T
+                xi = 1.0/np.sqrt(np.apply_along_axis(np.sum, 1, distanceVecsN*mult1))
+                xi[originIdx] = 1.0 # avoid divide-by-zero problem
+                rescale = np.exp(-distances/xi)[:,np.newaxis] 
+                scaledSpins *= rescale                     
+            else:
+                print(&#39;Damping matrix is not symmetric. Spins will not be modified.&#39;)
+        else:
+            print(&#39;Damping matrix is not a 3x3 matrix. Spins will not be modified.&#39;)
+
+    return scaledSpins</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.getCoordsFromSpecies"><code class="name flex">
+<span>def <span class="ident">getCoordsFromSpecies</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read in atomic positions and spins from magnetic species.</p>
+<p>This differs from makeSpins() and makeAtoms() because it simply loads
+the atoms and spins from the species without re-generating them from
+the structure.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getCoordsFromSpecies(self):
+    &#34;&#34;&#34;Read in atomic positions and spins from magnetic species.
+
+    This differs from makeSpins() and makeAtoms() because it simply loads
+    the atoms and spins from the species without re-generating them from 
+    the structure.
+    &#34;&#34;&#34;
+    tempA = np.array([[0, 0, 0]])
+    tempS = np.array([[0, 0, 0]])
+    for key in self.species:
+        na = self.species[key].atoms.shape[0]
+        ns = self.species[key].atoms.shape[0]
+        if (na &gt; 0) and (na == ns):            
+            tempA = np.concatenate((tempA, self.species[key].atoms))
+            tempS = np.concatenate((tempS, self.species[key].spins))
+        else:
+            if self.verbose:
+                print((&#39;Coordinates of atoms and spins for &#39; + key))
+                print(&#39;have not been loaded because they have not yet been&#39;)
+                print(&#39;generated and/or do not match in shape.&#39;)
+    if tempA.shape != (1, 3):        
+        self.atoms = tempA[1:]
+        self.spins = tempS[1:]
+    elif len(self.species) == 0:
+        self.atoms = np.array([])
+        self.spins = np.array([])</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.getSpeciesIdxs"><code class="name flex">
+<span>def <span class="ident">getSpeciesIdxs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a dictionary with the starting index in the atoms and spins
+arrays corresponding to each magnetic species.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getSpeciesIdxs(self):
+    &#34;&#34;&#34;Return a dictionary with the starting index in the atoms and spins
+       arrays corresponding to each magnetic species.
+    &#34;&#34;&#34;
+    idxDict = {}
+    startIdx = 0
+    for key in self.species:
+        idxDict[key] = startIdx
+        startIdx += self.species[key].atoms.shape[0]
+    return idxDict</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.loadSpecies"><code class="name flex">
+<span>def <span class="ident">loadSpecies</span></span>(<span>self, magSpec)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load in an already-existing MagSpecies object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magSpec</code></strong> :&ensp;<code><a title="diffpy.mpdf.magstructure.MagSpecies" href="#diffpy.mpdf.magstructure.MagSpecies">MagSpecies</a> object</code></dt>
+<dd>The magnetic species to be imported
+into the structure.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadSpecies(self, magSpec):
+    &#34;&#34;&#34;Load in an already-existing MagSpecies object
+
+    Args:
+        magSpec (MagSpecies object): The magnetic species to be imported
+            into the structure.
+    &#34;&#34;&#34;
+    # check that the label is not a duplicate with any other mag species.
+    duplicate = False
+    for name in list(self.species.keys()):
+        if name == magSpec.label:
+            duplicate = True
+    if not duplicate:
+        self.species[magSpec.label] = magSpec
+        self.struc = magSpec.struc
+        self.getCoordsFromSpecies()
+        # update the list of fractions
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in list(self.species.keys()):
+            if totatoms == 0.0:
+                totatoms = 1.0 # prevent divide by zero problems
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            self.fractions[key] = frac
+        self.runChecks()
+    else:
+        print(&#39;The label for this species has already been assigned to&#39;)
+        print(&#39;another species in the structure. Please choose a new label&#39;)
+        print(&#39;for this species.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeAll"><code class="name flex">
+<span>def <span class="ident">makeAll</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shortcut method to generate atoms, spins, g-factors, and form
+factor for the magnetic structure all in one go.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeAll(self):
+    &#34;&#34;&#34;Shortcut method to generate atoms, spins, g-factors, and form
+            factor for the magnetic structure all in one go.
+    &#34;&#34;&#34;
+    self.makeAtoms()
+    self.makeSpins()
+    self.makeGfactors()
+    self.makeFractions()
+    self.makeKfactors()
+    self.makeFF()
+    self.makeCalcIdxs()
+    self.runChecks(doCalcIdxsCheck=True)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeAtoms"><code class="name flex">
+<span>def <span class="ident">makeAtoms</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the Cartesian coordinates of the atoms for this species.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fromUnitCell</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>True if atoms/spins to be generated from
+a unit cell provided by the user; False if the diffpy structure
+object is to be used.</dd>
+<dt><strong><code>unitcell</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Provides the unit cell lattice vectors as
+np.array((avec, bvec, cvec)).</dd>
+<dt><strong><code>atombasis</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>Provides positions of the magnetic atoms
+in fractional coordinates within the unit cell.</dd>
+</dl>
+<p>spin cell (numpy array): Provides the orientations of the spins in
+the unit cell, in the same order as atombasis</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeAtoms(self):
+    &#34;&#34;&#34;Generate the Cartesian coordinates of the atoms for this species.
+
+    Args:
+        fromUnitCell (boolean): True if atoms/spins to be generated from
+            a unit cell provided by the user; False if the diffpy structure
+            object is to be used.
+        unitcell (numpy array): Provides the unit cell lattice vectors as
+            np.array((avec, bvec, cvec)).
+        atombasis (numpy array): Provides positions of the magnetic atoms
+            in fractional coordinates within the unit cell.
+        spin cell (numpy array): Provides the orientations of the spins in
+            the unit cell, in the same order as atombasis
+    &#34;&#34;&#34;
+    temp = np.array([[0, 0, 0]])
+    for key in self.species:
+        self.species[key].makeAtoms()
+        temp = np.concatenate((temp, self.species[key].atoms))
+    self.atoms = temp[1:]</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeCalcIdxs"><code class="name flex">
+<span>def <span class="ident">makeCalcIdxs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the indices of the atoms to be used for the calculation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeCalcIdxs(self):
+    &#34;&#34;&#34;Generate the indices of the atoms to be used for the calculation.
+    &#34;&#34;&#34;
+    idxDict = self.getSpeciesIdxs()
+    calcIdxs = []
+    for key in self.species:
+        calcIdxs.append(np.array(self.species[key].calcIdxs) +
+                        idxDict[key])
+    calcIdxs = [ci for sublist in calcIdxs for ci in sublist]
+    self.calcIdxs = calcIdxs</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeFF"><code class="name flex">
+<span>def <span class="ident">makeFF</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the properly weighted average magnetic form factor of all
+the magnetic species in the structure.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeFF(self):
+    &#34;&#34;&#34;Generate the properly weighted average magnetic form factor of all
+            the magnetic species in the structure.
+    &#34;&#34;&#34;
+    try:
+        self.ffqgrid = list(self.species.values())[0].ffqgrid
+        self.ff = np.zeros_like(self.ffqgrid)
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in self.species:
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            self.species[key].makeFF()
+            self.ff += frac*self.species[key].ff
+    except:
+        if len(self.species) == 0:
+            self.ff = jCalc(self.ffqgrid)
+        else:
+            print(&#39;Check that all mag species have same q-grid.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeFractions"><code class="name flex">
+<span>def <span class="ident">makeFractions</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the fractions dictionary.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeFractions(self):
+    &#34;&#34;&#34;Generate the fractions dictionary.
+    &#34;&#34;&#34;
+    try:
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in self.species:                
+            if totatoms == 0.0:
+                totatoms = 1.0 # prevent divide by zero problems
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            self.fractions[key] = frac
+    except:
+        if len(self.species) == 0:
+            self.fractions = {}
+        else:
+            print(&#39;Check MagStructure.fractions dictionary for problems.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeGfactors"><code class="name flex">
+<span>def <span class="ident">makeGfactors</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate an array of Lande g-factors in the same order as the spins
+in the MagStructure.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeGfactors(self):
+    &#34;&#34;&#34;Generate an array of Lande g-factors in the same order as the spins
+            in the MagStructure.
+    &#34;&#34;&#34;
+    temp = np.array([2.0])
+    for key in self.species:
+        temp = np.concatenate((temp,
+                               (self.species[key].gS+self.species[key].gL)*np.ones(self.species[key].spins.shape[0])))
+    self.gfactors = temp[1:]</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeKfactors"><code class="name flex">
+<span>def <span class="ident">makeKfactors</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the factors K1 and K2 used for unnormalized mPDF. The fractions
+dictionary must be accurate before running this method.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeKfactors(self):
+    &#34;&#34;&#34;Set the factors K1 and K2 used for unnormalized mPDF. The fractions
+       dictionary must be accurate before running this method.
+    &#34;&#34;&#34;
+    K1, K2 = 0, 0        
+    for key in self.species:
+        gSa, gLa = self.species[key].gS, self.species[key].gL
+        ga = gSa + gLa
+        Ja = self.species[key].J
+        K1 += self.fractions[key]*ga*np.sqrt(Ja*(Ja+1))
+        K2 += self.fractions[key]*ga**2*Ja*(Ja+1)
+    K1 = K1**2
+    K1 *= (1.913*2.81794/2.0)**2*2.0/3.0
+    K2 *= (1.913*2.81794/2.0)**2*2.0/3.0
+    self.K1 = K1
+    self.K2 = K2</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeSpecies"><code class="name flex">
+<span>def <span class="ident">makeSpecies</span></span>(<span>self, label, strucIdxs=None, atoms=None, spins=None, basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None, gL=None, ffparamkey=None, ffqgrid=None, ff=None, occ=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a MagSpecies object and add it to the species dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>label</code></strong> :&ensp;<code>string</code></dt>
+<dd>label for this particular magnetic species. Should be
+different from the labels for any other magnetic species you make.</dd>
+<dt><strong><code>strucIdxs</code></strong> :&ensp;<code>python list</code></dt>
+<dd>list of integers giving indices of magnetic
+atoms in the unit cell</dd>
+<dt><strong><code>atoms</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>list of atomic coordinates of all the magnetic
+atoms in the structure; e.g. generated by generateAtomsXYZ()</dd>
+<dt><strong><code>spins</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>triplets giving the spin vectors of all the
+atoms, in the same order as the atoms array provided as input.</dd>
+<dt><strong><code>basisvecs</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>nested three-vector(s) giving the basis
+vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+phase factor should be included directly with the basisvecs.</dd>
+<dt><strong><code>kvecs</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>nested three-vector(s) giving the propagation
+vectors for the magnetic structure in r.l.u.,
+e.g. np.array([[0.5, 0.5, 0.5]])</dd>
+<dt><strong><code>gS</code></strong> :&ensp;<code>float</code></dt>
+<dd>spin component of the Lande g-factor (g = gS+gL)</dd>
+<dt><strong><code>gL</code></strong> :&ensp;<code>float</code></dt>
+<dd>orbital component of the Lande g-factor</dd>
+<dt><strong><code>ffparamkey</code></strong> :&ensp;<code>string</code></dt>
+<dd>gives the appropriate key for getFFparams()</dd>
+<dt><strong><code>ffqgrid</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>grid of momentum transfer values used for
+calculating the magnetic form factor.</dd>
+<dt><strong><code>ff</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>magnetic form factor.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeSpecies(self, label, strucIdxs=None, atoms=None, spins=None,
+                basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None,
+                gL=None, ffparamkey=None,ffqgrid=None, ff=None, occ=None):
+    &#34;&#34;&#34;Create a MagSpecies object and add it to the species dictionary.
+
+    Args:
+        label (string): label for this particular magnetic species. Should be
+            different from the labels for any other magnetic species you make.
+        strucIdxs (python list): list of integers giving indices of magnetic
+            atoms in the unit cell
+        atoms (numpy array): list of atomic coordinates of all the magnetic
+            atoms in the structure; e.g. generated by generateAtomsXYZ()
+        spins (numpy array): triplets giving the spin vectors of all the
+            atoms, in the same order as the atoms array provided as input.
+        basisvecs (numpy array): nested three-vector(s) giving the basis
+            vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
+            phase factor should be included directly with the basisvecs.
+        kvecs (numpy array): nested three-vector(s) giving the propagation
+            vectors for the magnetic structure in r.l.u.,
+            e.g. np.array([[0.5, 0.5, 0.5]])
+        gS (float): spin component of the Lande g-factor (g = gS+gL)
+        gL (float): orbital component of the Lande g-factor
+        ffparamkey (string): gives the appropriate key for getFFparams()
+        ffqgrid (numpy array): grid of momentum transfer values used for
+            calculating the magnetic form factor.
+        ff (numpy array): magnetic form factor.
+
+    &#34;&#34;&#34;
+    # check that the label is not a duplicate with any other mag species.
+    duplicate = False
+    for name in list(self.species.keys()):
+        if name == label:
+            duplicate = True
+    if not duplicate:
+        if ffqgrid is None:
+            ffqgrid = np.arange(0, 10.0, 0.01)
+        self.species[label] = MagSpecies(self.struc, label, strucIdxs, atoms, spins,
+                                         self.rmaxAtoms, basisvecs, kvecs, S, L,
+                                         J, gS, gL, ffparamkey, ffqgrid, ff,
+                                         self.verbose, occ)
+        # update the list of fractions
+        totatoms = 0.0
+        for key in self.species:
+            totatoms += self.species[key].atoms.shape[0]
+        for key in self.species:
+            if totatoms == 0.0:
+                totatoms = 1.0 # prevent divide by zero problems
+            frac = float(self.species[key].atoms.shape[0])/totatoms
+            self.fractions[key] = frac
+        self.runChecks()
+    else:
+        print(&#39;This label has already been assigned to another species in&#39;)
+        print(&#39;the structure. Please choose a new label.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.makeSpins"><code class="name flex">
+<span>def <span class="ident">makeSpins</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the Cartesian coordinates of the spin vectors in the
+structure. Calls the makeSpins() method for each MagSpecies in
+the species dictionary and concatenates them together.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeSpins(self):
+    &#34;&#34;&#34;Generate the Cartesian coordinates of the spin vectors in the
+           structure. Calls the makeSpins() method for each MagSpecies in
+           the species dictionary and concatenates them together.
+    &#34;&#34;&#34;
+    temp = np.array([[0, 0, 0]])
+    for key in self.species:
+        self.species[key].makeSpins()
+        temp = np.concatenate((temp, self.species[key].spins))
+    self.spins = temp[1:]</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.removeSpecies"><code class="name flex">
+<span>def <span class="ident">removeSpecies</span></span>(<span>self, label, update=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove a magnetic species from the species dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>label</code></strong> :&ensp;<code>string</code></dt>
+<dd>key for the dictionary entry to be removed.</dd>
+<dt><strong><code>update</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, the MagStructure will update its atoms
+and spins with the removed species now excluded.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def removeSpecies(self, label, update=True):
+    &#34;&#34;&#34;Remove a magnetic species from the species dictionary.
+
+    Args:
+        label (string): key for the dictionary entry to be removed.
+        update (boolean): if True, the MagStructure will update its atoms
+            and spins with the removed species now excluded.
+    &#34;&#34;&#34;
+    try:
+        del self.species[label]
+        if update:
+            self.getCoordsFromSpecies()
+            # update the list of fractions
+            totatoms = 0.0
+            for key in self.species:
+                totatoms += self.species[key].atoms.shape[0]
+            for key in self.species:                
+                if totatoms == 0.0:
+                    totatoms = 1.0 # prevent divide by zero problems
+                frac = float(self.species[key].atoms.shape[0])/totatoms
+                self.fractions[key] = frac
+    except:
+        print(&#39;Species cannot be deleted. Check that you are using the&#39;)
+        print(&#39;correct species label.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.runChecks"><code class="name flex">
+<span>def <span class="ident">runChecks</span></span>(<span>self, doCalcIdxsCheck=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run some simple checks and raise a warning if a problem is found.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def runChecks(self, doCalcIdxsCheck=False):
+    &#34;&#34;&#34;Run some simple checks and raise a warning if a problem is found.
+    &#34;&#34;&#34;
+    # do the MagSpecies checks
+    for key in self.species:
+        self.species[key].runChecks()
+
+    if self.verbose:        
+        print((&#39;Running checks for &#39;+self.label+&#39; MagStructure object...\n&#39;))
+
+    flag = False
+    flagCount = 0
+
+    # check for duplication among magnetic species
+    if len(self.species) &gt; 0:        
+        if list(self.species.values())[0].useDiffpyStruc:
+            idxs = []
+            for key in self.species:
+                idxs.append(self.species[key].strucIdxs)
+            idxs = [item for sublist in idxs for item in sublist] # flatten the list
+            for idx in idxs:
+                if idxs.count(idx) &gt; 1:
+                    flag = True
+            if flag:
+                flagCount += 1
+                if self.verbose:
+                    print(&#39;Warning: Magnetic species may have overlapping atoms.&#39;)
+                    print(&#39;Check the strucIdxs lists for your magnetic species.&#39;)
+                flag = False
+
+    # check that the fractions are consistent
+    totatoms = 0.0
+    for key in self.species:
+        totatoms += self.species[key].atoms.shape[0]
+    for key in self.species:
+        if totatoms == 0.0:
+            totatoms = 1.0 # prevent divide by zero problems
+        frac = float(self.species[key].atoms.shape[0])/totatoms
+        if (frac &gt; 0) and (np.abs(frac - self.fractions[key])/frac &gt; 0.1):
+            flag = True
+    if flag:
+        flagCount += 1
+        if self.verbose:
+            print(&#39;Species fractions do not correspond to actual number of&#39;)
+            print(&#39;spins of each species in the structure.&#39;)
+    flag = False
+
+    ### check if calcIdxs may not be representative of all MagSpecies.
+    if doCalcIdxsCheck: # option to turn off this check e.g. when loading a MagSpecies
+        if len(self.calcIdxs) &lt; len(self.species):
+            flag = True
+        if flag:
+            flagCount += 1
+            print(&#39;Warning: your calcIdxs may not be representative of all&#39;)
+            print(&#39;the magnetic species. calcIdxs should have the index of&#39;)
+            print(&#39;at least one spin from each species. Use&#39;)
+            print(&#39;magStruc.getSpeciesIdxs() to see starting indices for&#39;)
+            print(&#39;each species.\n&#39;)
+        flag = False
+
+    ### check if calcIdxs has indices that exceed the spin array
+    if self.atoms.shape[0]&gt;0:
+        if (np.array(self.calcIdxs).max()+1) &gt; self.atoms.shape[0]:
+            flag = True
+    if flag:
+        flagCount += 1
+        print(&#39;calcIdxs contains indices that are too large for the&#39;)
+        print(&#39;arrays of atoms and spins contained in the MagStructure.&#39;)
+    flag = False
+
+    # summarize results
+    if flagCount == 0:
+        if self.verbose:
+            print(&#39;All MagStructure checks passed. No obvious problems found.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.spinsFromAtoms"><code class="name flex">
+<span>def <span class="ident">spinsFromAtoms</span></span>(<span>self, positions, fractional=True, returnIdxs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the spin vectors corresponding to specified atomic
+positions.</p>
+<p>This method calls the diffpy.mpdf.spinsFromAtoms() method. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>magstruc</code></strong></dt>
+<dd>MagSpecies or MagStructure object containing atoms and spins</dd>
+<dt><strong><code>positions</code></strong> :&ensp;<code>list</code> or <code>array</code></dt>
+<dd>atomic positions for which the
+corresponding spins should be returned.</dd>
+<dt><strong><code>fractional</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>set as True if the atomic positions are in
+fractional coordinates of the crystallographic lattice
+vectors.</dd>
+<dt><strong><code>returnIdxs</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, the indices of the spins will also be
+returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Array consisting of the spins corresponding to the atomic positions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def spinsFromAtoms(self,positions,fractional=True,returnIdxs=False):
+    &#34;&#34;&#34;Return the spin vectors corresponding to specified atomic
+       positions.
+
+    This method calls the diffpy.mpdf.spinsFromAtoms() method. 
+
+    Args:
+        magstruc: MagSpecies or MagStructure object containing atoms and spins
+        positions (list or array): atomic positions for which the
+            corresponding spins should be returned.
+        fractional (boolean): set as True if the atomic positions are in
+            fractional coordinates of the crystallographic lattice
+            vectors.
+        returnIdxs (boolean): if True, the indices of the spins will also be
+            returned.
+    Returns:
+        Array consisting of the spins corresponding to the atomic positions.
+    &#34;&#34;&#34;
+    return spinsFromAtoms(self,positions,fractional,returnIdxs)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magstructure.MagStructure.visualize"><code class="name flex">
+<span>def <span class="ident">visualize</span></span>(<span>self, atoms, spins, showcrystalaxes=False, axesorigin=array([0, 0, 0]))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a crude 3-d plot to visualize the selected spins.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>atoms</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>array of atomic positions of spins to be
+visualized.</dd>
+<dt><strong><code>spins</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>array of spin vectors in same order as atoms.</dd>
+<dt><strong><code>showcrystalaxes</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>if True, will display the crystal axes
+determined from the first magnetic species in the MagStructure</dd>
+<dt><strong><code>axesorigin</code></strong> :&ensp;<code>array</code></dt>
+<dd>position at which the crystal axes should be
+displayed</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def visualize(self,atoms,spins,showcrystalaxes=False,
+              axesorigin=np.array([0,0,0])):
+    &#34;&#34;&#34;Generate a crude 3-d plot to visualize the selected spins.
+
+    Args:
+        atoms (numpy array): array of atomic positions of spins to be
+            visualized.
+        spins (numpy array): array of spin vectors in same order as atoms.
+        showcrystalaxes (boolean): if True, will display the crystal axes
+            determined from the first magnetic species in the MagStructure
+        axesorigin (array): position at which the crystal axes should be
+            displayed
+    &#34;&#34;&#34;
+    import matplotlib.pyplot as plt        
+    from mpl_toolkits.mplot3d import axes3d
+
+    fig = visualizeSpins(atoms,spins)
+    if showcrystalaxes:
+        ax3d = fig.axes[0]
+        try:
+            mspec=list(self.species.items())[0][1]
+            if mspec.useDiffpyStruc:
+                lat=mspec.struc.lattice
+                a, b, c = lat.stdbase
+            else:
+                a, b, c = mspec.latVecs
+            xo, yo, zo = axesorigin
+            ax3d.quiver(xo, yo, zo, a[0], a[1], a[2], pivot=&#39;tail&#39;, color=&#39;r&#39;)
+            ax3d.quiver(xo, yo, zo, b[0], b[1], b[2], pivot=&#39;tail&#39;, color=&#39;g&#39;)
+            ax3d.quiver(xo, yo, zo, c[0], c[1], c[2], pivot=&#39;tail&#39;, color=&#39;b&#39;)
+        except:
+            print(&#39;Please make sure your magnetic structure contains a&#39;)
+            print(&#39;magnetic species with MagSpecies.struc set to a diffpy&#39;)
+            print(&#39;structure or MagSpecies.latVecs provided and&#39;)
+            print(&#39;MagSpecies.useDiffpyStruc set to False.&#39;)
+    plt.show()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="diffpy.mpdf" href="index.html">diffpy.mpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="diffpy.mpdf.magstructure.MagSpecies" href="#diffpy.mpdf.magstructure.MagSpecies">MagSpecies</a></code></h4>
+<ul class="two-column">
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.atomsFromSpins" href="#diffpy.mpdf.magstructure.MagSpecies.atomsFromSpins">atomsFromSpins</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.copy" href="#diffpy.mpdf.magstructure.MagSpecies.copy">copy</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.findAtomIndices" href="#diffpy.mpdf.magstructure.MagSpecies.findAtomIndices">findAtomIndices</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.makeAtoms" href="#diffpy.mpdf.magstructure.MagSpecies.makeAtoms">makeAtoms</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.makeFF" href="#diffpy.mpdf.magstructure.MagSpecies.makeFF">makeFF</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.makeSpins" href="#diffpy.mpdf.magstructure.MagSpecies.makeSpins">makeSpins</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.runChecks" href="#diffpy.mpdf.magstructure.MagSpecies.runChecks">runChecks</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.setOcc" href="#diffpy.mpdf.magstructure.MagSpecies.setOcc">setOcc</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagSpecies.spinsFromAtoms" href="#diffpy.mpdf.magstructure.MagSpecies.spinsFromAtoms">spinsFromAtoms</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="diffpy.mpdf.magstructure.MagStructure" href="#diffpy.mpdf.magstructure.MagStructure">MagStructure</a></code></h4>
+<ul class="">
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.atomsFromSpins" href="#diffpy.mpdf.magstructure.MagStructure.atomsFromSpins">atomsFromSpins</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.calcAtomicDensity" href="#diffpy.mpdf.magstructure.MagStructure.calcAtomicDensity">calcAtomicDensity</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.calcMagneticAtomRatio" href="#diffpy.mpdf.magstructure.MagStructure.calcMagneticAtomRatio">calcMagneticAtomRatio</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.calcNetMag" href="#diffpy.mpdf.magstructure.MagStructure.calcNetMag">calcNetMag</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.copy" href="#diffpy.mpdf.magstructure.MagStructure.copy">copy</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.findAtomIndices" href="#diffpy.mpdf.magstructure.MagStructure.findAtomIndices">findAtomIndices</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.generateScaledSpins" href="#diffpy.mpdf.magstructure.MagStructure.generateScaledSpins">generateScaledSpins</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.getCoordsFromSpecies" href="#diffpy.mpdf.magstructure.MagStructure.getCoordsFromSpecies">getCoordsFromSpecies</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.getSpeciesIdxs" href="#diffpy.mpdf.magstructure.MagStructure.getSpeciesIdxs">getSpeciesIdxs</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.loadSpecies" href="#diffpy.mpdf.magstructure.MagStructure.loadSpecies">loadSpecies</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeAll" href="#diffpy.mpdf.magstructure.MagStructure.makeAll">makeAll</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeAtoms" href="#diffpy.mpdf.magstructure.MagStructure.makeAtoms">makeAtoms</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeCalcIdxs" href="#diffpy.mpdf.magstructure.MagStructure.makeCalcIdxs">makeCalcIdxs</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeFF" href="#diffpy.mpdf.magstructure.MagStructure.makeFF">makeFF</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeFractions" href="#diffpy.mpdf.magstructure.MagStructure.makeFractions">makeFractions</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeGfactors" href="#diffpy.mpdf.magstructure.MagStructure.makeGfactors">makeGfactors</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeKfactors" href="#diffpy.mpdf.magstructure.MagStructure.makeKfactors">makeKfactors</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeSpecies" href="#diffpy.mpdf.magstructure.MagStructure.makeSpecies">makeSpecies</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.makeSpins" href="#diffpy.mpdf.magstructure.MagStructure.makeSpins">makeSpins</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.removeSpecies" href="#diffpy.mpdf.magstructure.MagStructure.removeSpecies">removeSpecies</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.runChecks" href="#diffpy.mpdf.magstructure.MagStructure.runChecks">runChecks</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.spinsFromAtoms" href="#diffpy.mpdf.magstructure.MagStructure.spinsFromAtoms">spinsFromAtoms</a></code></li>
+<li><code><a title="diffpy.mpdf.magstructure.MagStructure.visualize" href="#diffpy.mpdf.magstructure.MagStructure.visualize">visualize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

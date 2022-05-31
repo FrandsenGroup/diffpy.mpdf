@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>diffpy.mpdf.visualize3D API documentation</title>
+<meta name="description" content="Generate 2D slices of 3D data for visualization." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>diffpy.mpdf.visualize3D</code></h1>
+</header>
+<section id="section-intro">
+<p>Generate 2D slices of 3D data for visualization.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Jacob Christensen and Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+&#34;&#34;&#34;Generate 2D slices of 3D data for visualization.&#34;&#34;&#34;
+
+import numpy as np
+from scipy.interpolate import interpn
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import cm, imshow, contour, clabel, colorbar
+
+class Visualizer:
+    &#34;&#34;&#34;Store and visualize three-dimensional data.
+    
+    Args:
+        m (numpy array): signal array (3D)
+        x (numpy array): x-dimension coordinates (1D)
+        y (numpy array): y-dimension coordinates (1D)
+        z (numpy array): z-dimension coordinates (1D)
+    &#34;&#34;&#34;
+    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
+            
+        self.m = m
+        self.x = x
+        self.y = y
+        self.z = z
+        self.a = None # these two instance attributes will construct an arbitrary grid
+        self.b = None
+        self.slice = None # this will become the data slice
+        if m is None:
+            self.m = np.array([])
+        if x is None:
+            self.x = np.array([])
+        if y is None:
+            self.y = np.array([])
+        if z is None:
+            self.z = np.array([])
+        self.sliceAvailable = sliceAvailable
+        
+    def three_points(self, p1, p2, p3):
+        &#34;&#34;&#34;find normal vector to the plane created by the three given points
+        &#34;&#34;&#34;
+        
+        # find two vectors from the three points which lie on the desired plane
+        vec1 = p2 - p1
+        vec2 = p3 - p1
+        # now cross these two vectors to find a vector normal to the plane
+        normal = np.cross(vec1, vec2)
+    
+        # now calculate the centroid of the three points given
+        x_pos = (p1[0] + p2[0] + p3[0]) / 3
+        y_pos = (p1[1] + p2[1] + p3[1]) / 3
+        z_pos = (p1[2] + p2[2] + p3[2]) / 3
+        cen_pt = np.array([x_pos, y_pos, z_pos])
+        print(&#39;Center Point:&#39;, cen_pt)
+        
+        return normal, cen_pt
+    
+    def make_slice(self, len_a=None, len_b=None, dr=None, use_normal=None, 
+                   cen_pt=None, normal=None, p1=None, p2=None, p3=None,
+                   returnSlice=False):
+        &#34;&#34;&#34;generate a 2D slice through the dataset
+        
+        Args:
+            len_a, len_b (float): the side lengths in Angstroms of the rectangular
+                slice to be taken through the data
+            dr (float): determines the spacing of the grid in Angstroms
+            use_normal (boolean): when True, will create slice from a normal vector and center point. When
+                False, will create slice from three points
+            cen_pt (numpy array): the center of the desired slice. Used when use_normal is True
+            normal (numpy array): the normal vector to desired plane. Used when use_normal is True
+            p1, p2, p3 (numpy array): three points in 3D space. The desired plane
+                goes through these points. Used when use_normal is False.
+            returnSlice (boolean): If True, this function will return the slice and grid.
+            
+        Returns:
+            2D array, along with space arrays, representing slice through 3D dataset
+        &#34;&#34;&#34;
+        if dr is None:
+            dr = 1
+        if use_normal is None:
+            use_normal = True
+        if len_a is None:
+            len_a = 10
+        if len_b is None:
+            len_b = 10
+        if cen_pt is None:
+            cen_pt = np.array([0, 0, 0])
+        if normal is None:
+            normal = np.array([1, 0, 0])
+        if p1 is None:
+            p1 = np.array([0, 1, 0])
+        if p2 is None:
+            p2 = np.array([1, 0, 0])
+        if p3 is None:
+            p3 = np.array([0, 0, 1])
+        
+        # First check if use_normal is False. If so, access three_points function 
+            # to calculate the normal and cen_pt of the desired plane
+        if use_normal is False:
+            normal, cen_pt = self.three_points(p1, p2, p3)
+         
+        # ensure that our basis vector v1 is not the same as normal
+        v1 = np.array([1, 0, 0])
+        if np.allclose(v1, normal):
+            v1 = np.array([0, 1, 0])
+    
+        # now make a matrix which will reflect any vector onto the orthogonal
+            # complement of the normal vec, which is our desired plane
+        # This is done by subtracting from the vector its component along the normal vector
+        m_norm = np.eye(3) - (np.outer(normal, normal.T) / normal.T.dot(normal))
+        
+        # now reflect v1 using m_norm
+        v1 = m_norm.dot(v1)
+        # and create a new vector v2 that is orthogonal to both v1 and normal
+        v2 = np.cross(normal, v1)
+        # we now have 2 vectors to form our plane
+    
+        # now create and normalize Q, which will rotate an arbitrary 
+            # slice to the orientation we desire
+        Q = np.column_stack((v1, v2, np.zeros_like(v1)))
+        Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
+    
+        # now create an arbitrary slice
+        self.a = np.arange(-len_a / 2, len_a / 2, dr)
+        self.b = np.arange(-len_b / 2, len_b / 2, dr)
+        self.a = np.append(self.a, len_a / 2)
+        self.b = np.append(self.b, len_b / 2)
+        A,B = np.meshgrid(self.a, self.b)
+        locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
+        # now move locations onto our two vectors, and add cen_pt to move slice into position
+        locations = Q.dot(locations).T + (cen_pt)
+    
+        # now we need to interpolate our 3Dmpdf function over this slice
+        points = (self.x, self.y, self.z)
+        interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
+        self.slice = interp.reshape(len(self.b),len(self.a))
+        
+        self.sliceAvailable = True
+        
+        if returnSlice:
+            return self.slice, self.a, self.b
+        
+    def visualize(self):
+        &#34;&#34;&#34;Visualize the current slice.
+        &#34;&#34;&#34;
+        if self.sliceAvailable:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
+            ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
+            amin, amax = min(self.a), max(self.a)
+            bmin, bmax = min(self.b), max(self.b)
+            im = ax.imshow(self.slice,
+                           extent=[amin, amax, bmin, bmax])
+            colorbar(im)
+            plt.tight_layout()
+            plt.show()
+            
+        else:
+            print(&#39;No data slice available for visualization.&#39;)
+            print(&#39;Please generate a slice using the makeSlice method.&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="diffpy.mpdf.visualize3D.Visualizer"><code class="flex name class">
+<span>class <span class="ident">Visualizer</span></span>
+<span>(</span><span>m=None, x=None, y=None, z=None, sliceAvailable=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Store and visualize three-dimensional data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>signal array (3D)</dd>
+<dt><strong><code>x</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>x-dimension coordinates (1D)</dd>
+<dt><strong><code>y</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>y-dimension coordinates (1D)</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>z-dimension coordinates (1D)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Visualizer:
+    &#34;&#34;&#34;Store and visualize three-dimensional data.
+    
+    Args:
+        m (numpy array): signal array (3D)
+        x (numpy array): x-dimension coordinates (1D)
+        y (numpy array): y-dimension coordinates (1D)
+        z (numpy array): z-dimension coordinates (1D)
+    &#34;&#34;&#34;
+    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
+            
+        self.m = m
+        self.x = x
+        self.y = y
+        self.z = z
+        self.a = None # these two instance attributes will construct an arbitrary grid
+        self.b = None
+        self.slice = None # this will become the data slice
+        if m is None:
+            self.m = np.array([])
+        if x is None:
+            self.x = np.array([])
+        if y is None:
+            self.y = np.array([])
+        if z is None:
+            self.z = np.array([])
+        self.sliceAvailable = sliceAvailable
+        
+    def three_points(self, p1, p2, p3):
+        &#34;&#34;&#34;find normal vector to the plane created by the three given points
+        &#34;&#34;&#34;
+        
+        # find two vectors from the three points which lie on the desired plane
+        vec1 = p2 - p1
+        vec2 = p3 - p1
+        # now cross these two vectors to find a vector normal to the plane
+        normal = np.cross(vec1, vec2)
+    
+        # now calculate the centroid of the three points given
+        x_pos = (p1[0] + p2[0] + p3[0]) / 3
+        y_pos = (p1[1] + p2[1] + p3[1]) / 3
+        z_pos = (p1[2] + p2[2] + p3[2]) / 3
+        cen_pt = np.array([x_pos, y_pos, z_pos])
+        print(&#39;Center Point:&#39;, cen_pt)
+        
+        return normal, cen_pt
+    
+    def make_slice(self, len_a=None, len_b=None, dr=None, use_normal=None, 
+                   cen_pt=None, normal=None, p1=None, p2=None, p3=None,
+                   returnSlice=False):
+        &#34;&#34;&#34;generate a 2D slice through the dataset
+        
+        Args:
+            len_a, len_b (float): the side lengths in Angstroms of the rectangular
+                slice to be taken through the data
+            dr (float): determines the spacing of the grid in Angstroms
+            use_normal (boolean): when True, will create slice from a normal vector and center point. When
+                False, will create slice from three points
+            cen_pt (numpy array): the center of the desired slice. Used when use_normal is True
+            normal (numpy array): the normal vector to desired plane. Used when use_normal is True
+            p1, p2, p3 (numpy array): three points in 3D space. The desired plane
+                goes through these points. Used when use_normal is False.
+            returnSlice (boolean): If True, this function will return the slice and grid.
+            
+        Returns:
+            2D array, along with space arrays, representing slice through 3D dataset
+        &#34;&#34;&#34;
+        if dr is None:
+            dr = 1
+        if use_normal is None:
+            use_normal = True
+        if len_a is None:
+            len_a = 10
+        if len_b is None:
+            len_b = 10
+        if cen_pt is None:
+            cen_pt = np.array([0, 0, 0])
+        if normal is None:
+            normal = np.array([1, 0, 0])
+        if p1 is None:
+            p1 = np.array([0, 1, 0])
+        if p2 is None:
+            p2 = np.array([1, 0, 0])
+        if p3 is None:
+            p3 = np.array([0, 0, 1])
+        
+        # First check if use_normal is False. If so, access three_points function 
+            # to calculate the normal and cen_pt of the desired plane
+        if use_normal is False:
+            normal, cen_pt = self.three_points(p1, p2, p3)
+         
+        # ensure that our basis vector v1 is not the same as normal
+        v1 = np.array([1, 0, 0])
+        if np.allclose(v1, normal):
+            v1 = np.array([0, 1, 0])
+    
+        # now make a matrix which will reflect any vector onto the orthogonal
+            # complement of the normal vec, which is our desired plane
+        # This is done by subtracting from the vector its component along the normal vector
+        m_norm = np.eye(3) - (np.outer(normal, normal.T) / normal.T.dot(normal))
+        
+        # now reflect v1 using m_norm
+        v1 = m_norm.dot(v1)
+        # and create a new vector v2 that is orthogonal to both v1 and normal
+        v2 = np.cross(normal, v1)
+        # we now have 2 vectors to form our plane
+    
+        # now create and normalize Q, which will rotate an arbitrary 
+            # slice to the orientation we desire
+        Q = np.column_stack((v1, v2, np.zeros_like(v1)))
+        Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
+    
+        # now create an arbitrary slice
+        self.a = np.arange(-len_a / 2, len_a / 2, dr)
+        self.b = np.arange(-len_b / 2, len_b / 2, dr)
+        self.a = np.append(self.a, len_a / 2)
+        self.b = np.append(self.b, len_b / 2)
+        A,B = np.meshgrid(self.a, self.b)
+        locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
+        # now move locations onto our two vectors, and add cen_pt to move slice into position
+        locations = Q.dot(locations).T + (cen_pt)
+    
+        # now we need to interpolate our 3Dmpdf function over this slice
+        points = (self.x, self.y, self.z)
+        interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
+        self.slice = interp.reshape(len(self.b),len(self.a))
+        
+        self.sliceAvailable = True
+        
+        if returnSlice:
+            return self.slice, self.a, self.b
+        
+    def visualize(self):
+        &#34;&#34;&#34;Visualize the current slice.
+        &#34;&#34;&#34;
+        if self.sliceAvailable:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
+            ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
+            amin, amax = min(self.a), max(self.a)
+            bmin, bmax = min(self.b), max(self.b)
+            im = ax.imshow(self.slice,
+                           extent=[amin, amax, bmin, bmax])
+            colorbar(im)
+            plt.tight_layout()
+            plt.show()
+            
+        else:
+            print(&#39;No data slice available for visualization.&#39;)
+            print(&#39;Please generate a slice using the makeSlice method.&#39;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.make_slice"><code class="name flex">
+<span>def <span class="ident">make_slice</span></span>(<span>self, len_a=None, len_b=None, dr=None, use_normal=None, cen_pt=None, normal=None, p1=None, p2=None, p3=None, returnSlice=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>generate a 2D slice through the dataset</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt>len_a, len_b (float): the side lengths in Angstroms of the rectangular</dt>
+<dt>slice to be taken through the data</dt>
+<dt><strong><code>dr</code></strong> :&ensp;<code>float</code></dt>
+<dd>determines the spacing of the grid in Angstroms</dd>
+<dt><strong><code>use_normal</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>when True, will create slice from a normal vector and center point. When
+False, will create slice from three points</dd>
+<dt><strong><code>cen_pt</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>the center of the desired slice. Used when use_normal is True</dd>
+<dt><strong><code>normal</code></strong> :&ensp;<code>numpy array</code></dt>
+<dd>the normal vector to desired plane. Used when use_normal is True</dd>
+<dt>p1, p2, p3 (numpy array): three points in 3D space. The desired plane</dt>
+<dt>goes through these points. Used when use_normal is False.</dt>
+<dt><strong><code>returnSlice</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>If True, this function will return the slice and grid.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>2D array, along with space arrays, representing slice through 3D dataset</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_slice(self, len_a=None, len_b=None, dr=None, use_normal=None, 
+               cen_pt=None, normal=None, p1=None, p2=None, p3=None,
+               returnSlice=False):
+    &#34;&#34;&#34;generate a 2D slice through the dataset
+    
+    Args:
+        len_a, len_b (float): the side lengths in Angstroms of the rectangular
+            slice to be taken through the data
+        dr (float): determines the spacing of the grid in Angstroms
+        use_normal (boolean): when True, will create slice from a normal vector and center point. When
+            False, will create slice from three points
+        cen_pt (numpy array): the center of the desired slice. Used when use_normal is True
+        normal (numpy array): the normal vector to desired plane. Used when use_normal is True
+        p1, p2, p3 (numpy array): three points in 3D space. The desired plane
+            goes through these points. Used when use_normal is False.
+        returnSlice (boolean): If True, this function will return the slice and grid.
+        
+    Returns:
+        2D array, along with space arrays, representing slice through 3D dataset
+    &#34;&#34;&#34;
+    if dr is None:
+        dr = 1
+    if use_normal is None:
+        use_normal = True
+    if len_a is None:
+        len_a = 10
+    if len_b is None:
+        len_b = 10
+    if cen_pt is None:
+        cen_pt = np.array([0, 0, 0])
+    if normal is None:
+        normal = np.array([1, 0, 0])
+    if p1 is None:
+        p1 = np.array([0, 1, 0])
+    if p2 is None:
+        p2 = np.array([1, 0, 0])
+    if p3 is None:
+        p3 = np.array([0, 0, 1])
+    
+    # First check if use_normal is False. If so, access three_points function 
+        # to calculate the normal and cen_pt of the desired plane
+    if use_normal is False:
+        normal, cen_pt = self.three_points(p1, p2, p3)
+     
+    # ensure that our basis vector v1 is not the same as normal
+    v1 = np.array([1, 0, 0])
+    if np.allclose(v1, normal):
+        v1 = np.array([0, 1, 0])
+
+    # now make a matrix which will reflect any vector onto the orthogonal
+        # complement of the normal vec, which is our desired plane
+    # This is done by subtracting from the vector its component along the normal vector
+    m_norm = np.eye(3) - (np.outer(normal, normal.T) / normal.T.dot(normal))
+    
+    # now reflect v1 using m_norm
+    v1 = m_norm.dot(v1)
+    # and create a new vector v2 that is orthogonal to both v1 and normal
+    v2 = np.cross(normal, v1)
+    # we now have 2 vectors to form our plane
+
+    # now create and normalize Q, which will rotate an arbitrary 
+        # slice to the orientation we desire
+    Q = np.column_stack((v1, v2, np.zeros_like(v1)))
+    Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
+
+    # now create an arbitrary slice
+    self.a = np.arange(-len_a / 2, len_a / 2, dr)
+    self.b = np.arange(-len_b / 2, len_b / 2, dr)
+    self.a = np.append(self.a, len_a / 2)
+    self.b = np.append(self.b, len_b / 2)
+    A,B = np.meshgrid(self.a, self.b)
+    locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
+    # now move locations onto our two vectors, and add cen_pt to move slice into position
+    locations = Q.dot(locations).T + (cen_pt)
+
+    # now we need to interpolate our 3Dmpdf function over this slice
+    points = (self.x, self.y, self.z)
+    interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
+    self.slice = interp.reshape(len(self.b),len(self.a))
+    
+    self.sliceAvailable = True
+    
+    if returnSlice:
+        return self.slice, self.a, self.b</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.three_points"><code class="name flex">
+<span>def <span class="ident">three_points</span></span>(<span>self, p1, p2, p3)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>find normal vector to the plane created by the three given points</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def three_points(self, p1, p2, p3):
+    &#34;&#34;&#34;find normal vector to the plane created by the three given points
+    &#34;&#34;&#34;
+    
+    # find two vectors from the three points which lie on the desired plane
+    vec1 = p2 - p1
+    vec2 = p3 - p1
+    # now cross these two vectors to find a vector normal to the plane
+    normal = np.cross(vec1, vec2)
+
+    # now calculate the centroid of the three points given
+    x_pos = (p1[0] + p2[0] + p3[0]) / 3
+    y_pos = (p1[1] + p2[1] + p3[1]) / 3
+    z_pos = (p1[2] + p2[2] + p3[2]) / 3
+    cen_pt = np.array([x_pos, y_pos, z_pos])
+    print(&#39;Center Point:&#39;, cen_pt)
+    
+    return normal, cen_pt</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.visualize"><code class="name flex">
+<span>def <span class="ident">visualize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Visualize the current slice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def visualize(self):
+    &#34;&#34;&#34;Visualize the current slice.
+    &#34;&#34;&#34;
+    if self.sliceAvailable:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
+        ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
+        amin, amax = min(self.a), max(self.a)
+        bmin, bmax = min(self.b), max(self.b)
+        im = ax.imshow(self.slice,
+                       extent=[amin, amax, bmin, bmax])
+        colorbar(im)
+        plt.tight_layout()
+        plt.show()
+        
+    else:
+        print(&#39;No data slice available for visualization.&#39;)
+        print(&#39;Please generate a slice using the makeSlice method.&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="diffpy.mpdf" href="index.html">diffpy.mpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="diffpy.mpdf.visualize3D.Visualizer" href="#diffpy.mpdf.visualize3D.Visualizer">Visualizer</a></code></h4>
+<ul class="">
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.make_slice" href="#diffpy.mpdf.visualize3D.Visualizer.make_slice">make_slice</a></code></li>
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.three_points" href="#diffpy.mpdf.visualize3D.Visualizer.three_points">three_points</a></code></li>
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.visualize" href="#diffpy.mpdf.visualize3D.Visualizer.visualize">visualize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

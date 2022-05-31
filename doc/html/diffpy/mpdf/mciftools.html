@@ -1,0 +1,1652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>diffpy.mpdf.mciftools API documentation</title>
+<meta name="description" content="functions for creating magnetic structures from MCIF files." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>diffpy.mpdf.mciftools</code></h1>
+</header>
+<section id="section-intro">
+<p>functions for creating magnetic structures from MCIF files.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Eric Stubben and Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+&#34;&#34;&#34;functions for creating magnetic structures from MCIF files.&#34;&#34;&#34;
+
+import re
+
+from cmath import exp
+
+from diffpy.mpdf import *
+from diffpy.structure.atom import Atom
+from diffpy.structure.lattice import Lattice
+from diffpy.structure.structure import Structure
+
+from math import floor, ceil
+
+import numpy as np
+from numpy import pi, sin, cos, sqrt, dot
+from numpy.linalg import det, inv, norm
+
+from diffpy.mpdf.simpleparser import SimpleParser
+
+
+def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
+    &#34;&#34;&#34;
+    Creates a MagStructure object from an MCIF file.
+    
+    Note: The only acceptable incommensurate structures at the moment are 1-k
+    structures with no     Fourier harmonics (i.e. only coefficients for
+    n = 1) and no atoms with nonzero average magnetic moment.
+
+    Args:
+        mcif (string): path to MCIF file for desired magnetic structure.
+        ffparamkey (string): optional; gives the appropriate key for getFFparams()
+            to generate the correct magnetic form factor.
+        rmaxAtoms (float): radius to which magnetic atoms should be generated.
+            Default is 20 Angstroms.
+
+    Returns:
+        MagStructure object corresponding to the magnetic structure
+            encoded in the MCIF file. Note that the position and spin arrays
+            are not automatically populated when using this function, so
+            MagStructure.makeAll() will likely need to be called afterward.
+
+    &#34;&#34;&#34;
+    # creates an empty MagStructure
+    mstruc = MagStructure()    
+
+    #Flags whether the structure is incommensurate
+    incomm = False
+    
+    #Extracts the needed information from the mcif file
+    tags = {}
+    parser = SimpleParser(tags)
+    tags = parser.ReadFile(mcif)
+    
+    #These are the parameters of the basic or unit magnetic cell
+    #&#39;a&#39;, &#39;b&#39;, and &#39;c&#39; are in angstroms, while &#39;alpha&#39;, &#39;beta&#39;, and &#39;gamma&#39; are in degrees
+    a = tags[&#39;_cell_length_a&#39;][0]
+    b = tags[&#39;_cell_length_b&#39;][0]
+    c = tags[&#39;_cell_length_c&#39;][0]
+    alpha = tags[&#39;_cell_angle_alpha&#39;][0]
+    beta = tags[&#39;_cell_angle_beta&#39;][0]
+    gamma = tags[&#39;_cell_angle_gamma&#39;][0]
+    transform = tags[&#39;_parent_space_group.child_transform_Pp_abc&#39;][0]
+    
+    #symbols = tags[&#39;_atom_site_type_symbol&#39;]
+    symbols = tags[&#39;_atom_site_label&#39;]
+    scaled_pos = np.array([tags[&#39;_atom_site_fract_x&#39;],
+                           tags[&#39;_atom_site_fract_y&#39;],
+                           tags[&#39;_atom_site_fract_z&#39;]]).T
+    scaled_pos = np.mod(scaled_pos,1.)
+    
+    mag_mom = np.zeros_like(scaled_pos)
+    mag_idx = []
+    
+    if &#39;_cell_wave_vector_x&#39; in tags:
+        #This is the branch for incommensurate structures
+        incomm = True
+        k = np.matrix.flatten(np.array([tags[&#39;_cell_wave_vector_x&#39;],
+                                        tags[&#39;_cell_wave_vector_y&#39;],
+                                        tags[&#39;_cell_wave_vector_z&#39;]]).T)
+
+        symm_cent = tags[&#39;_space_group_symop_magn_ssg_centering.algebraic&#39;]
+        symm_ops = tags[&#39;_space_group_symop_magn_ssg_operation.algebraic&#39;]
+
+        #For incommensurate structures, mag_mom is the average magnetic moment of an atom. Currently,
+        #this variable is unused for incommensurate structures
+        four_cos = np.zeros_like(scaled_pos)
+        four_sin = np.zeros_like(scaled_pos)
+        for i, label in enumerate(tags[&#39;_atom_site_label&#39;]):
+            if label in tags[&#39;_atom_site_moment.label&#39;]:
+                mag_idx.append(i)
+                mi = tags[&#39;_atom_site_moment.label&#39;].index(label)
+                mag_mom[i] = [tags[&#39;_atom_site_moment.crystalaxis_x&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_y&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
+        
+                four_cos[i] = [tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi],
+                               tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi + 1],
+                               tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi + 2]]
+        
+                four_sin[i] = [tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi],
+                               tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi + 1],
+                               tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi + 2]]
+    else:
+        #This is the branch for commensurate structures
+        k = np.array([0,0,0])
+        
+        symm_cent = tags[&#39;_space_group_symop_magn_centering.xyz&#39;]
+        symm_ops = tags[&#39;_space_group_symop_magn_operation.xyz&#39;]
+        
+        for i, label in enumerate(tags[&#39;_atom_site_label&#39;]):
+            if label in tags[&#39;_atom_site_moment.label&#39;]:
+                mag_idx.append(i)
+                mi = tags[&#39;_atom_site_moment.label&#39;].index(label)
+                mag_mom[i] = [tags[&#39;_atom_site_moment.crystalaxis_x&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_y&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
+    
+    #Takes the magnetic information to reduced lattice coordinates
+    L = np.diag([1./a,1./b,1./c])
+    mag_mom = dot(mag_mom,L)
+    if incomm:
+        four_cos = dot(four_cos,L)
+        four_sin = dot(four_sin,L)
+        
+    #Performs the symmetry operations to populate the rest of the unit cell
+    all_pos = np.copy(scaled_pos)
+    all_mom = np.copy(mag_mom)
+    if incomm:
+        all_cos = np.copy(four_cos)
+        all_sin = np.copy(four_sin)
+        
+    tol = 1e-3    
+    for j, pos in enumerate(scaled_pos):
+        eq_site_counter = 1
+        for cent in symm_cent:
+            #Applies a centering operation
+            if incomm:
+                Rc, hc, r1c, tc, t4c, trc = parse_magn_ssg_operation(cent)
+            else:
+                Rc, tc, trc = parse_magn_operation(cent)
+            cent_pos = np.mod(dot(Rc,pos) + tc,1.)
+            
+            for op in symm_ops:
+                #Applies a symmetry operation
+                if incomm:
+                    R, h, r1, t, t4, tr = parse_magn_ssg_operation(op)
+                else:
+                    R, t, tr = parse_magn_operation(op)
+                eq_site = dot(R,cent_pos) + t
+                
+                #Handles the cases where eq_site has coordinate values extremely close to 0 or 1
+                for l, coord in enumerate(eq_site):
+                    if abs(1 - coord) &lt; tol:
+                        eq_site[l] = 1.
+                    if abs(coord) &lt; tol:
+                        eq_site[l] = 0.
+                eq_site = np.mod(eq_site,1.)
+
+                #Checks to make sure site hasn&#39;t already been occupied
+                for l, pp in enumerate(all_pos):
+                    if np.allclose(eq_site,pp,atol=tol):
+                        break
+                else:
+                    #Adds the new site found with symmetry
+                    if j in mag_idx:
+                        mag_idx.append(len(symbols))
+                    symbols.append(symbols[j]+&#39;.&#39;+str(eq_site_counter))
+                    eq_site_counter += 1
+                    all_pos = np.append(all_pos,[eq_site],axis=0)
+                    
+                    #Transforms the moment information
+                    if incomm:
+                        deltc = 2*pi*(t4c + dot(hc,pos))
+                        delt = 2*pi*(t4 + dot(h,cent_pos))
+                
+                        cent_cos = trc*det(Rc)*(cos(deltc)*dot(Rc,four_cos[j]) - r1c*sin(deltc)*dot(Rc,four_sin[j]))
+                        cent_sin = trc*det(Rc)*(sin(deltc)*dot(Rc,four_cos[j]) + r1c*cos(deltc)*dot(Rc,four_sin[j]))
+                        
+                        new_cos = tr*det(R)*(cos(delt)*dot(R,cent_cos) - r1*sin(delt)*dot(R,cent_sin))
+                        new_sin = tr*det(R)*(sin(delt)*dot(R,cent_cos) + r1*cos(delt)*dot(R,cent_sin))
+                        
+                        all_cos = np.append(all_cos,[new_cos],axis=0)
+                        all_sin = np.append(all_sin,[new_sin],axis=0)
+
+                    new_mom = tr*trc*det(R)*det(Rc)*dot(R,dot(Rc,mag_mom[j]))   
+                    all_mom = np.append(all_mom,[new_mom],axis=0)
+    
+    #Determines the basis vectors of the structure (same as the magnetic moments if commensurate)
+    basis_vecs = np.empty(np.shape(all_pos),dtype=complex)
+    if incomm:
+        basis_vecs = (0.5*np.exp(-2*pi*1j*dot(all_pos,k)))[:,np.newaxis]*(all_cos + 1j*all_sin)
+        #for i, pos in enumerate(all_pos):
+            #basis_vecs[i] = 0.5*exp(-2*pi*1j*dot(k,pos))*(all_cos[i] + 1j*all_sin[i])
+    else:
+        basis_vecs = all_mom.astype(complex)
+        #for i, pos in enumerate(all_pos):
+            #basis_vecs[i] = all_mom[i].astype(complex)
+            
+    #Converts the basis vectors to Cartesian coordinates
+    lat = Lattice(a,b,c,alpha,beta,gamma)
+    basis_vecs = dot(basis_vecs,lat.base)
+    all_mom = dot(all_mom,lat.base)
+    
+    #Creates a diffpy Structure object
+    atoms = []
+    for i, pos in enumerate(all_pos):
+        atoms.append(Atom(atype=symbols[i],xyz=pos))
+    astruc = Structure(atoms=atoms)
+    astruc.lattice = lat
+
+    #Creates a separate MagSpecies object for each magnetic atom in the unit cell
+    for idx in mag_idx:
+        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms)
+        
+        new_mspec.struc = astruc
+        new_mspec.label = symbols[idx]
+        
+        new_mspec.strucIdxs = [idx]
+        new_mspec.origin = all_pos[idx]
+
+        new_mspec.kvecs = np.array([k])
+        new_mspec.basisvecs = np.array([basis_vecs[idx]])
+        if incomm:
+            new_mspec.kvecs = np.append(new_mspec.kvecs,[-k],axis=0)
+            new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
+        new_mspec.avgmom = all_mom[idx] if incomm else np.array([0, 0, 0])
+        
+        mstruc.loadSpecies(new_mspec)
+
+    #If different from the magnetic cell, loads the atomic cell information into the MagStructure object  
+    if transform != &#39;a,b,c;0,0,0&#39;:
+        mstruc.atomic_struc = create_atomic_cell(mstruc,transform)
+        mstruc.transform = transform
+
+    print(&#39;MagStructure creation from mcif file successful.&#39;)
+    return mstruc
+
+   
+def create_atomic_cell(mstruc,transform):
+    &#34;&#34;&#34;
+    This method accepts a MagStructure object that has already been loaded with an mcif file
+    and a string containing the parent-child basis transformation information. The output will be a new
+    diffpy.Structure object loaded with the atomic structure information related to the magnetic structure
+    of the original sample.
+    &#34;&#34;&#34;
+    #Processes the string with the parent-child transformation info
+    R, t = parse_parent_child_transform(transform)
+    R_p = inv(R)
+    t_p = dot(t,R_p)
+
+    #Transforms the magnetic cell basis to an atomic cell basis per the inverse of the given transform
+    mag_cell = mstruc.struc.lattice.base
+    atom_cell = dot(R_p,mag_cell)
+
+    #Determines the dimension of the supercell we need to completely contain the atomic cell
+    dim  = [[floor(min(R_p[:,0]) - t_p[0]) - 1,ceil(max(R_p[:,0]) - t_p[0]) + 1],
+            [floor(min(R_p[:,1]) - t_p[1]) - 1,ceil(max(R_p[:,1]) - t_p[1]) + 1],
+            [floor(min(R_p[:,2]) - t_p[2]) - 1,ceil(max(R_p[:,2]) - t_p[2]) + 1]]
+
+    sup_pos, sup_occup, sup_symb = supersize_me(mstruc.struc,dim)
+
+    #Determines atomic unit cell from the newly created magnetic supercell
+    scaled_pos = []
+    occup = []
+    symb = []
+
+    tol = 1e-3
+    for l, pos in enumerate(sup_pos):
+        #Converts the position to fractional atomic lattice coordinates
+        new_pos = dot(pos,R) + t
+
+        #Tidies up coordinates close enough to 0 or 1        
+        for i, coord in enumerate(new_pos):
+            if abs(1 - coord) &lt; tol:
+                new_pos[i] = 1.
+            if abs(coord) &lt; tol:
+                new_pos[i] = 0.
+
+        #Checks if the atoms sits inside the atomic unit cell
+        if (0&lt;=new_pos[0]&lt;1) and (0&lt;=new_pos[1]&lt;1) and (0&lt;=new_pos[2]&lt;1):
+            add_pos = True            
+
+            #Also checks for duplicates
+            dupes, dupe_idxs = find_dupes(scaled_pos,new_pos,tol)
+            if len(dupes) &gt;= 1:
+                tot_occup = sup_occup[l]
+                for idx in dupe_idxs:
+                    tot_occup += occup[idx]
+                    if element(symb[idx]) == element(sup_symb[l]):
+                        add_pos = False
+                if (tot_occup - 1) &gt; tol:
+                    add_pos = False
+            #for m, pp in enumerate(scaled_pos):
+            #    if np.allclose(new_pos,pp,atol=tol):
+            #        break
+            #else:
+            if add_pos:
+                scaled_pos.append(new_pos)
+                occup.append(sup_occup[l])
+                symb.append(sup_symb[l])
+
+    #Creates a new diffpy.Structure object representing the atomic unit cell
+    atoms = []
+    for l, pos in enumerate(scaled_pos):
+        atoms.append(Atom(atype=symb[l],xyz=pos,occupancy=occup[l]))
+    new_struc = Structure(atoms=atoms)
+    new_struc.lattice = Lattice(base=atom_cell)
+
+    return new_struc
+
+
+def create_magnetic_cell(astruc,transform):
+    &#34;&#34;&#34;
+    Takes a diffpy.Structure object representing the atomic unit cell and a string containing information 
+    about the parent to child basis vector transformation. Returns a new diffpy.Structure object
+    representing the magnetic unit cell. 
+
+    Note: At the moment, the resulting magnetic structure won&#39;t actually have any magnetic moment 
+    information; it will just be a list of atoms and their positions in the unit cell. Work still needs to
+    be done to figure out how to connect atoms in the magnetic cell with the correct moment information.
+    &#34;&#34;&#34;
+    #Processes the string with the parent-child transformation info
+    R, t = parse_parent_child_transform(transform)
+    R_p = inv(R)
+    t_p = dot(t,R_p)
+    
+    #Transforms the atomic cell basis to a magnetic cell basis using the given transform
+    atom_cell = astruc.lattice.base
+    mag_cell = dot(R,atom_cell)
+    
+    #Determines the dimensions of the supercell we want to work with to get the magnetic cell
+    dim = [[floor(min(R[:,0]) + t[0]) - 1,ceil(max(R[:,0]) + t[0]) + 1],
+           [floor(min(R[:,1]) + t[1]) - 1,ceil(max(R[:,1]) + t[1]) + 1],
+           [floor(min(R[:,2]) + t[2]) - 1,ceil(max(R[:,2]) + t[2]) + 1]]
+    
+    sup_pos, sup_occup, sup_symb = supersize_me(astruc,dim)
+    
+    #Picks out the magnetic unit cell from the newly created atomic supercell
+    scaled_pos = []
+    occup = []
+    symb = []
+    
+    tol = 1e-3
+    for l, pos in enumerate(sup_pos):
+        #Converts the position to fractional magnetic lattice coordinates
+        new_pos = dot(pos,R_p) - t_p
+
+        #Tidies up coordinates close enough to 0 or 1        
+        for i, coord in enumerate(new_pos):
+            if abs(1 - coord) &lt; tol:
+                new_pos[i] = 1.
+            if abs(coord) &lt; tol:
+                new_pos[i] = 0.
+
+        #Checks if the atom sits inside the magnetic unit cell
+        if (0&lt;=new_pos[0]&lt;1) and (0&lt;=new_pos[1]&lt;1) and (0&lt;=new_pos[2]&lt;1):
+            add_pos = True
+
+            #Also checks for duplicates (which may be allowed based on occupancy)
+            dupes, dupe_idxs = find_dupes(scaled_pos,new_pos,tol)
+            if len(dupes) &gt;= 1:
+                tot_occup = sup_occup[l]
+                for idx in dupe_idxs:
+                    tot_occup += occup[idx]
+                    if element(symb[idx]) == element(sup_symb[l]):
+                        add_pos = False
+                if (tot_occup - 1) &gt; tol:
+                    add_pos = False
+            #for m, pp in enumerate(scaled_pos):
+            #    if np.allclose(new_pos,pp,atol=tol):
+            #        break
+            #else:
+            if add_pos:
+                scaled_pos.append(new_pos)
+                occup.append(sup_occup[l])
+                symb.append(sup_symb[l])
+            
+    #Creates a new diffpy.Structure object representing the magnetic unit cell (without the moment information)
+    atoms = []
+    for l, pos in enumerate(scaled_pos):
+        atoms.append(Atom(atype=symb[l],xyz=pos,occupancy=occup[l]))
+    new_struc = Structure(atoms=atoms)
+    new_struc.lattice = Lattice(base=mag_cell)
+    
+    return new_struc
+
+
+def parse_magn_ssg_operation(op):
+    &#34;&#34;&#34;
+    Parses a string containing a superspace group symmetry operation in standard
+    notation. Returns the rotation and translation part of the associated space
+    group operation (R and t), the average structure reciprocal lattice vector (h), 
+    superspace phase information (r1 and t4), and the time reversal sign (p).
+    &#34;&#34;&#34;
+    r1,r2,r3,r4,p=op.split(&#39;,&#39;)
+    M = np.zeros([4,4])
+    t = np.zeros([3])
+    h = np.zeros([3])
+    
+    #Compiles translation information
+    t[0] = convert_to_float(r1[-4:]) if &#39;/&#39; in r1 else 0.
+    t[1] = convert_to_float(r2[-4:]) if &#39;/&#39; in r2 else 0.
+    t[2] = convert_to_float(r3[-4:]) if &#39;/&#39; in r3 else 0.
+    t4 = convert_to_float(r4[-4:]) if &#39;/&#39; in r4 else 0.
+    
+    #Compiles rotation matrix
+    for i, line in enumerate([r1,r2,r3,r4]):
+        x1=x2=x3=x4=0.
+        m = re.search(r&#39;-?\d?x1&#39;,line)
+        if m:
+            xs=m.group()
+            x1 = 1. if (&#39;x1&#39; in xs and not &#39;-&#39; in xs) else -1.
+            xs = xs.replace(&#39;x1&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,xs)
+            if m:
+                x1 *= float(m.group())
+
+        m = re.search(r&#39;-?\d?x2&#39;,line)
+        if m:
+            ys=m.group()
+            x2 = 1. if (&#39;x2&#39; in ys and not &#39;-&#39; in ys) else -1.
+            ys = ys.replace(&#39;x2&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,ys)
+            if m:
+                x2 *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?x3&#39;,line)
+        if m:
+            zs=m.group()
+            x3 = 1. if (&#39;x3&#39; in zs and not &#39;-&#39; in zs) else -1.
+            zs = zs.replace(&#39;x3&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,zs)
+            if m:
+                x3 *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?x4&#39;,line)
+        if m:
+            ts = m.group()
+            x4 = 1. if (&#39;x4&#39; in ts and not &#39;-&#39; in ts) else -1.
+            ts = ts.replace(&#39;x4&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,ts)
+            if m:
+                x4 *= float(m.group())
+            
+        M[i,0], M[i,1], M[i,2], M[i,3] = [x1,x2,x3,x4]
+    
+    R = M[:3,:3]
+    h = M[3,:3]
+    r1 = M[3,3]
+        
+    return (R,h,r1,t,t4,float(p))
+    
+
+#Essentially a copy of muesr&#39;s parse_magn_operation_xyz_string function
+def parse_magn_operation(op):
+    &#34;&#34;&#34;
+    Parses a string containg a space group symmetry operation in standard notation.
+    Returns the rotation and translation parts of the operation (R and t) and the 
+    time reversal sign (p).
+    &#34;&#34;&#34;
+    r1,r2,r3,p=op.split(&#39;,&#39;)
+    R = np.zeros([3,3]) # rotations
+    t = np.zeros([3])   # translations
+    
+    # compile traslation matrix
+    t[0] = convert_to_float(r1[-4:]) if &#39;/&#39; in r1 else 0.
+    t[1] = convert_to_float(r2[-4:]) if &#39;/&#39; in r2 else 0.
+    t[2] = convert_to_float(r3[-4:]) if &#39;/&#39; in r3 else 0.
+    
+    # compile rotation matrix
+    for i, line in enumerate([r1,r2,r3]):
+        x=y=z=0.
+        m = re.search(r&#39;-?\d?x&#39;,line)
+        if m:
+            xs=m.group()
+            x = 1. if (&#39;x&#39; in xs and not &#39;-&#39; in xs) else -1.
+            m = re.search(r&#39;\d&#39;,xs)
+            if m:
+                x *= float(m.group())
+
+        m = re.search(r&#39;-?\d?y&#39;,line)
+        if m:
+            ys=m.group()
+            y = 1. if (&#39;y&#39; in ys and not &#39;-&#39; in ys) else -1.
+            m = re.search(r&#39;\d&#39;,ys)
+            if m:
+                y *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?z&#39;,line)
+        if m:
+            zs=m.group()
+            z = 1. if (&#39;z&#39; in zs and not &#39;-&#39; in zs) else -1.
+            m = re.search(r&#39;\d&#39;,zs)
+            if m:
+                z *= float(m.group())                            
+            
+        R[i,0], R[i,1], R[i,2] = [x,y,z]
+        
+    return (R,t,float(p))
+
+
+#This is based on muesr&#39;s parse_magn_operation_xyz_string method    
+def parse_parent_child_transform(transform):
+    &#34;&#34;&#34;
+    Takes in a string containing information about the transformation from the parent
+    (paramagnetic) basis to the child (magnetic) basis and returns the &#34;rotation&#34; (not
+    necessarily a pure rotation) matrix and translation vector associated with the 
+    transformation.
+    &#34;&#34;&#34;
+    #Splits up the string into related pieces of information
+    rotation, translation = transform.split(&#39;;&#39;)
+    r1, r2, r3 = rotation.split(&#39;,&#39;)
+    t1, t2, t3 = translation.split(&#39;,&#39;)
+
+    #Initializes the rotation matrix and translation vector
+    R = np.zeros((3,3))
+    t = np.zeros(3)
+    
+    #Compiles the translation vector
+    t[0] = convert_to_float(t1) if &#39;/&#39; in t1 else t1
+    t[1] = convert_to_float(t2) if &#39;/&#39; in t2 else t2
+    t[2] = convert_to_float(t3) if &#39;/&#39; in t3 else t3
+    
+    #Compiles the rotation matrix
+    for i, line in enumerate([r1,r2,r3]):
+        x = y = z = 0
+        
+        m = re.search(r&#39;-?\d?/?\d?a&#39;,line)
+        if m:
+            xs = m.group()
+            x = 1. if (&#39;a&#39; in xs and not &#39;-&#39; in xs) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,xs)
+            if m:
+                if &#39;/&#39; in m.group():
+                    x *= convert_to_float(m.group())
+                else:
+                    x *= float(m.group())
+        
+        m = re.search(r&#39;-?\d?/?\d?b&#39;,line)
+        if m:
+            ys = m.group()
+            y = 1. if (&#39;b&#39; in ys and not &#39;-&#39; in ys) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,ys)
+            if m:
+                if &#39;/&#39; in m.group():
+                    y *= convert_to_float(m.group())
+                else:
+                    y *= float(m.group())
+                    
+        m = re.search(r&#39;-?\d?/?\d?c&#39;,line)
+        if m:
+            zs = m.group()
+            z = 1. if (&#39;c&#39; in zs and not &#39;-&#39; in zs) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,zs)
+            if m:
+                if &#39;/&#39; in m.group():
+                    z *= convert_to_float(m.group())
+                else:
+                    z *= float(m.group())
+        
+        R[i,0] = x
+        R[i,1] = y
+        R[i,2] = z
+        
+    return (R,t)
+
+
+#ATTENTION: This method should now work with diffpy, but testing still needs to be done
+def supersize_me(struc,dim):
+    &#34;&#34;&#34;
+    Accepts a diffpy.Structure object and a list of pairs specifying the beginning and ending
+    cell along each crystal axis and returns two arrays containing the fractional coordinates of the 
+    atoms in the supercell relative to the original unit cell and their chemical symbols, respectively.
+    &#34;&#34;&#34;
+    #Extracts the necessary information from the MagStructure object
+    old_pos = struc.xyz
+    old_occup = struc.occupancy
+    old_symb = []
+    for i in range(len(struc.element)):
+        old_symb.append(struc.element[i])
+    
+    #Appends the desired additional cells to the original unit cell
+    pos_list = []
+    occup_list = []
+    symb = []
+    
+    for k in range(dim[2][0],dim[2][1]):
+        for j in range(dim[1][0],dim[1][1]):
+            for i in range(dim[0][0],dim[0][1]):
+                for l, pos in enumerate(old_pos):
+                    pos_list.append(pos + np.array([i,j,k]))
+                    occup_list.append(old_occup[l])
+                    symb.append(old_symb[l])
+    
+    pos = np.array(pos_list)
+    occup = np.array(occup_list)
+    
+    return (pos,occup,symb)
+
+
+def order_by_pos(original,unordered):
+    &#34;&#34;&#34;
+    This method accepts two arrays of the same size and outputs a third array also of that size.
+    The third array is created by permuting the rows of the &#39;unordered&#39; array in such a way
+    that the point given by the ith row of the output array is closer (in terms of Euclidean distance)
+    to the point given by the ith row vector of the &#39;original&#39; array than to the point given by any
+    other row of the &#39;original&#39; array. The intended application of this method is to recover the
+    ordering of an array of atomic positions in a magnetic unit cell after downsizing to an atomic unit
+    cell and then upsizing once more.
+    
+    In this method, we&#39;re assuming that each point in the &#39;unordered&#39; array is closest to exactly one 
+    point in the original array. The motivation for this is that the rescaling of the atomic unit cell
+    during PDF and mPDF fits should only cause small changes in atomic positions within the unit cell, 
+    so no atom should stray far enough from their original position to end up closer to a different
+    atom.
+    &#34;&#34;&#34;
+    #Checks if the input arrays have the same shape
+    if np.shape(original)!=np.shape(unordered):
+        print(&#39;Error: Input arrays must be of the same size.&#39;)
+        return
+
+    ordered = np.zeros_like(unordered)
+    unordered_copy = np.copy(unordered)
+
+    for i, pos_orig in enumerate(original):
+        #For a given point in the &#39;original&#39; array, finds the closest point in the &#39;unordered&#39; array
+        closest_pos = 0
+        closest_dist = 1e6
+
+        for j, pos_unord in enumerate(unordered_copy):
+            curr_dist = norm(pos_orig - pos_unord)
+            if curr_dist &lt; closest_dist:
+                closest_dist = curr_dist
+                closest_pos = j
+
+        #Adds the closest point in the &#39;unordered&#39; array to the &#39;ordered&#39; array in the correct position
+        ordered[i] = unordered_copy[closest_pos]
+
+        #Deletes the position from the &#39;unordered&#39; array to speed up computation
+        unordered_copy = np.delete(unordered_copy,closest_pos,0)
+
+    return ordered
+
+
+def find_dupes(array,value,tol=1e-3):
+    &#34;&#34;&#34;
+    Given an m x n array, an n-vector, and a tolerance, determines which rows of the array match 
+    the n-vector within the desired (absolute) tolerance. Returns an array consisting of the 
+    matching rows and a list containing the respective indices of the rows as they were in the 
+    original array.
+    &#34;&#34;&#34;
+    dupes = np.array([])
+    dupe_idxs = []
+    
+    for i, row in enumerate(array):
+        if np.allclose(row,value,atol=tol):
+            dupes = np.append(dupes,row,axis=0)
+            dupe_idxs.append(i)
+    
+    return dupes, dupe_idxs
+
+
+def element(site_label):
+    &#34;&#34;&#34;
+    Finds and returns the chemical symbol of an element based on its site label. 
+    &#34;&#34;&#34;
+    chem_symbol = site_label[0]
+    
+    if len(site_label) &gt; 1:
+        if site_label[1].isalpha():
+            chem_symbol += site_label[1]
+    
+    return chem_symbol
+
+
+def convert_to_float(frac_str):
+    &#34;&#34;&#34;
+    This function takes in a string containing a fraction and returns a float.
+    &#34;&#34;&#34;
+    num, denom = frac_str.split(&#39;/&#39;)
+    return (float(num) / float(denom))
+    
+
+#This method can probably be removed in favor of diffpy&#39;s own cell vector generating method
+def cellpar_to_cell(cell_par):
+    &#34;&#34;&#34;
+    Takes in a list of cell parameters (three side lengths and three angles are expected) and
+    returns an array with the cell lattice vectors as rows. The lattice vectors are output in 
+    standard Cartesian coordinates with the a- and b-vectors in the xy-plane and the a-vector
+    parallel to the x-axis.
+    &#34;&#34;&#34;
+    #Extract the cell parameters from the list
+    a, b, c, alpha, beta, gamma = cell_par
+    
+    #Initializes a-vector parallel to x-axis
+    va = a * np.array([1,0.,0.])
+
+    #Constructs b-vector in the xy-plane
+    vb = b * np.array([cos(gamma),sin(gamma),0.])
+
+    #Determines resulting c-vector subject to parameter constraints
+    cx = cos(beta)
+    cy = (cos(alpha) - cos(beta)*cos(gamma))/sin(gamma)
+    cz = sqrt(1 - cx**2 - cy**2)
+    vc = c * np.array([cx,cy,cz])
+
+    #Makes and returns the cell array
+    cell = np.vstack((va,vb,vc))
+    return cell</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="diffpy.mpdf.mciftools.cellpar_to_cell"><code class="name flex">
+<span>def <span class="ident">cellpar_to_cell</span></span>(<span>cell_par)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Takes in a list of cell parameters (three side lengths and three angles are expected) and
+returns an array with the cell lattice vectors as rows. The lattice vectors are output in
+standard Cartesian coordinates with the a- and b-vectors in the xy-plane and the a-vector
+parallel to the x-axis.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cellpar_to_cell(cell_par):
+    &#34;&#34;&#34;
+    Takes in a list of cell parameters (three side lengths and three angles are expected) and
+    returns an array with the cell lattice vectors as rows. The lattice vectors are output in 
+    standard Cartesian coordinates with the a- and b-vectors in the xy-plane and the a-vector
+    parallel to the x-axis.
+    &#34;&#34;&#34;
+    #Extract the cell parameters from the list
+    a, b, c, alpha, beta, gamma = cell_par
+    
+    #Initializes a-vector parallel to x-axis
+    va = a * np.array([1,0.,0.])
+
+    #Constructs b-vector in the xy-plane
+    vb = b * np.array([cos(gamma),sin(gamma),0.])
+
+    #Determines resulting c-vector subject to parameter constraints
+    cx = cos(beta)
+    cy = (cos(alpha) - cos(beta)*cos(gamma))/sin(gamma)
+    cz = sqrt(1 - cx**2 - cy**2)
+    vc = c * np.array([cx,cy,cz])
+
+    #Makes and returns the cell array
+    cell = np.vstack((va,vb,vc))
+    return cell</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.convert_to_float"><code class="name flex">
+<span>def <span class="ident">convert_to_float</span></span>(<span>frac_str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function takes in a string containing a fraction and returns a float.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_to_float(frac_str):
+    &#34;&#34;&#34;
+    This function takes in a string containing a fraction and returns a float.
+    &#34;&#34;&#34;
+    num, denom = frac_str.split(&#39;/&#39;)
+    return (float(num) / float(denom))</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.create_atomic_cell"><code class="name flex">
+<span>def <span class="ident">create_atomic_cell</span></span>(<span>mstruc, transform)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method accepts a MagStructure object that has already been loaded with an mcif file
+and a string containing the parent-child basis transformation information. The output will be a new
+diffpy.Structure object loaded with the atomic structure information related to the magnetic structure
+of the original sample.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_atomic_cell(mstruc,transform):
+    &#34;&#34;&#34;
+    This method accepts a MagStructure object that has already been loaded with an mcif file
+    and a string containing the parent-child basis transformation information. The output will be a new
+    diffpy.Structure object loaded with the atomic structure information related to the magnetic structure
+    of the original sample.
+    &#34;&#34;&#34;
+    #Processes the string with the parent-child transformation info
+    R, t = parse_parent_child_transform(transform)
+    R_p = inv(R)
+    t_p = dot(t,R_p)
+
+    #Transforms the magnetic cell basis to an atomic cell basis per the inverse of the given transform
+    mag_cell = mstruc.struc.lattice.base
+    atom_cell = dot(R_p,mag_cell)
+
+    #Determines the dimension of the supercell we need to completely contain the atomic cell
+    dim  = [[floor(min(R_p[:,0]) - t_p[0]) - 1,ceil(max(R_p[:,0]) - t_p[0]) + 1],
+            [floor(min(R_p[:,1]) - t_p[1]) - 1,ceil(max(R_p[:,1]) - t_p[1]) + 1],
+            [floor(min(R_p[:,2]) - t_p[2]) - 1,ceil(max(R_p[:,2]) - t_p[2]) + 1]]
+
+    sup_pos, sup_occup, sup_symb = supersize_me(mstruc.struc,dim)
+
+    #Determines atomic unit cell from the newly created magnetic supercell
+    scaled_pos = []
+    occup = []
+    symb = []
+
+    tol = 1e-3
+    for l, pos in enumerate(sup_pos):
+        #Converts the position to fractional atomic lattice coordinates
+        new_pos = dot(pos,R) + t
+
+        #Tidies up coordinates close enough to 0 or 1        
+        for i, coord in enumerate(new_pos):
+            if abs(1 - coord) &lt; tol:
+                new_pos[i] = 1.
+            if abs(coord) &lt; tol:
+                new_pos[i] = 0.
+
+        #Checks if the atoms sits inside the atomic unit cell
+        if (0&lt;=new_pos[0]&lt;1) and (0&lt;=new_pos[1]&lt;1) and (0&lt;=new_pos[2]&lt;1):
+            add_pos = True            
+
+            #Also checks for duplicates
+            dupes, dupe_idxs = find_dupes(scaled_pos,new_pos,tol)
+            if len(dupes) &gt;= 1:
+                tot_occup = sup_occup[l]
+                for idx in dupe_idxs:
+                    tot_occup += occup[idx]
+                    if element(symb[idx]) == element(sup_symb[l]):
+                        add_pos = False
+                if (tot_occup - 1) &gt; tol:
+                    add_pos = False
+            #for m, pp in enumerate(scaled_pos):
+            #    if np.allclose(new_pos,pp,atol=tol):
+            #        break
+            #else:
+            if add_pos:
+                scaled_pos.append(new_pos)
+                occup.append(sup_occup[l])
+                symb.append(sup_symb[l])
+
+    #Creates a new diffpy.Structure object representing the atomic unit cell
+    atoms = []
+    for l, pos in enumerate(scaled_pos):
+        atoms.append(Atom(atype=symb[l],xyz=pos,occupancy=occup[l]))
+    new_struc = Structure(atoms=atoms)
+    new_struc.lattice = Lattice(base=atom_cell)
+
+    return new_struc</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.create_from_mcif"><code class="name flex">
+<span>def <span class="ident">create_from_mcif</span></span>(<span>mcif, ffparamkey=None, rmaxAtoms=20)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a MagStructure object from an MCIF file.</p>
+<p>Note: The only acceptable incommensurate structures at the moment are 1-k
+structures with no
+Fourier harmonics (i.e. only coefficients for
+n = 1) and no atoms with nonzero average magnetic moment.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mcif</code></strong> :&ensp;<code>string</code></dt>
+<dd>path to MCIF file for desired magnetic structure.</dd>
+<dt><strong><code>ffparamkey</code></strong> :&ensp;<code>string</code></dt>
+<dd>optional; gives the appropriate key for getFFparams()
+to generate the correct magnetic form factor.</dd>
+<dt><strong><code>rmaxAtoms</code></strong> :&ensp;<code>float</code></dt>
+<dd>radius to which magnetic atoms should be generated.
+Default is 20 Angstroms.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>MagStructure object corresponding to the magnetic structure
+encoded in the MCIF file. Note that the position and spin arrays
+are not automatically populated when using this function, so
+MagStructure.makeAll() will likely need to be called afterward.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
+    &#34;&#34;&#34;
+    Creates a MagStructure object from an MCIF file.
+    
+    Note: The only acceptable incommensurate structures at the moment are 1-k
+    structures with no     Fourier harmonics (i.e. only coefficients for
+    n = 1) and no atoms with nonzero average magnetic moment.
+
+    Args:
+        mcif (string): path to MCIF file for desired magnetic structure.
+        ffparamkey (string): optional; gives the appropriate key for getFFparams()
+            to generate the correct magnetic form factor.
+        rmaxAtoms (float): radius to which magnetic atoms should be generated.
+            Default is 20 Angstroms.
+
+    Returns:
+        MagStructure object corresponding to the magnetic structure
+            encoded in the MCIF file. Note that the position and spin arrays
+            are not automatically populated when using this function, so
+            MagStructure.makeAll() will likely need to be called afterward.
+
+    &#34;&#34;&#34;
+    # creates an empty MagStructure
+    mstruc = MagStructure()    
+
+    #Flags whether the structure is incommensurate
+    incomm = False
+    
+    #Extracts the needed information from the mcif file
+    tags = {}
+    parser = SimpleParser(tags)
+    tags = parser.ReadFile(mcif)
+    
+    #These are the parameters of the basic or unit magnetic cell
+    #&#39;a&#39;, &#39;b&#39;, and &#39;c&#39; are in angstroms, while &#39;alpha&#39;, &#39;beta&#39;, and &#39;gamma&#39; are in degrees
+    a = tags[&#39;_cell_length_a&#39;][0]
+    b = tags[&#39;_cell_length_b&#39;][0]
+    c = tags[&#39;_cell_length_c&#39;][0]
+    alpha = tags[&#39;_cell_angle_alpha&#39;][0]
+    beta = tags[&#39;_cell_angle_beta&#39;][0]
+    gamma = tags[&#39;_cell_angle_gamma&#39;][0]
+    transform = tags[&#39;_parent_space_group.child_transform_Pp_abc&#39;][0]
+    
+    #symbols = tags[&#39;_atom_site_type_symbol&#39;]
+    symbols = tags[&#39;_atom_site_label&#39;]
+    scaled_pos = np.array([tags[&#39;_atom_site_fract_x&#39;],
+                           tags[&#39;_atom_site_fract_y&#39;],
+                           tags[&#39;_atom_site_fract_z&#39;]]).T
+    scaled_pos = np.mod(scaled_pos,1.)
+    
+    mag_mom = np.zeros_like(scaled_pos)
+    mag_idx = []
+    
+    if &#39;_cell_wave_vector_x&#39; in tags:
+        #This is the branch for incommensurate structures
+        incomm = True
+        k = np.matrix.flatten(np.array([tags[&#39;_cell_wave_vector_x&#39;],
+                                        tags[&#39;_cell_wave_vector_y&#39;],
+                                        tags[&#39;_cell_wave_vector_z&#39;]]).T)
+
+        symm_cent = tags[&#39;_space_group_symop_magn_ssg_centering.algebraic&#39;]
+        symm_ops = tags[&#39;_space_group_symop_magn_ssg_operation.algebraic&#39;]
+
+        #For incommensurate structures, mag_mom is the average magnetic moment of an atom. Currently,
+        #this variable is unused for incommensurate structures
+        four_cos = np.zeros_like(scaled_pos)
+        four_sin = np.zeros_like(scaled_pos)
+        for i, label in enumerate(tags[&#39;_atom_site_label&#39;]):
+            if label in tags[&#39;_atom_site_moment.label&#39;]:
+                mag_idx.append(i)
+                mi = tags[&#39;_atom_site_moment.label&#39;].index(label)
+                mag_mom[i] = [tags[&#39;_atom_site_moment.crystalaxis_x&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_y&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
+        
+                four_cos[i] = [tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi],
+                               tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi + 1],
+                               tags[&#39;_atom_site_moment_Fourier_param.cos&#39;][3*mi + 2]]
+        
+                four_sin[i] = [tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi],
+                               tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi + 1],
+                               tags[&#39;_atom_site_moment_Fourier_param.sin&#39;][3*mi + 2]]
+    else:
+        #This is the branch for commensurate structures
+        k = np.array([0,0,0])
+        
+        symm_cent = tags[&#39;_space_group_symop_magn_centering.xyz&#39;]
+        symm_ops = tags[&#39;_space_group_symop_magn_operation.xyz&#39;]
+        
+        for i, label in enumerate(tags[&#39;_atom_site_label&#39;]):
+            if label in tags[&#39;_atom_site_moment.label&#39;]:
+                mag_idx.append(i)
+                mi = tags[&#39;_atom_site_moment.label&#39;].index(label)
+                mag_mom[i] = [tags[&#39;_atom_site_moment.crystalaxis_x&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_y&#39;][mi],
+                              tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
+    
+    #Takes the magnetic information to reduced lattice coordinates
+    L = np.diag([1./a,1./b,1./c])
+    mag_mom = dot(mag_mom,L)
+    if incomm:
+        four_cos = dot(four_cos,L)
+        four_sin = dot(four_sin,L)
+        
+    #Performs the symmetry operations to populate the rest of the unit cell
+    all_pos = np.copy(scaled_pos)
+    all_mom = np.copy(mag_mom)
+    if incomm:
+        all_cos = np.copy(four_cos)
+        all_sin = np.copy(four_sin)
+        
+    tol = 1e-3    
+    for j, pos in enumerate(scaled_pos):
+        eq_site_counter = 1
+        for cent in symm_cent:
+            #Applies a centering operation
+            if incomm:
+                Rc, hc, r1c, tc, t4c, trc = parse_magn_ssg_operation(cent)
+            else:
+                Rc, tc, trc = parse_magn_operation(cent)
+            cent_pos = np.mod(dot(Rc,pos) + tc,1.)
+            
+            for op in symm_ops:
+                #Applies a symmetry operation
+                if incomm:
+                    R, h, r1, t, t4, tr = parse_magn_ssg_operation(op)
+                else:
+                    R, t, tr = parse_magn_operation(op)
+                eq_site = dot(R,cent_pos) + t
+                
+                #Handles the cases where eq_site has coordinate values extremely close to 0 or 1
+                for l, coord in enumerate(eq_site):
+                    if abs(1 - coord) &lt; tol:
+                        eq_site[l] = 1.
+                    if abs(coord) &lt; tol:
+                        eq_site[l] = 0.
+                eq_site = np.mod(eq_site,1.)
+
+                #Checks to make sure site hasn&#39;t already been occupied
+                for l, pp in enumerate(all_pos):
+                    if np.allclose(eq_site,pp,atol=tol):
+                        break
+                else:
+                    #Adds the new site found with symmetry
+                    if j in mag_idx:
+                        mag_idx.append(len(symbols))
+                    symbols.append(symbols[j]+&#39;.&#39;+str(eq_site_counter))
+                    eq_site_counter += 1
+                    all_pos = np.append(all_pos,[eq_site],axis=0)
+                    
+                    #Transforms the moment information
+                    if incomm:
+                        deltc = 2*pi*(t4c + dot(hc,pos))
+                        delt = 2*pi*(t4 + dot(h,cent_pos))
+                
+                        cent_cos = trc*det(Rc)*(cos(deltc)*dot(Rc,four_cos[j]) - r1c*sin(deltc)*dot(Rc,four_sin[j]))
+                        cent_sin = trc*det(Rc)*(sin(deltc)*dot(Rc,four_cos[j]) + r1c*cos(deltc)*dot(Rc,four_sin[j]))
+                        
+                        new_cos = tr*det(R)*(cos(delt)*dot(R,cent_cos) - r1*sin(delt)*dot(R,cent_sin))
+                        new_sin = tr*det(R)*(sin(delt)*dot(R,cent_cos) + r1*cos(delt)*dot(R,cent_sin))
+                        
+                        all_cos = np.append(all_cos,[new_cos],axis=0)
+                        all_sin = np.append(all_sin,[new_sin],axis=0)
+
+                    new_mom = tr*trc*det(R)*det(Rc)*dot(R,dot(Rc,mag_mom[j]))   
+                    all_mom = np.append(all_mom,[new_mom],axis=0)
+    
+    #Determines the basis vectors of the structure (same as the magnetic moments if commensurate)
+    basis_vecs = np.empty(np.shape(all_pos),dtype=complex)
+    if incomm:
+        basis_vecs = (0.5*np.exp(-2*pi*1j*dot(all_pos,k)))[:,np.newaxis]*(all_cos + 1j*all_sin)
+        #for i, pos in enumerate(all_pos):
+            #basis_vecs[i] = 0.5*exp(-2*pi*1j*dot(k,pos))*(all_cos[i] + 1j*all_sin[i])
+    else:
+        basis_vecs = all_mom.astype(complex)
+        #for i, pos in enumerate(all_pos):
+            #basis_vecs[i] = all_mom[i].astype(complex)
+            
+    #Converts the basis vectors to Cartesian coordinates
+    lat = Lattice(a,b,c,alpha,beta,gamma)
+    basis_vecs = dot(basis_vecs,lat.base)
+    all_mom = dot(all_mom,lat.base)
+    
+    #Creates a diffpy Structure object
+    atoms = []
+    for i, pos in enumerate(all_pos):
+        atoms.append(Atom(atype=symbols[i],xyz=pos))
+    astruc = Structure(atoms=atoms)
+    astruc.lattice = lat
+
+    #Creates a separate MagSpecies object for each magnetic atom in the unit cell
+    for idx in mag_idx:
+        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms)
+        
+        new_mspec.struc = astruc
+        new_mspec.label = symbols[idx]
+        
+        new_mspec.strucIdxs = [idx]
+        new_mspec.origin = all_pos[idx]
+
+        new_mspec.kvecs = np.array([k])
+        new_mspec.basisvecs = np.array([basis_vecs[idx]])
+        if incomm:
+            new_mspec.kvecs = np.append(new_mspec.kvecs,[-k],axis=0)
+            new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
+        new_mspec.avgmom = all_mom[idx] if incomm else np.array([0, 0, 0])
+        
+        mstruc.loadSpecies(new_mspec)
+
+    #If different from the magnetic cell, loads the atomic cell information into the MagStructure object  
+    if transform != &#39;a,b,c;0,0,0&#39;:
+        mstruc.atomic_struc = create_atomic_cell(mstruc,transform)
+        mstruc.transform = transform
+
+    print(&#39;MagStructure creation from mcif file successful.&#39;)
+    return mstruc</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.create_magnetic_cell"><code class="name flex">
+<span>def <span class="ident">create_magnetic_cell</span></span>(<span>astruc, transform)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Takes a diffpy.Structure object representing the atomic unit cell and a string containing information
+about the parent to child basis vector transformation. Returns a new diffpy.Structure object
+representing the magnetic unit cell. </p>
+<p>Note: At the moment, the resulting magnetic structure won't actually have any magnetic moment
+information; it will just be a list of atoms and their positions in the unit cell. Work still needs to
+be done to figure out how to connect atoms in the magnetic cell with the correct moment information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_magnetic_cell(astruc,transform):
+    &#34;&#34;&#34;
+    Takes a diffpy.Structure object representing the atomic unit cell and a string containing information 
+    about the parent to child basis vector transformation. Returns a new diffpy.Structure object
+    representing the magnetic unit cell. 
+
+    Note: At the moment, the resulting magnetic structure won&#39;t actually have any magnetic moment 
+    information; it will just be a list of atoms and their positions in the unit cell. Work still needs to
+    be done to figure out how to connect atoms in the magnetic cell with the correct moment information.
+    &#34;&#34;&#34;
+    #Processes the string with the parent-child transformation info
+    R, t = parse_parent_child_transform(transform)
+    R_p = inv(R)
+    t_p = dot(t,R_p)
+    
+    #Transforms the atomic cell basis to a magnetic cell basis using the given transform
+    atom_cell = astruc.lattice.base
+    mag_cell = dot(R,atom_cell)
+    
+    #Determines the dimensions of the supercell we want to work with to get the magnetic cell
+    dim = [[floor(min(R[:,0]) + t[0]) - 1,ceil(max(R[:,0]) + t[0]) + 1],
+           [floor(min(R[:,1]) + t[1]) - 1,ceil(max(R[:,1]) + t[1]) + 1],
+           [floor(min(R[:,2]) + t[2]) - 1,ceil(max(R[:,2]) + t[2]) + 1]]
+    
+    sup_pos, sup_occup, sup_symb = supersize_me(astruc,dim)
+    
+    #Picks out the magnetic unit cell from the newly created atomic supercell
+    scaled_pos = []
+    occup = []
+    symb = []
+    
+    tol = 1e-3
+    for l, pos in enumerate(sup_pos):
+        #Converts the position to fractional magnetic lattice coordinates
+        new_pos = dot(pos,R_p) - t_p
+
+        #Tidies up coordinates close enough to 0 or 1        
+        for i, coord in enumerate(new_pos):
+            if abs(1 - coord) &lt; tol:
+                new_pos[i] = 1.
+            if abs(coord) &lt; tol:
+                new_pos[i] = 0.
+
+        #Checks if the atom sits inside the magnetic unit cell
+        if (0&lt;=new_pos[0]&lt;1) and (0&lt;=new_pos[1]&lt;1) and (0&lt;=new_pos[2]&lt;1):
+            add_pos = True
+
+            #Also checks for duplicates (which may be allowed based on occupancy)
+            dupes, dupe_idxs = find_dupes(scaled_pos,new_pos,tol)
+            if len(dupes) &gt;= 1:
+                tot_occup = sup_occup[l]
+                for idx in dupe_idxs:
+                    tot_occup += occup[idx]
+                    if element(symb[idx]) == element(sup_symb[l]):
+                        add_pos = False
+                if (tot_occup - 1) &gt; tol:
+                    add_pos = False
+            #for m, pp in enumerate(scaled_pos):
+            #    if np.allclose(new_pos,pp,atol=tol):
+            #        break
+            #else:
+            if add_pos:
+                scaled_pos.append(new_pos)
+                occup.append(sup_occup[l])
+                symb.append(sup_symb[l])
+            
+    #Creates a new diffpy.Structure object representing the magnetic unit cell (without the moment information)
+    atoms = []
+    for l, pos in enumerate(scaled_pos):
+        atoms.append(Atom(atype=symb[l],xyz=pos,occupancy=occup[l]))
+    new_struc = Structure(atoms=atoms)
+    new_struc.lattice = Lattice(base=mag_cell)
+    
+    return new_struc</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.element"><code class="name flex">
+<span>def <span class="ident">element</span></span>(<span>site_label)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds and returns the chemical symbol of an element based on its site label.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def element(site_label):
+    &#34;&#34;&#34;
+    Finds and returns the chemical symbol of an element based on its site label. 
+    &#34;&#34;&#34;
+    chem_symbol = site_label[0]
+    
+    if len(site_label) &gt; 1:
+        if site_label[1].isalpha():
+            chem_symbol += site_label[1]
+    
+    return chem_symbol</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.find_dupes"><code class="name flex">
+<span>def <span class="ident">find_dupes</span></span>(<span>array, value, tol=0.001)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given an m x n array, an n-vector, and a tolerance, determines which rows of the array match
+the n-vector within the desired (absolute) tolerance. Returns an array consisting of the
+matching rows and a list containing the respective indices of the rows as they were in the
+original array.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_dupes(array,value,tol=1e-3):
+    &#34;&#34;&#34;
+    Given an m x n array, an n-vector, and a tolerance, determines which rows of the array match 
+    the n-vector within the desired (absolute) tolerance. Returns an array consisting of the 
+    matching rows and a list containing the respective indices of the rows as they were in the 
+    original array.
+    &#34;&#34;&#34;
+    dupes = np.array([])
+    dupe_idxs = []
+    
+    for i, row in enumerate(array):
+        if np.allclose(row,value,atol=tol):
+            dupes = np.append(dupes,row,axis=0)
+            dupe_idxs.append(i)
+    
+    return dupes, dupe_idxs</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.order_by_pos"><code class="name flex">
+<span>def <span class="ident">order_by_pos</span></span>(<span>original, unordered)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method accepts two arrays of the same size and outputs a third array also of that size.
+The third array is created by permuting the rows of the 'unordered' array in such a way
+that the point given by the ith row of the output array is closer (in terms of Euclidean distance)
+to the point given by the ith row vector of the 'original' array than to the point given by any
+other row of the 'original' array. The intended application of this method is to recover the
+ordering of an array of atomic positions in a magnetic unit cell after downsizing to an atomic unit
+cell and then upsizing once more.</p>
+<p>In this method, we're assuming that each point in the 'unordered' array is closest to exactly one
+point in the original array. The motivation for this is that the rescaling of the atomic unit cell
+during PDF and mPDF fits should only cause small changes in atomic positions within the unit cell,
+so no atom should stray far enough from their original position to end up closer to a different
+atom.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def order_by_pos(original,unordered):
+    &#34;&#34;&#34;
+    This method accepts two arrays of the same size and outputs a third array also of that size.
+    The third array is created by permuting the rows of the &#39;unordered&#39; array in such a way
+    that the point given by the ith row of the output array is closer (in terms of Euclidean distance)
+    to the point given by the ith row vector of the &#39;original&#39; array than to the point given by any
+    other row of the &#39;original&#39; array. The intended application of this method is to recover the
+    ordering of an array of atomic positions in a magnetic unit cell after downsizing to an atomic unit
+    cell and then upsizing once more.
+    
+    In this method, we&#39;re assuming that each point in the &#39;unordered&#39; array is closest to exactly one 
+    point in the original array. The motivation for this is that the rescaling of the atomic unit cell
+    during PDF and mPDF fits should only cause small changes in atomic positions within the unit cell, 
+    so no atom should stray far enough from their original position to end up closer to a different
+    atom.
+    &#34;&#34;&#34;
+    #Checks if the input arrays have the same shape
+    if np.shape(original)!=np.shape(unordered):
+        print(&#39;Error: Input arrays must be of the same size.&#39;)
+        return
+
+    ordered = np.zeros_like(unordered)
+    unordered_copy = np.copy(unordered)
+
+    for i, pos_orig in enumerate(original):
+        #For a given point in the &#39;original&#39; array, finds the closest point in the &#39;unordered&#39; array
+        closest_pos = 0
+        closest_dist = 1e6
+
+        for j, pos_unord in enumerate(unordered_copy):
+            curr_dist = norm(pos_orig - pos_unord)
+            if curr_dist &lt; closest_dist:
+                closest_dist = curr_dist
+                closest_pos = j
+
+        #Adds the closest point in the &#39;unordered&#39; array to the &#39;ordered&#39; array in the correct position
+        ordered[i] = unordered_copy[closest_pos]
+
+        #Deletes the position from the &#39;unordered&#39; array to speed up computation
+        unordered_copy = np.delete(unordered_copy,closest_pos,0)
+
+    return ordered</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.parse_magn_operation"><code class="name flex">
+<span>def <span class="ident">parse_magn_operation</span></span>(<span>op)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parses a string containg a space group symmetry operation in standard notation.
+Returns the rotation and translation parts of the operation (R and t) and the
+time reversal sign (p).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_magn_operation(op):
+    &#34;&#34;&#34;
+    Parses a string containg a space group symmetry operation in standard notation.
+    Returns the rotation and translation parts of the operation (R and t) and the 
+    time reversal sign (p).
+    &#34;&#34;&#34;
+    r1,r2,r3,p=op.split(&#39;,&#39;)
+    R = np.zeros([3,3]) # rotations
+    t = np.zeros([3])   # translations
+    
+    # compile traslation matrix
+    t[0] = convert_to_float(r1[-4:]) if &#39;/&#39; in r1 else 0.
+    t[1] = convert_to_float(r2[-4:]) if &#39;/&#39; in r2 else 0.
+    t[2] = convert_to_float(r3[-4:]) if &#39;/&#39; in r3 else 0.
+    
+    # compile rotation matrix
+    for i, line in enumerate([r1,r2,r3]):
+        x=y=z=0.
+        m = re.search(r&#39;-?\d?x&#39;,line)
+        if m:
+            xs=m.group()
+            x = 1. if (&#39;x&#39; in xs and not &#39;-&#39; in xs) else -1.
+            m = re.search(r&#39;\d&#39;,xs)
+            if m:
+                x *= float(m.group())
+
+        m = re.search(r&#39;-?\d?y&#39;,line)
+        if m:
+            ys=m.group()
+            y = 1. if (&#39;y&#39; in ys and not &#39;-&#39; in ys) else -1.
+            m = re.search(r&#39;\d&#39;,ys)
+            if m:
+                y *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?z&#39;,line)
+        if m:
+            zs=m.group()
+            z = 1. if (&#39;z&#39; in zs and not &#39;-&#39; in zs) else -1.
+            m = re.search(r&#39;\d&#39;,zs)
+            if m:
+                z *= float(m.group())                            
+            
+        R[i,0], R[i,1], R[i,2] = [x,y,z]
+        
+    return (R,t,float(p))</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.parse_magn_ssg_operation"><code class="name flex">
+<span>def <span class="ident">parse_magn_ssg_operation</span></span>(<span>op)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parses a string containing a superspace group symmetry operation in standard
+notation. Returns the rotation and translation part of the associated space
+group operation (R and t), the average structure reciprocal lattice vector (h),
+superspace phase information (r1 and t4), and the time reversal sign (p).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_magn_ssg_operation(op):
+    &#34;&#34;&#34;
+    Parses a string containing a superspace group symmetry operation in standard
+    notation. Returns the rotation and translation part of the associated space
+    group operation (R and t), the average structure reciprocal lattice vector (h), 
+    superspace phase information (r1 and t4), and the time reversal sign (p).
+    &#34;&#34;&#34;
+    r1,r2,r3,r4,p=op.split(&#39;,&#39;)
+    M = np.zeros([4,4])
+    t = np.zeros([3])
+    h = np.zeros([3])
+    
+    #Compiles translation information
+    t[0] = convert_to_float(r1[-4:]) if &#39;/&#39; in r1 else 0.
+    t[1] = convert_to_float(r2[-4:]) if &#39;/&#39; in r2 else 0.
+    t[2] = convert_to_float(r3[-4:]) if &#39;/&#39; in r3 else 0.
+    t4 = convert_to_float(r4[-4:]) if &#39;/&#39; in r4 else 0.
+    
+    #Compiles rotation matrix
+    for i, line in enumerate([r1,r2,r3,r4]):
+        x1=x2=x3=x4=0.
+        m = re.search(r&#39;-?\d?x1&#39;,line)
+        if m:
+            xs=m.group()
+            x1 = 1. if (&#39;x1&#39; in xs and not &#39;-&#39; in xs) else -1.
+            xs = xs.replace(&#39;x1&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,xs)
+            if m:
+                x1 *= float(m.group())
+
+        m = re.search(r&#39;-?\d?x2&#39;,line)
+        if m:
+            ys=m.group()
+            x2 = 1. if (&#39;x2&#39; in ys and not &#39;-&#39; in ys) else -1.
+            ys = ys.replace(&#39;x2&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,ys)
+            if m:
+                x2 *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?x3&#39;,line)
+        if m:
+            zs=m.group()
+            x3 = 1. if (&#39;x3&#39; in zs and not &#39;-&#39; in zs) else -1.
+            zs = zs.replace(&#39;x3&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,zs)
+            if m:
+                x3 *= float(m.group())
+                
+        m = re.search(r&#39;-?\d?x4&#39;,line)
+        if m:
+            ts = m.group()
+            x4 = 1. if (&#39;x4&#39; in ts and not &#39;-&#39; in ts) else -1.
+            ts = ts.replace(&#39;x4&#39;,&#39;&#39;)
+            m = re.search(r&#39;\d&#39;,ts)
+            if m:
+                x4 *= float(m.group())
+            
+        M[i,0], M[i,1], M[i,2], M[i,3] = [x1,x2,x3,x4]
+    
+    R = M[:3,:3]
+    h = M[3,:3]
+    r1 = M[3,3]
+        
+    return (R,h,r1,t,t4,float(p))</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.parse_parent_child_transform"><code class="name flex">
+<span>def <span class="ident">parse_parent_child_transform</span></span>(<span>transform)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Takes in a string containing information about the transformation from the parent
+(paramagnetic) basis to the child (magnetic) basis and returns the "rotation" (not
+necessarily a pure rotation) matrix and translation vector associated with the
+transformation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_parent_child_transform(transform):
+    &#34;&#34;&#34;
+    Takes in a string containing information about the transformation from the parent
+    (paramagnetic) basis to the child (magnetic) basis and returns the &#34;rotation&#34; (not
+    necessarily a pure rotation) matrix and translation vector associated with the 
+    transformation.
+    &#34;&#34;&#34;
+    #Splits up the string into related pieces of information
+    rotation, translation = transform.split(&#39;;&#39;)
+    r1, r2, r3 = rotation.split(&#39;,&#39;)
+    t1, t2, t3 = translation.split(&#39;,&#39;)
+
+    #Initializes the rotation matrix and translation vector
+    R = np.zeros((3,3))
+    t = np.zeros(3)
+    
+    #Compiles the translation vector
+    t[0] = convert_to_float(t1) if &#39;/&#39; in t1 else t1
+    t[1] = convert_to_float(t2) if &#39;/&#39; in t2 else t2
+    t[2] = convert_to_float(t3) if &#39;/&#39; in t3 else t3
+    
+    #Compiles the rotation matrix
+    for i, line in enumerate([r1,r2,r3]):
+        x = y = z = 0
+        
+        m = re.search(r&#39;-?\d?/?\d?a&#39;,line)
+        if m:
+            xs = m.group()
+            x = 1. if (&#39;a&#39; in xs and not &#39;-&#39; in xs) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,xs)
+            if m:
+                if &#39;/&#39; in m.group():
+                    x *= convert_to_float(m.group())
+                else:
+                    x *= float(m.group())
+        
+        m = re.search(r&#39;-?\d?/?\d?b&#39;,line)
+        if m:
+            ys = m.group()
+            y = 1. if (&#39;b&#39; in ys and not &#39;-&#39; in ys) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,ys)
+            if m:
+                if &#39;/&#39; in m.group():
+                    y *= convert_to_float(m.group())
+                else:
+                    y *= float(m.group())
+                    
+        m = re.search(r&#39;-?\d?/?\d?c&#39;,line)
+        if m:
+            zs = m.group()
+            z = 1. if (&#39;c&#39; in zs and not &#39;-&#39; in zs) else -1.
+            m = re.search(r&#39;\d/?\d?&#39;,zs)
+            if m:
+                if &#39;/&#39; in m.group():
+                    z *= convert_to_float(m.group())
+                else:
+                    z *= float(m.group())
+        
+        R[i,0] = x
+        R[i,1] = y
+        R[i,2] = z
+        
+    return (R,t)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mciftools.supersize_me"><code class="name flex">
+<span>def <span class="ident">supersize_me</span></span>(<span>struc, dim)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Accepts a diffpy.Structure object and a list of pairs specifying the beginning and ending
+cell along each crystal axis and returns two arrays containing the fractional coordinates of the
+atoms in the supercell relative to the original unit cell and their chemical symbols, respectively.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def supersize_me(struc,dim):
+    &#34;&#34;&#34;
+    Accepts a diffpy.Structure object and a list of pairs specifying the beginning and ending
+    cell along each crystal axis and returns two arrays containing the fractional coordinates of the 
+    atoms in the supercell relative to the original unit cell and their chemical symbols, respectively.
+    &#34;&#34;&#34;
+    #Extracts the necessary information from the MagStructure object
+    old_pos = struc.xyz
+    old_occup = struc.occupancy
+    old_symb = []
+    for i in range(len(struc.element)):
+        old_symb.append(struc.element[i])
+    
+    #Appends the desired additional cells to the original unit cell
+    pos_list = []
+    occup_list = []
+    symb = []
+    
+    for k in range(dim[2][0],dim[2][1]):
+        for j in range(dim[1][0],dim[1][1]):
+            for i in range(dim[0][0],dim[0][1]):
+                for l, pos in enumerate(old_pos):
+                    pos_list.append(pos + np.array([i,j,k]))
+                    occup_list.append(old_occup[l])
+                    symb.append(old_symb[l])
+    
+    pos = np.array(pos_list)
+    occup = np.array(occup_list)
+    
+    return (pos,occup,symb)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="diffpy.mpdf" href="index.html">diffpy.mpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="diffpy.mpdf.mciftools.cellpar_to_cell" href="#diffpy.mpdf.mciftools.cellpar_to_cell">cellpar_to_cell</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.convert_to_float" href="#diffpy.mpdf.mciftools.convert_to_float">convert_to_float</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.create_atomic_cell" href="#diffpy.mpdf.mciftools.create_atomic_cell">create_atomic_cell</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.create_from_mcif" href="#diffpy.mpdf.mciftools.create_from_mcif">create_from_mcif</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.create_magnetic_cell" href="#diffpy.mpdf.mciftools.create_magnetic_cell">create_magnetic_cell</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.element" href="#diffpy.mpdf.mciftools.element">element</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.find_dupes" href="#diffpy.mpdf.mciftools.find_dupes">find_dupes</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.order_by_pos" href="#diffpy.mpdf.mciftools.order_by_pos">order_by_pos</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.parse_magn_operation" href="#diffpy.mpdf.mciftools.parse_magn_operation">parse_magn_operation</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.parse_magn_ssg_operation" href="#diffpy.mpdf.mciftools.parse_magn_ssg_operation">parse_magn_ssg_operation</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.parse_parent_child_transform" href="#diffpy.mpdf.mciftools.parse_parent_child_transform">parse_parent_child_transform</a></code></li>
+<li><code><a title="diffpy.mpdf.mciftools.supersize_me" href="#diffpy.mpdf.mciftools.supersize_me">supersize_me</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
