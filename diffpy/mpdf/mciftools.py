@@ -42,16 +42,17 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
     n = 1) and no atoms with nonzero average magnetic moment.
 
     Args:
-    mcif (string): path to MCIF file for desired magnetic structure.
-    ffparamkey (string): optional; gives the appropriate key for getFFparams()
-        to generate the correct magnetic form factor.
-    rmaxAtoms (float): radius to which magnetic atoms should be generated.
-        Default is 20 Angstroms.
+        mcif (string): path to MCIF file for desired magnetic structure.
+        ffparamkey (string): optional; gives the appropriate key for getFFparams()
+            to generate the correct magnetic form factor.
+        rmaxAtoms (float): radius to which magnetic atoms should be generated.
+            Default is 20 Angstroms.
 
-    Returns: MagStructure object corresponding to the magnetic structure
-        encoded in the MCIF file. Note that the position and spin arrays
-        are not automatically populated when using this function, so
-        MagStructure.makeAll() will likely need to be called afterward.
+    Returns:
+        MagStructure object corresponding to the magnetic structure
+            encoded in the MCIF file. Note that the position and spin arrays
+            are not automatically populated when using this function, so
+            MagStructure.makeAll() will likely need to be called afterward.
 
     """
     # creates an empty MagStructure
