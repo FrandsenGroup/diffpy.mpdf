@@ -2,7 +2,7 @@
 
 Framework for computing and fitting magnetic PDFs.
 
-This package aims to provide a convenient method for computing the magnetic PDF (mPDF) from magnetic structures and performing fits to neutron total scattering data. The mPDF is calculated by an mPDFcalculator object, which extracts the spin positions and spin vectors from a magStructure object that the mPDFcalculator takes as input. The magStructure object in turn can contain multiple magSpecies objects, which generate magnetic configurations based on a diffpy.Structure object and a set of propagation vectors and basis vectors provided by the user. Alternatively, the user can manually define a magnetic unit cell that will be used to generate the magnetic structure, or the magnetic structure can be defined simply as lists of spin positions and spin vectors provided by the user.
+This package aims to provide a convenient method for computing the magnetic PDF (mPDF) from magnetic structures and performing fits to neutron total scattering data. The mPDF is calculated by an mPDFcalculator object, which extracts the spin positions and spin vectors from a magStructure object that the mPDFcalculator takes as input. The magStructure object in turn can contain multiple magSpecies objects, which generate magnetic configurations based on a diffpy.Structure object and a set of propagation vectors and basis vectors either provided by the user or read in directly from an MCIF file. Alternatively, the user can manually define a magnetic unit cell that will be used to generate the magnetic structure, or the magnetic structure can be defined simply as lists of spin positions and spin vectors provided by the user.
 
 
 ## Requirements
@@ -15,11 +15,11 @@ Recommended software:
 
 Full diffpy-cmi suite.
 
-Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit).
+Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit). With some effort, it may also be possible to run the program on Windows using the Linux Subsystem available for Windows 10.
 
 ## Installation
 
-The recommended way to install this package is first to install diffpy-cmi through conda, then install diffpy.mpdf from source.
+The recommended way to install this package is first to install diffpy-cmi through conda using the Anaconda python distribution, then install diffpy.mpdf from source. See https://www.anaconda.com/distribution for instructions about installing the Anaconda python distribution.
 
 #### Step 1 (recommended): Create and activate a conda environment for diffpy + diffpy.mpdf.
     >>> conda create --name diffpy python=3
