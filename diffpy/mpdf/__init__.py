@@ -27,5 +27,6 @@ from diffpy.mpdf.mpdf3Dcalculator import *
 from diffpy.mpdf.visualize3D import *
 from diffpy.mpdf.mciftools import *
 from diffpy.mpdf.simpleparser import *
+from diffpy.mpdf.mpdftransformer import *
 
 # End of file
