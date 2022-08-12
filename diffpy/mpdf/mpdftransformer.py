@@ -17,7 +17,6 @@
 """class to transform magnetic scattering data into mPDF data."""
 
 import copy
-import random
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
@@ -517,9 +516,11 @@ class MPDFtransformer:
         w = 6
         h = 3
 
+        plotsReady = False
+
         # plot of scattered intensity
         if len(self.q) == len(self.iq) > 1:
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title('Intensity vs. Q')
             if len(self.diq) == len(self.iq):
@@ -532,12 +533,13 @@ class MPDFtransformer:
             ax.set_xlabel(r'Q ($\mathdefault{\AA^{-1}}$)')
             ax.set_ylabel(r' Intensity (arb. units)')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
+            plotsReady = True
 
         # plots for the normalized mPDF
         if self._normalized_done:
             # plot of sqm
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(r'S$_{\mathdefault{m}}$ vs. Q')
             msk = self._mask3
@@ -546,10 +548,10 @@ class MPDFtransformer:
             ax.set_xlabel(r'Q ($\mathdefault{\AA^{-1}}$)')
             ax.set_ylabel(r'S$_{\mathdefault{m}}$')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
 
             # plot of fqm with the polynomial background
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(r'F$_{\mathdefault{m}}$ vs. Q')
             msk = self._mask3
@@ -559,10 +561,10 @@ class MPDFtransformer:
             ax.set_xlabel(r'Q ($\mathdefault{\AA^{-1}}$)')
             ax.set_ylabel(r'F$_{\mathdefault{m}}$')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
 
             # plot of fqc
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(r'F$_{\mathdefault{c}}$ vs. Q')
             msk = self._mask3
@@ -574,30 +576,34 @@ class MPDFtransformer:
             ax.set_xlabel(r'Q ($\mathdefault{\AA^{-1}}$)')
             ax.set_ylabel(r'F$_{\mathdefault{c}}$')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
 
             # plot of gmag
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(r'G$_{\mathdefault{mag}}$ vs. r')
             ax.plot(self._r, self._gmag)
             ax.set_xlabel(r'r ($\mathdefault{\AA}$)')
             ax.set_ylabel(r'G$_{\mathdefault{mag}}$ ($\mathdefault{\AA^{-2}}$)')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
+            plotsReady = True
 
         # plot of unnormalized mPDF
         if self._unnormalized_done:
             # plot of gmag
-            fig = plt.figure(figsize=(w,h))
+            fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(r'd$_{\mathdefault{mag}}$ vs. r')
             ax.plot(self._r, self._dmag)
             ax.set_xlabel(r'r ($\mathdefault{\AA}$)')
             ax.set_ylabel(r'd$_{\mathdefault{mag}}$ (arb. units)')
             plt.tight_layout()
-            plt.show()
+            plt.draw()
+            plotsReady = True
 
+        if plotsReady:
+            plt.show()
 
     def copy(self):
         """Return a deep copy of the MPDFtransformer object."""
