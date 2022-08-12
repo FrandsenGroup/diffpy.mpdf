@@ -26,12 +26,15 @@ from numpy.polynomial.polynomial import polyval
 from diffpy.mpdf.magutils import sinTransformDirectIntegration
 
 def resid1(p, ff, iq, diq):
+    """Scale the magnetic form factor to the data."""
     return (iq - (p[0] * ff)**2)/diq
 
 def bkgfunc(p, q):
+    """Generate polynomial to fit to F(Q)."""
     return q * polyval(q, p)
 
 def resid2(p, q, fqm, dfqm):
+    """Fit polynomial to F(Q)."""
     return (fqm - bkgfunc(p, q))/dfqm
 
 def window_FD(q, qmaxwindow, width):
@@ -39,18 +42,19 @@ def window_FD(q, qmaxwindow, width):
     Window function based on the Fermi-Dirac function.
     Goes to zero at qmaxwindow.
     """
-    window = 0.0*q
+    window = 0.0 * q
     mask = (q <= qmaxwindow)
-    window[mask] = 2.0/(np.exp((q[mask]-qmaxwindow)/width)+1) - 1
+    window[mask] = 2.0/(np.exp((q[mask]-qmaxwindow)/width) + 1) - 1
     return window
 
 def window_Lorch(q, qmaxwindow):
     """
     Lorch window function. Goes to zero at qmaxwindow.
     """
-    window = 0.0*q
+    window = 0.0 * q
     mask = (q <= qmaxwindow)
-    window[mask] = (qmaxwindow/np.pi/q[mask])*np.sin(np.pi*q[mask]/qmaxwindow)
+    window[mask] = (qmaxwindow/np.pi/q[mask]) * \
+                   np.sin(np.pi*q[mask]/qmaxwindow)
     return window
 
 def getmPDF_unnormalized(q, iq, qmin, qmax, rmin=0.05, rmax=100, rstep=0.01):
@@ -272,7 +276,27 @@ class MPDFtransformer:
         windowedgewidth (float): approximate width of Fermi-Dirac window.
             Not applicable to 'Lorch' or 'None' window options.
 
-    Attributes:
+    Properties:
+        r (np array): r grid of the mPDF.
+        dmag (np array): Unnormalized mPDF.
+        gmag (np array): Normalized mPDF.
+        sqm (np array): Magnetic structure function (no corrections applied)
+        dsqm (np array): Estimated uncertainties for sqm.
+        fqc (np array): Corrected reduced magnetic structure function
+            (this is what gets Fourier transformed).
+        fqc_prewindow (np array): Corrected reduced magnetic structure
+            function before any window function is applied.
+        fqm (np array): Measured (i.e. uncorrected) reduced magnetic structure
+            function without any polynomial correction.
+        dfqm (np array): Estimated uncertainties for fqm.
+        windowFunc (np array): The window function used.
+        ff2 (np array): The scaled, squared magnetic form factor.
+        bkg (np array): The final polynomial background used.
+        bkga (np array): The lower-degree polynomial background.
+        bkgb (np array): The higher-degree polynomial background.
+        mask1 (np array): Mask used to scale the squared form factor.
+        mask2 (np array): Mask used to fit the polynomial background.
+        mask3 (np array): Mask used when computing the Fourier transform.
         unnormalized_done (boolean): True if the unnormalized mPDF has
             been generated.
         normalized_done (boolean): True if the normalized mPDF has
@@ -352,81 +376,109 @@ class MPDFtransformer:
 
     @property
     def r(self):
+        """r grid of the mPDF."""
         return self._r
 
     @property
     def dmag(self):
+        """Unnormalized mPDF."""
         return self._dmag
 
     @property
     def gmag(self):
+        """Normalized mPDF."""
         return self._gmag
 
     @property
     def sqm(self):
+        """Magnetic structure function."""
         return self._sqm
 
     @property
     def dsqm(self):
+        """Estimated uncertainties for sqm."""
         return self._dsqm
 
     @property
     def fqm(self):
+        """Uncorrected reduced magnetic structure function."""
         return self._fqm
 
     @property
+    def dfqm(self):
+        """Estimated uncertainties for fqm."""
+        return self._dfqm
+
+    @property
     def fqc(self):
+        """Corrected reduced magnetic structure function."""
         return self._fqc
 
     @property
     def fqc_prewindow(self):
+        """fqc but before any window function has been applied."""
         return self._fqc_prewindow
 
     @property
-    def dfqm(self):
-        return self._dfqm
-
-    @property
     def windowFunc(self):
+        """The window function used for fqc."""
         return self._windowFunc
 
     @property
     def ff2(self):
+        """Scaled, squared magnetic form factor."""
         return self._ff2
 
     @property
     def bkg(self):
+        """Polynomial background used in the correction."""
         return self._bkg
 
     @property
     def bkga(self):
+        """Lower-degree polynomial background."""
         return self._bkga
 
     @property
     def bkgb(self):
+        """Higher-degree polynomial background."""
         return self._bkgb
 
     @property
     def mask1(self):
+        """Mask used to scale the squared form factor."""
         return self._mask1
 
     @property
     def mask2(self):
+        """Mask used to fit the polynomial background."""
         return self._mask2
 
     @property
     def mask3(self):
+        """Mask used when computing the Fourier transform."""
         return self._mask3
 
     @property
     def unnormalized_done(self):
+        """True if the unnormalized mPDF has been generated."""
         return self._unnormalized_done
 
     @property
     def normalized_done(self):
+        """True if the normalized mPDF has been generated."""
         return self._normalized_done
 
     def getmPDF(self, type='normalized'):
+        """Generate the magnetic PDF.
+
+        Args:
+            type (str): must be 'normalized' or 'unnormalized'.
+                'normalized': will generate the normalized mPDF.
+                'unnormalized': will generate the unnormalized mPDF.
+        Returns: Doesn't return anything, but populates the relevant
+            MPDFtransformer properties.
+        """
         if type not in ['normalized', 'unnormalized']:
             print('Please choose normalized or unnormalized.')
         elif type == 'unnormalized':
@@ -461,6 +513,7 @@ class MPDFtransformer:
             self._normalized_done = True
 
     def makePlots(self):
+        """Generate plots from the data processing."""
         w = 6
         h = 3
 
@@ -547,6 +600,5 @@ class MPDFtransformer:
 
 
     def copy(self):
-        """Return a deep copy of the MPDFtransformer object.
-        """
+        """Return a deep copy of the MPDFtransformer object."""
         return copy.deepcopy(self)
