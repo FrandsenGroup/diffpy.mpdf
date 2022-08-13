@@ -1,0 +1,1985 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>diffpy.mpdf.mpdftransformer API documentation</title>
+<meta name="description" content="class to transform magnetic scattering data into mPDF data." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>diffpy.mpdf.mpdftransformer</code></h1>
+</header>
+<section id="section-intro">
+<p>class to transform magnetic scattering data into mPDF data.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python
+##############################################################################
+#
+# diffpy.mpdf         by Frandsen Group
+#                     Benjamin A. Frandsen benfrandsen@byu.edu
+#                     (c) 2022 Benjamin Allen Frandsen
+#                      All rights reserved
+#
+# File coded by:    Benjamin Frandsen
+#
+# See AUTHORS.txt for a list of people who contributed.
+# See LICENSE.txt for license information.
+#
+##############################################################################
+
+
+&#34;&#34;&#34;class to transform magnetic scattering data into mPDF data.&#34;&#34;&#34;
+
+import copy
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
+from numpy.polynomial import Polynomial
+from numpy.polynomial.polynomial import polyval
+from diffpy.mpdf.magutils import sinTransformDirectIntegration
+
+def resid1(p, ff, iq, diq):
+    &#34;&#34;&#34;Scale the magnetic form factor to the data.&#34;&#34;&#34;
+    return (iq - (p[0] * ff)**2)/diq
+
+def bkgfunc(p, q):
+    &#34;&#34;&#34;Generate polynomial to fit to F(Q).&#34;&#34;&#34;
+    return q * polyval(q, p)
+
+def resid2(p, q, fqm, dfqm):
+    &#34;&#34;&#34;Fit polynomial to F(Q).&#34;&#34;&#34;
+    return (fqm - bkgfunc(p, q))/dfqm
+
+def window_FD(q, qmaxwindow, width):
+    &#34;&#34;&#34;
+    Window function based on the Fermi-Dirac function.
+    Goes to zero at qmaxwindow.
+    &#34;&#34;&#34;
+    window = 0.0 * q
+    mask = (q &lt;= qmaxwindow)
+    window[mask] = 2.0/(np.exp((q[mask]-qmaxwindow)/width) + 1) - 1
+    return window
+
+def window_Lorch(q, qmaxwindow):
+    &#34;&#34;&#34;
+    Lorch window function. Goes to zero at qmaxwindow.
+    &#34;&#34;&#34;
+    window = 0.0 * q
+    mask = (q &lt;= qmaxwindow)
+    window[mask] = (qmaxwindow/np.pi/q[mask]) * \
+                   np.sin(np.pi*q[mask]/qmaxwindow)
+    return window
+
+def getmPDF_unnormalized(q, iq, qmin, qmax, rmin=0.05, rmax=100, rstep=0.01):
+    &#34;&#34;&#34;Sine Fourier transform to generate the unnormalized mPDF.
+
+    This function is called by an instance of mpdftransformer to generate
+    the unnormalized mPDF.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+
+    Returns:
+        r (np array): r grid of the unnormalized mPDF.
+        dmag (np array): Unnormalized mPDF.
+    &#34;&#34;&#34;
+    mask = np.logical_and(q&gt;=qmin, q&lt;=qmax)
+    q = q[mask]
+    iq = iq[mask]
+    r, dmag = sinTransformDirectIntegration(q, q*iq, rmin=rmin, rmax=rmax,
+                                            rstep=rstep)
+    return r, dmag
+
+def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
+                  diq=None, qstart=3.0, rmin=0.05, rmax=100, rstep=0.01,
+                  window=&#39;None&#39;, qmaxwindow=0, windowedgewidth=0.1):
+    &#34;&#34;&#34;PDFgetX3-style processing to produce the normalized mPDF.
+    
+    This function is called by an instance of MPDFtransformer to generate
+    the normalized mPDF and intermediate functions.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        ff (np array): Magnetic form factor on the same grid as q.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmaxinst (float): Maximum q value included in the background fit.
+            In inverse Angstroms.
+        rpoly (float): real-space distance below which artifacts may be
+            introduced; used with qmaxinst to determin polynomial degree.
+            In Angstroms.
+        diq (np array): Error bars corresponding to the scattered intensity.
+        qstart (float): Starting q-value for which the squared form factor
+            will be fit to the data. Fitting range is [qstart, qmaxinst].
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+        window (str): specifies what type of window function to use. Default
+            is &#39;None&#39;. Other options are &#39;FD&#39; for the Fermi-Dirac window
+            and &#39;Lorch&#39; for the Lorch window.
+        qmaxwindow (float): Sets the q value where the window goes to 0.
+        windowedgewidth (float): approximate width of Fermi-Dirac window.
+            Not applicable to &#39;Lorch&#39; or &#39;None&#39; window options.
+
+    Returns:
+        Dictionary with the following keys and values:
+        &#39;r&#39; : r-grid of the resulting mPDF data.
+        &#39;gmag&#39;: the resulting normalized mPDF data.
+        &#39;sqm&#39;: magnetic structure function (no corrections applied)
+        &#39;dsqm&#39;: estimated uncertainties for sqm.
+        &#39;fqc&#39;: corrected reduced magnetic structure function (this is what
+            gets Fourier transformed).
+        &#39;fqc_prewindow&#39;: corrected reduced magnetic structure function
+            before any window function is applied.
+        &#39;fqm&#39;: measured (i.e. uncorrected) reduced magnetic structure function.
+        &#39;dfqm&#39;: estimated uncertainties for fqm.
+        &#39;windowFunc&#39;: the window function used.
+        &#39;ff2&#39;: the scaled, squared magnetic form factor.
+        &#39;bkg&#39;: the final polynomial background used.
+        &#39;bkga&#39;: the lower-degree polynomial background.
+        &#39;bkgb&#39;: the higher-degree polynomial background.
+        &#39;mask1&#39;: mask used to scale the squared form factor.
+        &#39;mask2&#39;: mask used to fit the polynomial background.
+        &#39;mask3&#39;: mask used when computing the Fourier transform.
+    &#34;&#34;&#34;
+    
+    ### Step 1: Fit squared form factor to asymptotic behavior of I(Q)
+    
+    # set uncertainties to unity if not provided
+    if diq is None:
+        diq = np.ones_like(q)
+        
+    mask1 = np.logical_and(q&gt;=qstart, q&lt;=qmaxinst)
+    opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
+
+    scl = opt1.x[0]
+
+    ff = scl * ff
+
+    # create a dictionary containing the items to be returned and add the
+    # scaled squared form factor and initial mask to it.
+    rv = {}
+    rv[&#39;ff2&#39;] = ff**2
+    rv[&#39;mask1&#39;] = mask1
+
+    ### Step 2: Obtain the measured F(Q), labeled fqm
+    sqm = iq / ff**2
+    dsqm = diq / ff**2
+    fqm = q * (sqm - 1)
+    dfqm = q * dsqm
+    rv[&#39;sqm&#39;] = sqm
+    rv[&#39;dsqm&#39;] = dsqm
+    rv[&#39;fqm&#39;] = fqm
+    rv[&#39;dfqm&#39;] = dfqm
+
+
+    ### Step 3: Fit polynomial background to fqm
+    nr = rpoly * qmaxinst / np.pi # non-integer polynomial degree
+    nlow = int(np.floor(nr))
+    nhigh = int(np.ceil(nr))
+    weight_low = nr - nlow
+    weight_high = nhigh - nr
+    
+    mask2 = np.logical_and(q&gt;=qmin, q&lt;=qmaxinst)
+    
+    # fit with lower degree
+    p02a = np.ones(nlow+1)
+    opt2a = least_squares(resid2, p02a, args=(q[mask2], fqm[mask2], dfqm[mask2]))
+
+    bkga = bkgfunc(opt2a.x, q)
+
+    # fit with higher degree
+    p02b = np.ones(nhigh+1)
+    opt2b = least_squares(resid2, p02b, args=(q[mask2], fqm[mask2], dfqm[mask2]))
+
+    bkgb = bkgfunc(opt2b.x, q)
+
+    # now generate the weighted background
+    bkg = weight_low * bkga + weight_high * bkgb
+    
+    # final calculated F(Q)
+    fqc = fqm - bkg
+
+    # add a bunch of other stuff to the return dictionary.
+    rv[&#39;mask2&#39;] = mask2
+    rv[&#39;bkga&#39;] = bkga
+    rv[&#39;bkgb&#39;] = bkgb
+    rv[&#39;bkg&#39;] = bkg
+    rv[&#39;fqc_prewindow&#39;] = 1.0 * fqc
+
+    if window == &#39;Lorch&#39;:
+        windowFunc = window_Lorch(q, qmaxwindow)
+        fqc *= windowFunc
+    
+    elif window == &#39;FD&#39;:
+        windowFunc = window_FD(q, qmaxwindow, windowedgewidth)
+        fqc *= windowFunc
+
+    else:
+        windowFunc = np.zeros_like(q) + 1.0
+
+    rv[&#39;windowFunc&#39;] = windowFunc
+    rv[&#39;fqc&#39;] = fqc
+    
+
+    ### Step 4: Compute the Fourier transform
+    mask3 = np.logical_and(q&gt;=qmin, q&lt;=qmax)
+
+    # normalized mPDF
+    r, gmag = sinTransformDirectIntegration(q[mask3], fqc[mask3], rmin=rmin, rmax=rmax, rstep=rstep)
+
+    rv[&#39;r&#39;] = r
+    rv[&#39;gmag&#39;] = gmag
+    rv[&#39;mask3&#39;] = mask3
+
+    return rv
+
+class MPDFtransformer:
+    &#34;&#34;&#34;Control the Fourier transform parameters to produce the mPDF.
+
+
+    This class is used to generate mPDF data (both normalized and unnormalized)
+    from magnetic scattering data. For the normalized mPDF, the magnetic form
+    factor must be provided, and an ad hoc polynomial background correction is
+    applied to minimize slowly varying errors at high q. The algorithm closely
+    follows that used in PDFgetX3 for x-ray PDF data.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        ff (np array): Magnetic form factor on the same grid as q.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmaxinst (float): Maximum q value included in the background fit.
+            In inverse Angstroms.
+        rpoly (float): real-space distance below which artifacts may be
+            introduced; used with qmaxinst to determin polynomial degree.
+            In Angstroms.
+        diq (np array): Error bars corresponding to the scattered intensity.
+        qstart (float): Starting q-value for which the squared form factor
+            will be fit to the data. Fitting range is [qstart, qmaxinst].
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+        window (str): specifies what type of window function to use. Default
+            is &#39;None&#39;. Other options are &#39;FD&#39; for the Fermi-Dirac window
+            and &#39;Lorch&#39; for the Lorch window.
+        qmaxwindow (float): Sets the q value where the window goes to 0.
+        windowedgewidth (float): approximate width of Fermi-Dirac window.
+            Not applicable to &#39;Lorch&#39; or &#39;None&#39; window options.
+
+    Properties:
+        r (np array): r grid of the mPDF.
+        dmag (np array): Unnormalized mPDF.
+        gmag (np array): Normalized mPDF.
+        sqm (np array): Magnetic structure function (no corrections applied)
+        dsqm (np array): Estimated uncertainties for sqm.
+        fqc (np array): Corrected reduced magnetic structure function
+            (this is what gets Fourier transformed).
+        fqc_prewindow (np array): Corrected reduced magnetic structure
+            function before any window function is applied.
+        fqm (np array): Measured (i.e. uncorrected) reduced magnetic structure
+            function without any polynomial correction.
+        dfqm (np array): Estimated uncertainties for fqm.
+        windowFunc (np array): The window function used.
+        ff2 (np array): The scaled, squared magnetic form factor.
+        bkg (np array): The final polynomial background used.
+        bkga (np array): The lower-degree polynomial background.
+        bkgb (np array): The higher-degree polynomial background.
+        mask1 (np array): Mask used to scale the squared form factor.
+        mask2 (np array): Mask used to fit the polynomial background.
+        mask3 (np array): Mask used when computing the Fourier transform.
+        unnormalized_done (boolean): True if the unnormalized mPDF has
+            been generated.
+        normalized_done (boolean): True if the normalized mPDF has
+            been generated.
+    &#34;&#34;&#34;
+    def __init__(self, q=None, iq=None, ff=None, qmin=0.0, qmax=10.0,
+                 qmaxinst=None, rpoly=1.8, diq=None, qstart=3.0, rmin=0.05,
+                 rmax=100.0, rstep=0.01, window=None, qmaxwindow=None,
+                 windowedgewidth=0.1):
+        if q is None:
+            self.q = np.array([0])
+        else:
+            self.q = q
+        if iq is None:
+            self.iq = np.array([0])
+        else:
+            self.iq = iq
+        if ff is None:
+            self.ff = np.array([0])
+        else:
+            self.ff = ff
+        self.qmin = qmin
+        self.qmax = qmax
+        if qmaxinst is None:
+            self.qmaxinst = 1.0*qmax
+        else:
+            self.qmaxinst = qmaxinst
+        self.rpoly = rpoly
+        if diq is None:
+            self.diq = np.array([0])
+        else:
+            self.diq = diq
+        self.qstart = qstart
+        self.rmin = rmin
+        self.rmax = rmax
+        self.rstep = rstep
+        if window is None:
+            self.window = &#39;None&#39;
+        else:
+            self.window = window
+        if qmaxwindow is None:
+            self.qmaxwindow = 1.0*qmax
+        else:
+            self.qmaxwindow = qmaxwindow
+        self.windowedgewidth = windowedgewidth
+        self._r = np.array([])
+        self._dmag = np.array([])
+        self._gmag = np.array([])
+        self._sqm = np.array([])
+        self._dsqm = np.array([])
+        self._fqm = np.array([])
+        self._fqc = np.array([])
+        self._fqc_prewindow = np.array([])
+        self._dfqm = np.array([])
+        self._windowFunc = np.array([])
+        self._ff2 = np.array([])
+        self._bkg = np.array([])
+        self._bkga = np.array([])
+        self._bkgb = np.array([])
+        self._mask1 = np.array([])
+        self._mask2 = np.array([])
+        self._mask3 = np.array([])
+        self._unnormalized_done = False
+        self._normalized_done = False
+
+    def __repr__(self):
+        info = &#39;MPDFtransformer instance: \n&#39;
+        info += &#39;qmin = &#39; + str(self.qmin) + &#39;\n&#39;
+        info += &#39;qmax = &#39; + str(self.qmax) + &#39;\n&#39;
+        info += &#39;qmaxinst = &#39; + str(self.qmaxinst) + &#39;\n&#39;
+        info += &#39;rpoly = &#39; + str(self.rpoly) + &#39;\n&#39;
+        info += &#39;rmin = &#39; + str(self.rmin) + &#39;\n&#39;
+        info += &#39;rmax = &#39; + str(self.rmax) + &#39;\n&#39;
+        info += &#39;rstep = &#39; + str(self.rstep) + &#39;\n&#39;
+        info += &#39;window = &#39; + self.window + &#39;\n&#39;
+        return info
+
+    @property
+    def r(self):
+        &#34;&#34;&#34;r grid of the mPDF.&#34;&#34;&#34;
+        return self._r
+
+    @property
+    def dmag(self):
+        &#34;&#34;&#34;Unnormalized mPDF.&#34;&#34;&#34;
+        return self._dmag
+
+    @property
+    def gmag(self):
+        &#34;&#34;&#34;Normalized mPDF.&#34;&#34;&#34;
+        return self._gmag
+
+    @property
+    def sqm(self):
+        &#34;&#34;&#34;Magnetic structure function.&#34;&#34;&#34;
+        return self._sqm
+
+    @property
+    def dsqm(self):
+        &#34;&#34;&#34;Estimated uncertainties for sqm.&#34;&#34;&#34;
+        return self._dsqm
+
+    @property
+    def fqm(self):
+        &#34;&#34;&#34;Uncorrected reduced magnetic structure function.&#34;&#34;&#34;
+        return self._fqm
+
+    @property
+    def dfqm(self):
+        &#34;&#34;&#34;Estimated uncertainties for fqm.&#34;&#34;&#34;
+        return self._dfqm
+
+    @property
+    def fqc(self):
+        &#34;&#34;&#34;Corrected reduced magnetic structure function.&#34;&#34;&#34;
+        return self._fqc
+
+    @property
+    def fqc_prewindow(self):
+        &#34;&#34;&#34;fqc but before any window function has been applied.&#34;&#34;&#34;
+        return self._fqc_prewindow
+
+    @property
+    def windowFunc(self):
+        &#34;&#34;&#34;The window function used for fqc.&#34;&#34;&#34;
+        return self._windowFunc
+
+    @property
+    def ff2(self):
+        &#34;&#34;&#34;Scaled, squared magnetic form factor.&#34;&#34;&#34;
+        return self._ff2
+
+    @property
+    def bkg(self):
+        &#34;&#34;&#34;Polynomial background used in the correction.&#34;&#34;&#34;
+        return self._bkg
+
+    @property
+    def bkga(self):
+        &#34;&#34;&#34;Lower-degree polynomial background.&#34;&#34;&#34;
+        return self._bkga
+
+    @property
+    def bkgb(self):
+        &#34;&#34;&#34;Higher-degree polynomial background.&#34;&#34;&#34;
+        return self._bkgb
+
+    @property
+    def mask1(self):
+        &#34;&#34;&#34;Mask used to scale the squared form factor.&#34;&#34;&#34;
+        return self._mask1
+
+    @property
+    def mask2(self):
+        &#34;&#34;&#34;Mask used to fit the polynomial background.&#34;&#34;&#34;
+        return self._mask2
+
+    @property
+    def mask3(self):
+        &#34;&#34;&#34;Mask used when computing the Fourier transform.&#34;&#34;&#34;
+        return self._mask3
+
+    @property
+    def unnormalized_done(self):
+        &#34;&#34;&#34;True if the unnormalized mPDF has been generated.&#34;&#34;&#34;
+        return self._unnormalized_done
+
+    @property
+    def normalized_done(self):
+        &#34;&#34;&#34;True if the normalized mPDF has been generated.&#34;&#34;&#34;
+        return self._normalized_done
+
+    def getmPDF(self, type=&#39;normalized&#39;):
+        &#34;&#34;&#34;Generate the magnetic PDF.
+
+        Args:
+            type (str): must be &#39;normalized&#39; or &#39;unnormalized&#39;.
+                &#39;normalized&#39;: will generate the normalized mPDF.
+                &#39;unnormalized&#39;: will generate the unnormalized mPDF.
+        Returns: Doesn&#39;t return anything, but populates the relevant
+            MPDFtransformer properties.
+        &#34;&#34;&#34;
+        if type not in [&#39;normalized&#39;, &#39;unnormalized&#39;]:
+            print(&#39;Please choose normalized or unnormalized.&#39;)
+        elif type == &#39;unnormalized&#39;:
+            r, dmag = getmPDF_unnormalized(self.q, self.iq, self.qmin,
+                                           self.qmax, self.rmin, self.rmax,
+                                           self.rstep)
+            self._r = r
+            self._dmag = dmag
+            self._unnormalized_done = True
+        elif type == &#39;normalized&#39;:
+            output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
+                                        self.qmax, self.qmaxinst, self.rpoly,
+                                        self.diq, self.qstart, self.rmin,
+                                        self.rmax, self.rstep, self.window,
+                                        self.qmaxwindow, self.windowedgewidth)
+            self._r = output[&#39;r&#39;]
+            self._gmag = output[&#39;gmag&#39;]
+            self._sqm = output[&#39;sqm&#39;]
+            self._dsqm = output[&#39;dsqm&#39;]
+            self._fqc = output[&#39;fqc&#39;]
+            self._fqc_prewindow = output[&#39;fqc_prewindow&#39;]
+            self._fqm = output[&#39;fqm&#39;]
+            self._dfqm = output[&#39;dfqm&#39;]
+            self._windowFunc = output[&#39;windowFunc&#39;]
+            self._ff2 = output[&#39;ff2&#39;]
+            self._bkg = output[&#39;bkg&#39;]
+            self._bkga = output[&#39;bkga&#39;]
+            self._bkgb = output[&#39;bkgb&#39;]
+            self._mask1 = output[&#39;mask1&#39;]
+            self._mask2 = output[&#39;mask2&#39;]
+            self._mask3 = output[&#39;mask3&#39;]
+            self._normalized_done = True
+
+    def makePlots(self):
+        &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+        w = 6
+        h = 3
+
+        plotsReady = False
+
+        # plot of scattered intensity
+        if len(self.q) == len(self.iq) &gt; 1:
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(&#39;Intensity vs. Q&#39;)
+            if len(self.diq) == len(self.iq):
+                ax.errorbar(self.q, self.iq, yerr=self.diq,
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q, self.iq, marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if len(self._ff2) == len(self.q):
+                ax.plot(self.q, self._ff2, color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39; Intensity (arb. units)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        # plots for the normalized mPDF
+        if self._normalized_done:
+            # plot of sqm
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of fqm with the polynomial background
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of fqc
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
+                ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
+                        np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;F$_{\mathdefault{c}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of gmag
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;G$_{\mathdefault{mag}}$ vs. r&#39;)
+            ax.plot(self._r, self._gmag)
+            ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+            ax.set_ylabel(r&#39;G$_{\mathdefault{mag}}$ ($\mathdefault{\AA^{-2}}$)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        # plot of unnormalized mPDF
+        if self._unnormalized_done:
+            # plot of gmag
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;d$_{\mathdefault{mag}}$ vs. r&#39;)
+            ax.plot(self._r, self._dmag)
+            ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+            ax.set_ylabel(r&#39;d$_{\mathdefault{mag}}$ (arb. units)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        if plotsReady:
+            plt.show()
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MPDFtransformer object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="diffpy.mpdf.mpdftransformer.bkgfunc"><code class="name flex">
+<span>def <span class="ident">bkgfunc</span></span>(<span>p, q)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate polynomial to fit to F(Q).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bkgfunc(p, q):
+    &#34;&#34;&#34;Generate polynomial to fit to F(Q).&#34;&#34;&#34;
+    return q * polyval(q, p)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.getmPDF_normalized"><code class="name flex">
+<span>def <span class="ident">getmPDF_normalized</span></span>(<span>q, iq, ff, qmin, qmax, qmaxinst, rpoly, diq=None, qstart=3.0, rmin=0.05, rmax=100, rstep=0.01, window='None', qmaxwindow=0, windowedgewidth=0.1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>PDFgetX3-style processing to produce the normalized mPDF.</p>
+<p>This function is called by an instance of MPDFtransformer to generate
+the normalized mPDF and intermediate functions.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>q</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Momentum transfer for which scattered intensities
+have been measured. Need not be uniform.</dd>
+<dt><strong><code>iq</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Scattered intensity.</dd>
+<dt><strong><code>ff</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Magnetic form factor on the same grid as q.</dd>
+<dt><strong><code>qmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>qmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>qmaxinst</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum q value included in the background fit.
+In inverse Angstroms.</dd>
+<dt><strong><code>rpoly</code></strong> :&ensp;<code>float</code></dt>
+<dd>real-space distance below which artifacts may be
+introduced; used with qmaxinst to determin polynomial degree.
+In Angstroms.</dd>
+<dt><strong><code>diq</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Error bars corresponding to the scattered intensity.</dd>
+<dt><strong><code>qstart</code></strong> :&ensp;<code>float</code></dt>
+<dd>Starting q-value for which the squared form factor
+will be fit to the data. Fitting range is [qstart, qmaxinst].
+In inverse Angstroms.</dd>
+<dt><strong><code>rmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rstep</code></strong> :&ensp;<code>float</code></dt>
+<dd>Step size for the r-grid for the mPDF data. In
+Angstroms.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>str</code></dt>
+<dd>specifies what type of window function to use. Default
+is 'None'. Other options are 'FD' for the Fermi-Dirac window
+and 'Lorch' for the Lorch window.</dd>
+<dt><strong><code>qmaxwindow</code></strong> :&ensp;<code>float</code></dt>
+<dd>Sets the q value where the window goes to 0.</dd>
+<dt><strong><code>windowedgewidth</code></strong> :&ensp;<code>float</code></dt>
+<dd>approximate width of Fermi-Dirac window.
+Not applicable to 'Lorch' or 'None' window options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary with the following keys and values:
+'r' : r-grid of the resulting mPDF data.
+'gmag': the resulting normalized mPDF data.
+'sqm': magnetic structure function (no corrections applied)
+'dsqm': estimated uncertainties for sqm.
+'fqc': corrected reduced magnetic structure function (this is what
+gets Fourier transformed).
+'fqc_prewindow': corrected reduced magnetic structure function
+before any window function is applied.
+'fqm': measured (i.e. uncorrected) reduced magnetic structure function.
+'dfqm': estimated uncertainties for fqm.
+'windowFunc': the window function used.
+'ff2': the scaled, squared magnetic form factor.
+'bkg': the final polynomial background used.
+'bkga': the lower-degree polynomial background.
+'bkgb': the higher-degree polynomial background.
+'mask1': mask used to scale the squared form factor.
+'mask2': mask used to fit the polynomial background.
+'mask3': mask used when computing the Fourier transform.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
+                  diq=None, qstart=3.0, rmin=0.05, rmax=100, rstep=0.01,
+                  window=&#39;None&#39;, qmaxwindow=0, windowedgewidth=0.1):
+    &#34;&#34;&#34;PDFgetX3-style processing to produce the normalized mPDF.
+    
+    This function is called by an instance of MPDFtransformer to generate
+    the normalized mPDF and intermediate functions.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        ff (np array): Magnetic form factor on the same grid as q.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmaxinst (float): Maximum q value included in the background fit.
+            In inverse Angstroms.
+        rpoly (float): real-space distance below which artifacts may be
+            introduced; used with qmaxinst to determin polynomial degree.
+            In Angstroms.
+        diq (np array): Error bars corresponding to the scattered intensity.
+        qstart (float): Starting q-value for which the squared form factor
+            will be fit to the data. Fitting range is [qstart, qmaxinst].
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+        window (str): specifies what type of window function to use. Default
+            is &#39;None&#39;. Other options are &#39;FD&#39; for the Fermi-Dirac window
+            and &#39;Lorch&#39; for the Lorch window.
+        qmaxwindow (float): Sets the q value where the window goes to 0.
+        windowedgewidth (float): approximate width of Fermi-Dirac window.
+            Not applicable to &#39;Lorch&#39; or &#39;None&#39; window options.
+
+    Returns:
+        Dictionary with the following keys and values:
+        &#39;r&#39; : r-grid of the resulting mPDF data.
+        &#39;gmag&#39;: the resulting normalized mPDF data.
+        &#39;sqm&#39;: magnetic structure function (no corrections applied)
+        &#39;dsqm&#39;: estimated uncertainties for sqm.
+        &#39;fqc&#39;: corrected reduced magnetic structure function (this is what
+            gets Fourier transformed).
+        &#39;fqc_prewindow&#39;: corrected reduced magnetic structure function
+            before any window function is applied.
+        &#39;fqm&#39;: measured (i.e. uncorrected) reduced magnetic structure function.
+        &#39;dfqm&#39;: estimated uncertainties for fqm.
+        &#39;windowFunc&#39;: the window function used.
+        &#39;ff2&#39;: the scaled, squared magnetic form factor.
+        &#39;bkg&#39;: the final polynomial background used.
+        &#39;bkga&#39;: the lower-degree polynomial background.
+        &#39;bkgb&#39;: the higher-degree polynomial background.
+        &#39;mask1&#39;: mask used to scale the squared form factor.
+        &#39;mask2&#39;: mask used to fit the polynomial background.
+        &#39;mask3&#39;: mask used when computing the Fourier transform.
+    &#34;&#34;&#34;
+    
+    ### Step 1: Fit squared form factor to asymptotic behavior of I(Q)
+    
+    # set uncertainties to unity if not provided
+    if diq is None:
+        diq = np.ones_like(q)
+        
+    mask1 = np.logical_and(q&gt;=qstart, q&lt;=qmaxinst)
+    opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
+
+    scl = opt1.x[0]
+
+    ff = scl * ff
+
+    # create a dictionary containing the items to be returned and add the
+    # scaled squared form factor and initial mask to it.
+    rv = {}
+    rv[&#39;ff2&#39;] = ff**2
+    rv[&#39;mask1&#39;] = mask1
+
+    ### Step 2: Obtain the measured F(Q), labeled fqm
+    sqm = iq / ff**2
+    dsqm = diq / ff**2
+    fqm = q * (sqm - 1)
+    dfqm = q * dsqm
+    rv[&#39;sqm&#39;] = sqm
+    rv[&#39;dsqm&#39;] = dsqm
+    rv[&#39;fqm&#39;] = fqm
+    rv[&#39;dfqm&#39;] = dfqm
+
+
+    ### Step 3: Fit polynomial background to fqm
+    nr = rpoly * qmaxinst / np.pi # non-integer polynomial degree
+    nlow = int(np.floor(nr))
+    nhigh = int(np.ceil(nr))
+    weight_low = nr - nlow
+    weight_high = nhigh - nr
+    
+    mask2 = np.logical_and(q&gt;=qmin, q&lt;=qmaxinst)
+    
+    # fit with lower degree
+    p02a = np.ones(nlow+1)
+    opt2a = least_squares(resid2, p02a, args=(q[mask2], fqm[mask2], dfqm[mask2]))
+
+    bkga = bkgfunc(opt2a.x, q)
+
+    # fit with higher degree
+    p02b = np.ones(nhigh+1)
+    opt2b = least_squares(resid2, p02b, args=(q[mask2], fqm[mask2], dfqm[mask2]))
+
+    bkgb = bkgfunc(opt2b.x, q)
+
+    # now generate the weighted background
+    bkg = weight_low * bkga + weight_high * bkgb
+    
+    # final calculated F(Q)
+    fqc = fqm - bkg
+
+    # add a bunch of other stuff to the return dictionary.
+    rv[&#39;mask2&#39;] = mask2
+    rv[&#39;bkga&#39;] = bkga
+    rv[&#39;bkgb&#39;] = bkgb
+    rv[&#39;bkg&#39;] = bkg
+    rv[&#39;fqc_prewindow&#39;] = 1.0 * fqc
+
+    if window == &#39;Lorch&#39;:
+        windowFunc = window_Lorch(q, qmaxwindow)
+        fqc *= windowFunc
+    
+    elif window == &#39;FD&#39;:
+        windowFunc = window_FD(q, qmaxwindow, windowedgewidth)
+        fqc *= windowFunc
+
+    else:
+        windowFunc = np.zeros_like(q) + 1.0
+
+    rv[&#39;windowFunc&#39;] = windowFunc
+    rv[&#39;fqc&#39;] = fqc
+    
+
+    ### Step 4: Compute the Fourier transform
+    mask3 = np.logical_and(q&gt;=qmin, q&lt;=qmax)
+
+    # normalized mPDF
+    r, gmag = sinTransformDirectIntegration(q[mask3], fqc[mask3], rmin=rmin, rmax=rmax, rstep=rstep)
+
+    rv[&#39;r&#39;] = r
+    rv[&#39;gmag&#39;] = gmag
+    rv[&#39;mask3&#39;] = mask3
+
+    return rv</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.getmPDF_unnormalized"><code class="name flex">
+<span>def <span class="ident">getmPDF_unnormalized</span></span>(<span>q, iq, qmin, qmax, rmin=0.05, rmax=100, rstep=0.01)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sine Fourier transform to generate the unnormalized mPDF.</p>
+<p>This function is called by an instance of mpdftransformer to generate
+the unnormalized mPDF.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>q</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Momentum transfer for which scattered intensities
+have been measured. Need not be uniform.</dd>
+<dt><strong><code>iq</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Scattered intensity.</dd>
+<dt><strong><code>qmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>qmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>rmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rstep</code></strong> :&ensp;<code>float</code></dt>
+<dd>Step size for the r-grid for the mPDF data. In
+Angstroms.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>r (np array): r grid of the unnormalized mPDF.
+dmag (np array): Unnormalized mPDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getmPDF_unnormalized(q, iq, qmin, qmax, rmin=0.05, rmax=100, rstep=0.01):
+    &#34;&#34;&#34;Sine Fourier transform to generate the unnormalized mPDF.
+
+    This function is called by an instance of mpdftransformer to generate
+    the unnormalized mPDF.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+
+    Returns:
+        r (np array): r grid of the unnormalized mPDF.
+        dmag (np array): Unnormalized mPDF.
+    &#34;&#34;&#34;
+    mask = np.logical_and(q&gt;=qmin, q&lt;=qmax)
+    q = q[mask]
+    iq = iq[mask]
+    r, dmag = sinTransformDirectIntegration(q, q*iq, rmin=rmin, rmax=rmax,
+                                            rstep=rstep)
+    return r, dmag</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.resid1"><code class="name flex">
+<span>def <span class="ident">resid1</span></span>(<span>p, ff, iq, diq)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Scale the magnetic form factor to the data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resid1(p, ff, iq, diq):
+    &#34;&#34;&#34;Scale the magnetic form factor to the data.&#34;&#34;&#34;
+    return (iq - (p[0] * ff)**2)/diq</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.resid2"><code class="name flex">
+<span>def <span class="ident">resid2</span></span>(<span>p, q, fqm, dfqm)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fit polynomial to F(Q).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resid2(p, q, fqm, dfqm):
+    &#34;&#34;&#34;Fit polynomial to F(Q).&#34;&#34;&#34;
+    return (fqm - bkgfunc(p, q))/dfqm</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.window_FD"><code class="name flex">
+<span>def <span class="ident">window_FD</span></span>(<span>q, qmaxwindow, width)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Window function based on the Fermi-Dirac function.
+Goes to zero at qmaxwindow.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def window_FD(q, qmaxwindow, width):
+    &#34;&#34;&#34;
+    Window function based on the Fermi-Dirac function.
+    Goes to zero at qmaxwindow.
+    &#34;&#34;&#34;
+    window = 0.0 * q
+    mask = (q &lt;= qmaxwindow)
+    window[mask] = 2.0/(np.exp((q[mask]-qmaxwindow)/width) + 1) - 1
+    return window</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.window_Lorch"><code class="name flex">
+<span>def <span class="ident">window_Lorch</span></span>(<span>q, qmaxwindow)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Lorch window function. Goes to zero at qmaxwindow.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def window_Lorch(q, qmaxwindow):
+    &#34;&#34;&#34;
+    Lorch window function. Goes to zero at qmaxwindow.
+    &#34;&#34;&#34;
+    window = 0.0 * q
+    mask = (q &lt;= qmaxwindow)
+    window[mask] = (qmaxwindow/np.pi/q[mask]) * \
+                   np.sin(np.pi*q[mask]/qmaxwindow)
+    return window</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer"><code class="flex name class">
+<span>class <span class="ident">MPDFtransformer</span></span>
+<span>(</span><span>q=None, iq=None, ff=None, qmin=0.0, qmax=10.0, qmaxinst=None, rpoly=1.8, diq=None, qstart=3.0, rmin=0.05, rmax=100.0, rstep=0.01, window=None, qmaxwindow=None, windowedgewidth=0.1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Control the Fourier transform parameters to produce the mPDF.</p>
+<p>This class is used to generate mPDF data (both normalized and unnormalized)
+from magnetic scattering data. For the normalized mPDF, the magnetic form
+factor must be provided, and an ad hoc polynomial background correction is
+applied to minimize slowly varying errors at high q. The algorithm closely
+follows that used in PDFgetX3 for x-ray PDF data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>q</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Momentum transfer for which scattered intensities
+have been measured. Need not be uniform.</dd>
+<dt><strong><code>iq</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Scattered intensity.</dd>
+<dt><strong><code>ff</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Magnetic form factor on the same grid as q.</dd>
+<dt><strong><code>qmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>qmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum q value included in the Fourier transform.
+In inverse Angstroms.</dd>
+<dt><strong><code>qmaxinst</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum q value included in the background fit.
+In inverse Angstroms.</dd>
+<dt><strong><code>rpoly</code></strong> :&ensp;<code>float</code></dt>
+<dd>real-space distance below which artifacts may be
+introduced; used with qmaxinst to determin polynomial degree.
+In Angstroms.</dd>
+<dt><strong><code>diq</code></strong> :&ensp;<code>np array</code></dt>
+<dd>Error bars corresponding to the scattered intensity.</dd>
+<dt><strong><code>qstart</code></strong> :&ensp;<code>float</code></dt>
+<dd>Starting q-value for which the squared form factor
+will be fit to the data. Fitting range is [qstart, qmaxinst].
+In inverse Angstroms.</dd>
+<dt><strong><code>rmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>Minimum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>Maximum r value for the mPDF data. In Angstroms.</dd>
+<dt><strong><code>rstep</code></strong> :&ensp;<code>float</code></dt>
+<dd>Step size for the r-grid for the mPDF data. In
+Angstroms.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>str</code></dt>
+<dd>specifies what type of window function to use. Default
+is 'None'. Other options are 'FD' for the Fermi-Dirac window
+and 'Lorch' for the Lorch window.</dd>
+<dt><strong><code>qmaxwindow</code></strong> :&ensp;<code>float</code></dt>
+<dd>Sets the q value where the window goes to 0.</dd>
+<dt><strong><code>windowedgewidth</code></strong> :&ensp;<code>float</code></dt>
+<dd>approximate width of Fermi-Dirac window.
+Not applicable to 'Lorch' or 'None' window options.</dd>
+</dl>
+<h2 id="properties">Properties</h2>
+<p>r (np array): r grid of the mPDF.
+dmag (np array): Unnormalized mPDF.
+gmag (np array): Normalized mPDF.
+sqm (np array): Magnetic structure function (no corrections applied)
+dsqm (np array): Estimated uncertainties for sqm.
+fqc (np array): Corrected reduced magnetic structure function
+(this is what gets Fourier transformed).
+fqc_prewindow (np array): Corrected reduced magnetic structure
+function before any window function is applied.
+fqm (np array): Measured (i.e. uncorrected) reduced magnetic structure
+function without any polynomial correction.
+dfqm (np array): Estimated uncertainties for fqm.
+windowFunc (np array): The window function used.
+ff2 (np array): The scaled, squared magnetic form factor.
+bkg (np array): The final polynomial background used.
+bkga (np array): The lower-degree polynomial background.
+bkgb (np array): The higher-degree polynomial background.
+mask1 (np array): Mask used to scale the squared form factor.
+mask2 (np array): Mask used to fit the polynomial background.
+mask3 (np array): Mask used when computing the Fourier transform.
+unnormalized_done (boolean): True if the unnormalized mPDF has
+been generated.
+normalized_done (boolean): True if the normalized mPDF has
+been generated.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MPDFtransformer:
+    &#34;&#34;&#34;Control the Fourier transform parameters to produce the mPDF.
+
+
+    This class is used to generate mPDF data (both normalized and unnormalized)
+    from magnetic scattering data. For the normalized mPDF, the magnetic form
+    factor must be provided, and an ad hoc polynomial background correction is
+    applied to minimize slowly varying errors at high q. The algorithm closely
+    follows that used in PDFgetX3 for x-ray PDF data.
+
+    Args:
+        q (np array): Momentum transfer for which scattered intensities
+            have been measured. Need not be uniform.
+        iq (np array): Scattered intensity.
+        ff (np array): Magnetic form factor on the same grid as q.
+        qmin (float): Minimum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmax (float): Maximum q value included in the Fourier transform.
+            In inverse Angstroms.
+        qmaxinst (float): Maximum q value included in the background fit.
+            In inverse Angstroms.
+        rpoly (float): real-space distance below which artifacts may be
+            introduced; used with qmaxinst to determin polynomial degree.
+            In Angstroms.
+        diq (np array): Error bars corresponding to the scattered intensity.
+        qstart (float): Starting q-value for which the squared form factor
+            will be fit to the data. Fitting range is [qstart, qmaxinst].
+            In inverse Angstroms.
+        rmin (float): Minimum r value for the mPDF data. In Angstroms.
+        rmax (float): Maximum r value for the mPDF data. In Angstroms.
+        rstep (float): Step size for the r-grid for the mPDF data. In
+            Angstroms.
+        window (str): specifies what type of window function to use. Default
+            is &#39;None&#39;. Other options are &#39;FD&#39; for the Fermi-Dirac window
+            and &#39;Lorch&#39; for the Lorch window.
+        qmaxwindow (float): Sets the q value where the window goes to 0.
+        windowedgewidth (float): approximate width of Fermi-Dirac window.
+            Not applicable to &#39;Lorch&#39; or &#39;None&#39; window options.
+
+    Properties:
+        r (np array): r grid of the mPDF.
+        dmag (np array): Unnormalized mPDF.
+        gmag (np array): Normalized mPDF.
+        sqm (np array): Magnetic structure function (no corrections applied)
+        dsqm (np array): Estimated uncertainties for sqm.
+        fqc (np array): Corrected reduced magnetic structure function
+            (this is what gets Fourier transformed).
+        fqc_prewindow (np array): Corrected reduced magnetic structure
+            function before any window function is applied.
+        fqm (np array): Measured (i.e. uncorrected) reduced magnetic structure
+            function without any polynomial correction.
+        dfqm (np array): Estimated uncertainties for fqm.
+        windowFunc (np array): The window function used.
+        ff2 (np array): The scaled, squared magnetic form factor.
+        bkg (np array): The final polynomial background used.
+        bkga (np array): The lower-degree polynomial background.
+        bkgb (np array): The higher-degree polynomial background.
+        mask1 (np array): Mask used to scale the squared form factor.
+        mask2 (np array): Mask used to fit the polynomial background.
+        mask3 (np array): Mask used when computing the Fourier transform.
+        unnormalized_done (boolean): True if the unnormalized mPDF has
+            been generated.
+        normalized_done (boolean): True if the normalized mPDF has
+            been generated.
+    &#34;&#34;&#34;
+    def __init__(self, q=None, iq=None, ff=None, qmin=0.0, qmax=10.0,
+                 qmaxinst=None, rpoly=1.8, diq=None, qstart=3.0, rmin=0.05,
+                 rmax=100.0, rstep=0.01, window=None, qmaxwindow=None,
+                 windowedgewidth=0.1):
+        if q is None:
+            self.q = np.array([0])
+        else:
+            self.q = q
+        if iq is None:
+            self.iq = np.array([0])
+        else:
+            self.iq = iq
+        if ff is None:
+            self.ff = np.array([0])
+        else:
+            self.ff = ff
+        self.qmin = qmin
+        self.qmax = qmax
+        if qmaxinst is None:
+            self.qmaxinst = 1.0*qmax
+        else:
+            self.qmaxinst = qmaxinst
+        self.rpoly = rpoly
+        if diq is None:
+            self.diq = np.array([0])
+        else:
+            self.diq = diq
+        self.qstart = qstart
+        self.rmin = rmin
+        self.rmax = rmax
+        self.rstep = rstep
+        if window is None:
+            self.window = &#39;None&#39;
+        else:
+            self.window = window
+        if qmaxwindow is None:
+            self.qmaxwindow = 1.0*qmax
+        else:
+            self.qmaxwindow = qmaxwindow
+        self.windowedgewidth = windowedgewidth
+        self._r = np.array([])
+        self._dmag = np.array([])
+        self._gmag = np.array([])
+        self._sqm = np.array([])
+        self._dsqm = np.array([])
+        self._fqm = np.array([])
+        self._fqc = np.array([])
+        self._fqc_prewindow = np.array([])
+        self._dfqm = np.array([])
+        self._windowFunc = np.array([])
+        self._ff2 = np.array([])
+        self._bkg = np.array([])
+        self._bkga = np.array([])
+        self._bkgb = np.array([])
+        self._mask1 = np.array([])
+        self._mask2 = np.array([])
+        self._mask3 = np.array([])
+        self._unnormalized_done = False
+        self._normalized_done = False
+
+    def __repr__(self):
+        info = &#39;MPDFtransformer instance: \n&#39;
+        info += &#39;qmin = &#39; + str(self.qmin) + &#39;\n&#39;
+        info += &#39;qmax = &#39; + str(self.qmax) + &#39;\n&#39;
+        info += &#39;qmaxinst = &#39; + str(self.qmaxinst) + &#39;\n&#39;
+        info += &#39;rpoly = &#39; + str(self.rpoly) + &#39;\n&#39;
+        info += &#39;rmin = &#39; + str(self.rmin) + &#39;\n&#39;
+        info += &#39;rmax = &#39; + str(self.rmax) + &#39;\n&#39;
+        info += &#39;rstep = &#39; + str(self.rstep) + &#39;\n&#39;
+        info += &#39;window = &#39; + self.window + &#39;\n&#39;
+        return info
+
+    @property
+    def r(self):
+        &#34;&#34;&#34;r grid of the mPDF.&#34;&#34;&#34;
+        return self._r
+
+    @property
+    def dmag(self):
+        &#34;&#34;&#34;Unnormalized mPDF.&#34;&#34;&#34;
+        return self._dmag
+
+    @property
+    def gmag(self):
+        &#34;&#34;&#34;Normalized mPDF.&#34;&#34;&#34;
+        return self._gmag
+
+    @property
+    def sqm(self):
+        &#34;&#34;&#34;Magnetic structure function.&#34;&#34;&#34;
+        return self._sqm
+
+    @property
+    def dsqm(self):
+        &#34;&#34;&#34;Estimated uncertainties for sqm.&#34;&#34;&#34;
+        return self._dsqm
+
+    @property
+    def fqm(self):
+        &#34;&#34;&#34;Uncorrected reduced magnetic structure function.&#34;&#34;&#34;
+        return self._fqm
+
+    @property
+    def dfqm(self):
+        &#34;&#34;&#34;Estimated uncertainties for fqm.&#34;&#34;&#34;
+        return self._dfqm
+
+    @property
+    def fqc(self):
+        &#34;&#34;&#34;Corrected reduced magnetic structure function.&#34;&#34;&#34;
+        return self._fqc
+
+    @property
+    def fqc_prewindow(self):
+        &#34;&#34;&#34;fqc but before any window function has been applied.&#34;&#34;&#34;
+        return self._fqc_prewindow
+
+    @property
+    def windowFunc(self):
+        &#34;&#34;&#34;The window function used for fqc.&#34;&#34;&#34;
+        return self._windowFunc
+
+    @property
+    def ff2(self):
+        &#34;&#34;&#34;Scaled, squared magnetic form factor.&#34;&#34;&#34;
+        return self._ff2
+
+    @property
+    def bkg(self):
+        &#34;&#34;&#34;Polynomial background used in the correction.&#34;&#34;&#34;
+        return self._bkg
+
+    @property
+    def bkga(self):
+        &#34;&#34;&#34;Lower-degree polynomial background.&#34;&#34;&#34;
+        return self._bkga
+
+    @property
+    def bkgb(self):
+        &#34;&#34;&#34;Higher-degree polynomial background.&#34;&#34;&#34;
+        return self._bkgb
+
+    @property
+    def mask1(self):
+        &#34;&#34;&#34;Mask used to scale the squared form factor.&#34;&#34;&#34;
+        return self._mask1
+
+    @property
+    def mask2(self):
+        &#34;&#34;&#34;Mask used to fit the polynomial background.&#34;&#34;&#34;
+        return self._mask2
+
+    @property
+    def mask3(self):
+        &#34;&#34;&#34;Mask used when computing the Fourier transform.&#34;&#34;&#34;
+        return self._mask3
+
+    @property
+    def unnormalized_done(self):
+        &#34;&#34;&#34;True if the unnormalized mPDF has been generated.&#34;&#34;&#34;
+        return self._unnormalized_done
+
+    @property
+    def normalized_done(self):
+        &#34;&#34;&#34;True if the normalized mPDF has been generated.&#34;&#34;&#34;
+        return self._normalized_done
+
+    def getmPDF(self, type=&#39;normalized&#39;):
+        &#34;&#34;&#34;Generate the magnetic PDF.
+
+        Args:
+            type (str): must be &#39;normalized&#39; or &#39;unnormalized&#39;.
+                &#39;normalized&#39;: will generate the normalized mPDF.
+                &#39;unnormalized&#39;: will generate the unnormalized mPDF.
+        Returns: Doesn&#39;t return anything, but populates the relevant
+            MPDFtransformer properties.
+        &#34;&#34;&#34;
+        if type not in [&#39;normalized&#39;, &#39;unnormalized&#39;]:
+            print(&#39;Please choose normalized or unnormalized.&#39;)
+        elif type == &#39;unnormalized&#39;:
+            r, dmag = getmPDF_unnormalized(self.q, self.iq, self.qmin,
+                                           self.qmax, self.rmin, self.rmax,
+                                           self.rstep)
+            self._r = r
+            self._dmag = dmag
+            self._unnormalized_done = True
+        elif type == &#39;normalized&#39;:
+            output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
+                                        self.qmax, self.qmaxinst, self.rpoly,
+                                        self.diq, self.qstart, self.rmin,
+                                        self.rmax, self.rstep, self.window,
+                                        self.qmaxwindow, self.windowedgewidth)
+            self._r = output[&#39;r&#39;]
+            self._gmag = output[&#39;gmag&#39;]
+            self._sqm = output[&#39;sqm&#39;]
+            self._dsqm = output[&#39;dsqm&#39;]
+            self._fqc = output[&#39;fqc&#39;]
+            self._fqc_prewindow = output[&#39;fqc_prewindow&#39;]
+            self._fqm = output[&#39;fqm&#39;]
+            self._dfqm = output[&#39;dfqm&#39;]
+            self._windowFunc = output[&#39;windowFunc&#39;]
+            self._ff2 = output[&#39;ff2&#39;]
+            self._bkg = output[&#39;bkg&#39;]
+            self._bkga = output[&#39;bkga&#39;]
+            self._bkgb = output[&#39;bkgb&#39;]
+            self._mask1 = output[&#39;mask1&#39;]
+            self._mask2 = output[&#39;mask2&#39;]
+            self._mask3 = output[&#39;mask3&#39;]
+            self._normalized_done = True
+
+    def makePlots(self):
+        &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+        w = 6
+        h = 3
+
+        plotsReady = False
+
+        # plot of scattered intensity
+        if len(self.q) == len(self.iq) &gt; 1:
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(&#39;Intensity vs. Q&#39;)
+            if len(self.diq) == len(self.iq):
+                ax.errorbar(self.q, self.iq, yerr=self.diq,
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q, self.iq, marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if len(self._ff2) == len(self.q):
+                ax.plot(self.q, self._ff2, color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39; Intensity (arb. units)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        # plots for the normalized mPDF
+        if self._normalized_done:
+            # plot of sqm
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of fqm with the polynomial background
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of fqc
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
+            msk = self._mask3
+            ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
+                ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
+                        np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+            ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+            ax.set_ylabel(r&#39;F$_{\mathdefault{c}}$&#39;)
+            plt.tight_layout()
+            plt.draw()
+
+            # plot of gmag
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;G$_{\mathdefault{mag}}$ vs. r&#39;)
+            ax.plot(self._r, self._gmag)
+            ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+            ax.set_ylabel(r&#39;G$_{\mathdefault{mag}}$ ($\mathdefault{\AA^{-2}}$)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        # plot of unnormalized mPDF
+        if self._unnormalized_done:
+            # plot of gmag
+            fig = plt.figure(figsize=(w, h))
+            ax = fig.add_subplot(111)
+            ax.set_title(r&#39;d$_{\mathdefault{mag}}$ vs. r&#39;)
+            ax.plot(self._r, self._dmag)
+            ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+            ax.set_ylabel(r&#39;d$_{\mathdefault{mag}}$ (arb. units)&#39;)
+            plt.tight_layout()
+            plt.draw()
+            plotsReady = True
+
+        if plotsReady:
+            plt.show()
+
+    def copy(self):
+        &#34;&#34;&#34;Return a deep copy of the MPDFtransformer object.&#34;&#34;&#34;
+        return copy.deepcopy(self)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkg"><code class="name">var <span class="ident">bkg</span></code></dt>
+<dd>
+<div class="desc"><p>Polynomial background used in the correction.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def bkg(self):
+    &#34;&#34;&#34;Polynomial background used in the correction.&#34;&#34;&#34;
+    return self._bkg</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkga"><code class="name">var <span class="ident">bkga</span></code></dt>
+<dd>
+<div class="desc"><p>Lower-degree polynomial background.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def bkga(self):
+    &#34;&#34;&#34;Lower-degree polynomial background.&#34;&#34;&#34;
+    return self._bkga</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkgb"><code class="name">var <span class="ident">bkgb</span></code></dt>
+<dd>
+<div class="desc"><p>Higher-degree polynomial background.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def bkgb(self):
+    &#34;&#34;&#34;Higher-degree polynomial background.&#34;&#34;&#34;
+    return self._bkgb</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.dfqm"><code class="name">var <span class="ident">dfqm</span></code></dt>
+<dd>
+<div class="desc"><p>Estimated uncertainties for fqm.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dfqm(self):
+    &#34;&#34;&#34;Estimated uncertainties for fqm.&#34;&#34;&#34;
+    return self._dfqm</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.dmag"><code class="name">var <span class="ident">dmag</span></code></dt>
+<dd>
+<div class="desc"><p>Unnormalized mPDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dmag(self):
+    &#34;&#34;&#34;Unnormalized mPDF.&#34;&#34;&#34;
+    return self._dmag</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.dsqm"><code class="name">var <span class="ident">dsqm</span></code></dt>
+<dd>
+<div class="desc"><p>Estimated uncertainties for sqm.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dsqm(self):
+    &#34;&#34;&#34;Estimated uncertainties for sqm.&#34;&#34;&#34;
+    return self._dsqm</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.ff2"><code class="name">var <span class="ident">ff2</span></code></dt>
+<dd>
+<div class="desc"><p>Scaled, squared magnetic form factor.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ff2(self):
+    &#34;&#34;&#34;Scaled, squared magnetic form factor.&#34;&#34;&#34;
+    return self._ff2</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc"><code class="name">var <span class="ident">fqc</span></code></dt>
+<dd>
+<div class="desc"><p>Corrected reduced magnetic structure function.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def fqc(self):
+    &#34;&#34;&#34;Corrected reduced magnetic structure function.&#34;&#34;&#34;
+    return self._fqc</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc_prewindow"><code class="name">var <span class="ident">fqc_prewindow</span></code></dt>
+<dd>
+<div class="desc"><p>fqc but before any window function has been applied.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def fqc_prewindow(self):
+    &#34;&#34;&#34;fqc but before any window function has been applied.&#34;&#34;&#34;
+    return self._fqc_prewindow</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqm"><code class="name">var <span class="ident">fqm</span></code></dt>
+<dd>
+<div class="desc"><p>Uncorrected reduced magnetic structure function.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def fqm(self):
+    &#34;&#34;&#34;Uncorrected reduced magnetic structure function.&#34;&#34;&#34;
+    return self._fqm</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.gmag"><code class="name">var <span class="ident">gmag</span></code></dt>
+<dd>
+<div class="desc"><p>Normalized mPDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def gmag(self):
+    &#34;&#34;&#34;Normalized mPDF.&#34;&#34;&#34;
+    return self._gmag</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask1"><code class="name">var <span class="ident">mask1</span></code></dt>
+<dd>
+<div class="desc"><p>Mask used to scale the squared form factor.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mask1(self):
+    &#34;&#34;&#34;Mask used to scale the squared form factor.&#34;&#34;&#34;
+    return self._mask1</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask2"><code class="name">var <span class="ident">mask2</span></code></dt>
+<dd>
+<div class="desc"><p>Mask used to fit the polynomial background.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mask2(self):
+    &#34;&#34;&#34;Mask used to fit the polynomial background.&#34;&#34;&#34;
+    return self._mask2</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask3"><code class="name">var <span class="ident">mask3</span></code></dt>
+<dd>
+<div class="desc"><p>Mask used when computing the Fourier transform.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mask3(self):
+    &#34;&#34;&#34;Mask used when computing the Fourier transform.&#34;&#34;&#34;
+    return self._mask3</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.normalized_done"><code class="name">var <span class="ident">normalized_done</span></code></dt>
+<dd>
+<div class="desc"><p>True if the normalized mPDF has been generated.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def normalized_done(self):
+    &#34;&#34;&#34;True if the normalized mPDF has been generated.&#34;&#34;&#34;
+    return self._normalized_done</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.r"><code class="name">var <span class="ident">r</span></code></dt>
+<dd>
+<div class="desc"><p>r grid of the mPDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def r(self):
+    &#34;&#34;&#34;r grid of the mPDF.&#34;&#34;&#34;
+    return self._r</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.sqm"><code class="name">var <span class="ident">sqm</span></code></dt>
+<dd>
+<div class="desc"><p>Magnetic structure function.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def sqm(self):
+    &#34;&#34;&#34;Magnetic structure function.&#34;&#34;&#34;
+    return self._sqm</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.unnormalized_done"><code class="name">var <span class="ident">unnormalized_done</span></code></dt>
+<dd>
+<div class="desc"><p>True if the unnormalized mPDF has been generated.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def unnormalized_done(self):
+    &#34;&#34;&#34;True if the unnormalized mPDF has been generated.&#34;&#34;&#34;
+    return self._unnormalized_done</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.windowFunc"><code class="name">var <span class="ident">windowFunc</span></code></dt>
+<dd>
+<div class="desc"><p>The window function used for fqc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def windowFunc(self):
+    &#34;&#34;&#34;The window function used for fqc.&#34;&#34;&#34;
+    return self._windowFunc</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a deep copy of the MPDFtransformer object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    &#34;&#34;&#34;Return a deep copy of the MPDFtransformer object.&#34;&#34;&#34;
+    return copy.deepcopy(self)</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.getmPDF"><code class="name flex">
+<span>def <span class="ident">getmPDF</span></span>(<span>self, type='normalized')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the magnetic PDF.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
+<dd>must be 'normalized' or 'unnormalized'.
+'normalized': will generate the normalized mPDF.
+'unnormalized': will generate the unnormalized mPDF.</dd>
+</dl>
+<p>Returns: Doesn't return anything, but populates the relevant
+MPDFtransformer properties.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getmPDF(self, type=&#39;normalized&#39;):
+    &#34;&#34;&#34;Generate the magnetic PDF.
+
+    Args:
+        type (str): must be &#39;normalized&#39; or &#39;unnormalized&#39;.
+            &#39;normalized&#39;: will generate the normalized mPDF.
+            &#39;unnormalized&#39;: will generate the unnormalized mPDF.
+    Returns: Doesn&#39;t return anything, but populates the relevant
+        MPDFtransformer properties.
+    &#34;&#34;&#34;
+    if type not in [&#39;normalized&#39;, &#39;unnormalized&#39;]:
+        print(&#39;Please choose normalized or unnormalized.&#39;)
+    elif type == &#39;unnormalized&#39;:
+        r, dmag = getmPDF_unnormalized(self.q, self.iq, self.qmin,
+                                       self.qmax, self.rmin, self.rmax,
+                                       self.rstep)
+        self._r = r
+        self._dmag = dmag
+        self._unnormalized_done = True
+    elif type == &#39;normalized&#39;:
+        output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
+                                    self.qmax, self.qmaxinst, self.rpoly,
+                                    self.diq, self.qstart, self.rmin,
+                                    self.rmax, self.rstep, self.window,
+                                    self.qmaxwindow, self.windowedgewidth)
+        self._r = output[&#39;r&#39;]
+        self._gmag = output[&#39;gmag&#39;]
+        self._sqm = output[&#39;sqm&#39;]
+        self._dsqm = output[&#39;dsqm&#39;]
+        self._fqc = output[&#39;fqc&#39;]
+        self._fqc_prewindow = output[&#39;fqc_prewindow&#39;]
+        self._fqm = output[&#39;fqm&#39;]
+        self._dfqm = output[&#39;dfqm&#39;]
+        self._windowFunc = output[&#39;windowFunc&#39;]
+        self._ff2 = output[&#39;ff2&#39;]
+        self._bkg = output[&#39;bkg&#39;]
+        self._bkga = output[&#39;bkga&#39;]
+        self._bkgb = output[&#39;bkgb&#39;]
+        self._mask1 = output[&#39;mask1&#39;]
+        self._mask2 = output[&#39;mask2&#39;]
+        self._mask3 = output[&#39;mask3&#39;]
+        self._normalized_done = True</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.makePlots"><code class="name flex">
+<span>def <span class="ident">makePlots</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate plots from the data processing.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makePlots(self):
+    &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+    w = 6
+    h = 3
+
+    plotsReady = False
+
+    # plot of scattered intensity
+    if len(self.q) == len(self.iq) &gt; 1:
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(&#39;Intensity vs. Q&#39;)
+        if len(self.diq) == len(self.iq):
+            ax.errorbar(self.q, self.iq, yerr=self.diq,
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        else:
+            ax.plot(self.q, self.iq, marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        if len(self._ff2) == len(self.q):
+            ax.plot(self.q, self._ff2, color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+        ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+        ax.set_ylabel(r&#39; Intensity (arb. units)&#39;)
+        plt.tight_layout()
+        plt.draw()
+        plotsReady = True
+
+    # plots for the normalized mPDF
+    if self._normalized_done:
+        # plot of sqm
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
+        msk = self._mask3
+        ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+        ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
+        plt.tight_layout()
+        plt.draw()
+
+        # plot of fqm with the polynomial background
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
+        msk = self._mask3
+        ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+        ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+        ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
+        plt.tight_layout()
+        plt.draw()
+
+        # plot of fqc
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
+        msk = self._mask3
+        ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
+            ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
+                    np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
+        ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
+        ax.set_ylabel(r&#39;F$_{\mathdefault{c}}$&#39;)
+        plt.tight_layout()
+        plt.draw()
+
+        # plot of gmag
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(r&#39;G$_{\mathdefault{mag}}$ vs. r&#39;)
+        ax.plot(self._r, self._gmag)
+        ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+        ax.set_ylabel(r&#39;G$_{\mathdefault{mag}}$ ($\mathdefault{\AA^{-2}}$)&#39;)
+        plt.tight_layout()
+        plt.draw()
+        plotsReady = True
+
+    # plot of unnormalized mPDF
+    if self._unnormalized_done:
+        # plot of gmag
+        fig = plt.figure(figsize=(w, h))
+        ax = fig.add_subplot(111)
+        ax.set_title(r&#39;d$_{\mathdefault{mag}}$ vs. r&#39;)
+        ax.plot(self._r, self._dmag)
+        ax.set_xlabel(r&#39;r ($\mathdefault{\AA}$)&#39;)
+        ax.set_ylabel(r&#39;d$_{\mathdefault{mag}}$ (arb. units)&#39;)
+        plt.tight_layout()
+        plt.draw()
+        plotsReady = True
+
+    if plotsReady:
+        plt.show()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="diffpy.mpdf" href="index.html">diffpy.mpdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="diffpy.mpdf.mpdftransformer.bkgfunc" href="#diffpy.mpdf.mpdftransformer.bkgfunc">bkgfunc</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.getmPDF_normalized" href="#diffpy.mpdf.mpdftransformer.getmPDF_normalized">getmPDF_normalized</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.getmPDF_unnormalized" href="#diffpy.mpdf.mpdftransformer.getmPDF_unnormalized">getmPDF_unnormalized</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.resid1" href="#diffpy.mpdf.mpdftransformer.resid1">resid1</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.resid2" href="#diffpy.mpdf.mpdftransformer.resid2">resid2</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.window_FD" href="#diffpy.mpdf.mpdftransformer.window_FD">window_FD</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.window_Lorch" href="#diffpy.mpdf.mpdftransformer.window_Lorch">window_Lorch</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer">MPDFtransformer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkg" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.bkg">bkg</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkga" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.bkga">bkga</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.bkgb" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.bkgb">bkgb</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.copy" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.copy">copy</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.dfqm" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.dfqm">dfqm</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.dmag" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.dmag">dmag</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.dsqm" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.dsqm">dsqm</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.ff2" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.ff2">ff2</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc">fqc</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc_prewindow" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.fqc_prewindow">fqc_prewindow</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.fqm" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.fqm">fqm</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.getmPDF" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.getmPDF">getmPDF</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.gmag" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.gmag">gmag</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.makePlots" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.makePlots">makePlots</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask1" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.mask1">mask1</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask2" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.mask2">mask2</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.mask3" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.mask3">mask3</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.normalized_done" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.normalized_done">normalized_done</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.r" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.r">r</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.sqm" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.sqm">sqm</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.unnormalized_done" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.unnormalized_done">unnormalized_done</a></code></li>
+<li><code><a title="diffpy.mpdf.mpdftransformer.MPDFtransformer.windowFunc" href="#diffpy.mpdf.mpdftransformer.MPDFtransformer.windowFunc">windowFunc</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
