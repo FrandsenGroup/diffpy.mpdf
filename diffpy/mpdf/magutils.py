@@ -1280,15 +1280,18 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     rSr, Sr = cv(rsr, sr, rsr, sr)
     rDr, Dr = cv(r, K1 / (2.0 * np.pi) * fr, rSr, Sr)
     para = -K2 / np.pi * np.gradient(Sr, rSr[1] - rSr[0])  ### paramagnetic term in d(r)
-    if qmin >= 0 and qmax > qmin:
-        rstep = r[1] - r[0]
-        rth = np.arange(0.0, r.max() + rstep, rstep)
-        rth[0] = 1e-4 * rstep  # avoid infinities at r = 0
-        th = (np.sin(qmax * rth) - np.sin(qmin * rth)) / np.pi / rth
-        rth[0] = 0.0
-        rpara, para = cv(rSr, para, rth, th)
-    else:
-        rpara, para = rSr, para
+    rpara, para = rSr, para
+    # The code below is used to apply the termination convolution to the paramagnetic peak.
+    # I don't think it's actually necessary.
+#    if qmin >= 0 and qmax > qmin:
+#        rstep = r[1] - r[0]
+#        rth = np.arange(0.0, r.max() + rstep, rstep)
+#        rth[0] = 1e-4 * rstep  # avoid infinities at r = 0
+#        th = (np.sin(qmax * rth) - np.sin(qmin * rth)) / np.pi / rth
+#        rth[0] = 0.0
+#        rpara, para = cv(rSr, para, rth, th)
+#    else:
+#        rpara, para = rSr, para
     # make sure para and Dr match up in shape
     dr = r[2] - r[1]
     goodslice = np.logical_and(rDr >= r.min() - 0.5 * dr, rDr <= r.max() + 0.5 * dr)
