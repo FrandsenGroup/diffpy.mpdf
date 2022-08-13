@@ -1,8 +1,8 @@
 ## diffpy.mpdf
 
-Framework for computing and fitting magnetic PDFs.
+Framework for comprehensive magnetic PDF analysis.
 
-This package aims to provide a convenient method for computing the magnetic PDF (mPDF) from magnetic structures and performing fits to neutron total scattering data. The mPDF is calculated by an mPDFcalculator object, which extracts the spin positions and spin vectors from a magStructure object that the mPDFcalculator takes as input. The magStructure object in turn can contain multiple magSpecies objects, which generate magnetic configurations based on a diffpy.Structure object and a set of propagation vectors and basis vectors either provided by the user or read in directly from an MCIF file. Alternatively, the user can manually define a magnetic unit cell that will be used to generate the magnetic structure, or the magnetic structure can be defined simply as lists of spin positions and spin vectors provided by the user.
+This package aims to provide a convenient method for computing the magnetic PDF (mPDF) from magnetic structures, performing fits to neutron total scattering data, and generating the experimental mPDF signal from magnetic scattering data. The mPDF is calculated by an MPDFcalculator object, which extracts the spin positions and spin vectors from a MagStructure object that the MPDFcalculator takes as input. The MagStructure object in turn can contain multiple MagSpecies objects, which generate magnetic configurations based on a diffpy.Structure object and a set of propagation vectors and basis vectors either provided by the user or read in directly from an MCIF file. Alternatively, the user can manually define a magnetic unit cell that will be used to generate the magnetic structure, or the magnetic structure can be defined simply as lists of spin positions and spin vectors provided by the user. The MPDFtransformer class is used to generate mPDF data from magnetic scattering data.
 
 
 ## Requirements
