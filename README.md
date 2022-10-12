@@ -15,7 +15,7 @@ Recommended software:
 
 Full diffpy-cmi suite.
 
-Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit). With some effort, it may also be possible to run the program on Windows using the Linux Subsystem available for Windows 10.
+Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit). With some effort, it may also be possible to run the program on Windows using the Linux Subsystem available for Windows 10. Perhaps a better option if you have a Windows PC is to install a virtual machine with a Linux distribution. Here's a useful guide on how to do that for Ubuntu using VirtualBox: https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview . 
 
 ## Installation
 
