@@ -1219,10 +1219,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
     # Do the convolution with the termination function if qmin/qmax have been given
     if qmin >= 0 and qmax > qmin:
-        rth = np.arange(0.0, rmax + extendedrmax + rstep, rstep)
-        rth[0] = 1e-4 * rstep  # avoid infinities at r = 0
-        th = (np.sin(qmax * rth) - np.sin(qmin * rth)) / np.pi / rth
-        rth[0] = 0.0
+        rth = np.arange(-rmax - extendedrmax, rmax + extendedrmax + rstep, rstep)
+        th = (qmax/np.pi) * np.sinc(qmax * rth / np.pi) - (qmin / np.pi) * np.sinc(qmin * rth / np.pi)
         rcv, frcv = cv(r, fr, rth, th)
         mask = np.logical_and(rcv >= r[0] - 0.5 * rstep, rcv <= r[-1] + 0.5 * rstep)
         rcv = rcv[mask]
