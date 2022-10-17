@@ -639,7 +639,7 @@ def jCalc(q, params=[0.2394, 26.038, 0.4727, 12.1375, 0.3065, 3.0939, -0.01906],
             -c * (q / 4 / np.pi) ** 2) + D
 
 
-def cv(x1, y1, x2, y2):
+def cv(x1, y1, x2, y2, align=False, normalize=False):
     """Perform the convolution of two functions and give the correct output.
 
 
@@ -650,10 +650,12 @@ def cv(x1, y1, x2, y2):
         x2 (numpy array): independent variable of second function; must have
             same grid spacing as x1
         y2 (numpy array): dependent variable of second function
+        align (boolean): if True, output grid will be identical to input x1, y1
+        normalize (boolean): if True, the output will be scaled to match y1
 
     Returns:
         xcv (numpy array): independent variable of convoluted function, has
-            dimension len(x1) + len(x2) - 1
+            dimension len(x1) + len(x2) - 1 unless align option us used.
 
         ycv (numpy array): convolution of y1 and y2, same shape as xcv
 
@@ -661,6 +663,14 @@ def cv(x1, y1, x2, y2):
     dx = x1[1] - x1[0]
     ycv = dx * convolve(y1, y2, 'full')
     xcv = np.linspace(x1[0] + x2[0], x1[-1] + x2[-1], len(ycv))
+    if align: # align output with the x1 and y1 input grids
+        lb = x1[0] - 0.5 * dx
+        ub = x1[-1] + 0.5 * dx
+        mask = np.logical_and(xcv > lb, xcv < ub)
+        ycv = ycv[mask]
+        xcv = xcv[mask]
+    if normalize: # normalize y1 to its original scale
+        ycv /= np.trapz(y2, x2) 
     return xcv, ycv
 
 
@@ -947,13 +957,11 @@ def smoothData(xdata, ydata, qCutoff, func='sinc', gaussHeight=0.01):
         print('The only function options are sinc and gaussian. Please check')
         print('your input. Using sinc by default.')
         s = np.sinc(rs * qCutoff / np.pi)
-    xsmooth, ysmooth = cv(xdata, ydata, rs, s)
-    ysmooth /= np.trapz(s, rs)
-    msk = np.logical_and(xsmooth > (xdata.min() - 0.5 * dr), xsmooth < (xdata.max() + 0.5 * dr))
-    return ysmooth[msk]
+    xsmooth, ysmooth = cv(xdata, ydata, rs, s, align=True, normalize=True)
+    return ysmooth
 
 
-def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
+def getDiffData(fileName, fitIdx=0, writedata=False):
     """Extract the fit residual from a structural PDF fit. Works for .fgr and
        .ddp files.
 
@@ -962,8 +970,6 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         fitIdx (int): index of fit in .ddp file from which the residual
              is to be extracted.
         writedata (boolean): whether or not the output should be saved to file
-        skips (int): Number of rows to be skipped in .fgr file to get to data;
-            default is 14.
 
     Returns:
         r (numpy array): same r-grid as contained in the fit file
@@ -971,7 +977,12 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         diff (numpy array): the structural PDF fit residual (i.e. the mPDF)
     """
     if fileName[-4:] == '.fgr':
-        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=skips)
+        lines = open(fileName).readlines()[:50]
+        for idx, line in enumerate(lines):
+            if 'start data' in line:
+                startLine = 1 * idx
+                break
+        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=startLine)
         r, diff = allcols[0], allcols[4]
         if writedata:
             np.savetxt(fileName[:-4] + '.diff', np.transpose((r, diff)))
@@ -1042,7 +1053,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   orderedScale=1.0,
                   K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
                   rho0=0, netMag=0, corrLength=0, linearTermMethod='exact',
-                  applyEnvelope=False):
+                  applyEnvelope=False, qwindow=np.array([0]),
+                  qgrid=np.array([0])):
     """Calculate the normalized mPDF.
 
     At minimum, this module requires input lists of atomic positions and spins.
@@ -1105,6 +1117,10 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         applyEnvelope (boolean): if True, an exponential damping envelope will
             be applied to the calculated f(r) (not including the linear term).
             The parameter corrLength is used to determine the envelope.
+        qwindow (numpy array): Q-space window function applied to the data
+            prior to Fourier transformation. Not used by default.
+        qgrid (numpy array): Q-space grid on which the window function is
+            defined.
     Returns: numpy arrays for r and the mPDF fr, on the extended grid.
         """
     # check if g-factors have been provided
@@ -1214,18 +1230,16 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
 
     ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
-    # Do the convolution with the termination function if qmin/qmax have been given
-    if qmin >= 0 and qmax > qmin:
+    # Do the convolution with the termination function if qmin/qmax or a window
+    # function have been given
+    if qmin >= 0 and qmax > qmin and len(qgrid) == 1: # no window function
         rth = np.arange(-rmax - extendedrmax, rmax + extendedrmax + rstep, rstep)
         th = (qmax/np.pi) * np.sinc(qmax * rth / np.pi) - (qmin / np.pi) * np.sinc(qmin * rth / np.pi)
-        rcv, frcv = cv(r, fr, rth, th)
-        mask = np.logical_and(rcv >= r[0] - 0.5 * rstep, rcv <= r[-1] + 0.5 * rstep)
-        rcv = rcv[mask]
-        frcv = frcv[mask]
-        # Scale the convolved function back to the scale of the original
-        a1 = np.trapz(np.abs(fr), r)
-        a2 = np.trapz(np.abs(frcv), rcv)
-        frcv = frcv * a1 / a2
+        rcv, frcv = cv(r, fr, rth, th, align=True, normalize=True)
+    elif len(qgrid) > 1: # use the window function
+        rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-rmax, rmax=rmax, rstep=rstep)
+        windowFT = np.real(windowFT)
+        rcv, frcv = cv(r, fr, rFT, windowFT, align=True, normalize=True)
     else:
         rcv, frcv = r, fr
 

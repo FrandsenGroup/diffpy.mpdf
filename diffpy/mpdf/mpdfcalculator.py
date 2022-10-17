@@ -58,12 +58,16 @@ class MPDFcalculator:
         drtr (float): step size for r-grid used for calculating Fourier
             transform of magnetic form mactor.
         label (string): Optional descriptive string for the MPDFcalculator.
+        qwindow (numpy array): Q-space window function applied to the data
+            prior to Fourier transformation. Not used by default.
+        qgrid (numpy array): Q-space grid on which the window function is
+            defined.
         """
     def __init__(self, magstruc=None, extendedrmax=4.0,
                  extendedrmin=4.0, qdamp=0.0, qmin=0.0,
                  qmax=-1.0, rmin=0.0, rmax=20.0, rstep=0.01,
                  ordScale=1.0, paraScale=1.0, rmintr=-5.0,
-                 rmaxtr=5.0, label=''):
+                 rmaxtr=5.0, label='', qwindow=None, qgrid=None):
         if magstruc is None:
             self.magstruc = []
         else:
@@ -84,6 +88,14 @@ class MPDFcalculator:
         self.rmintr = rmintr
         self.rmaxtr = rmaxtr
         self.label = label
+        if qwindow is None:
+            self.qwindow = np.array([0])
+        else:
+            self.qwindow = qwindow
+        if qgrid is None:
+            self.qgrid = np.array([0])
+        else:
+            self.qgrid = qgrid
 
     def __repr__(self):
         if self.label == '':
@@ -155,7 +167,8 @@ class MPDFcalculator:
                                           self.extendedrmax, self.ordScale,
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
-                                          linearTermMethod)
+                                          linearTermMethod, False, self.qwindow,
+                                          self.qgrid)
         elif correlationMethod == 'full':  # change magnitudes of the spins
             originalSpins = 1.0*self.magstruc.spins
             for i, currentIdx in enumerate(self.magstruc.calcIdxs):
@@ -168,7 +181,8 @@ class MPDFcalculator:
                                               self.extendedrmax, self.ordScale,
                                               self.magstruc.K1, self.magstruc.rho0,
                                               self.magstruc.netMag, xi,
-                                              linearTermMethod)
+                                              linearTermMethod, False, self.qwindow,
+                                              self.qgrid)
                 if i==0:
                     frcalc = 1.0*frtemp
                 else:
@@ -185,7 +199,8 @@ class MPDFcalculator:
                                           self.extendedrmax, self.ordScale,
                                           self.magstruc.K1, self.magstruc.rho0,
                                           self.magstruc.netMag, xi,
-                                          linearTermMethod, applyEnvelope=True)
+                                          linearTermMethod, True, self.qwindow,
+                                          self.qgrid)
         # create a mask to put the calculation on the desired grid
         mask = np.logical_and(rcalc > self.rmin - 0.5*self.rstep,
                               rcalc < self.rmax + 0.5*self.rstep)
