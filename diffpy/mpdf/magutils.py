@@ -953,7 +953,7 @@ def smoothData(xdata, ydata, qCutoff, func='sinc', gaussHeight=0.01):
     return ysmooth[msk]
 
 
-def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
+def getDiffData(fileName, fitIdx=0, writedata=False):
     """Extract the fit residual from a structural PDF fit. Works for .fgr and
        .ddp files.
 
@@ -962,8 +962,6 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         fitIdx (int): index of fit in .ddp file from which the residual
              is to be extracted.
         writedata (boolean): whether or not the output should be saved to file
-        skips (int): Number of rows to be skipped in .fgr file to get to data;
-            default is 14.
 
     Returns:
         r (numpy array): same r-grid as contained in the fit file
@@ -971,7 +969,12 @@ def getDiffData(fileName, fitIdx=0, writedata=False, skips=14):
         diff (numpy array): the structural PDF fit residual (i.e. the mPDF)
     """
     if fileName[-4:] == '.fgr':
-        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=skips)
+        lines = open(fileName).readlines()[:50]
+        for idx, line in enumerate(lines):
+            if 'start data' in line:
+                startLine = 1 * idx
+                break
+        allcols = np.loadtxt(fileName, unpack=True, comments='#', skiprows=startLine)
         r, diff = allcols[0], allcols[4]
         if writedata:
             np.savetxt(fileName[:-4] + '.diff', np.transpose((r, diff)))
