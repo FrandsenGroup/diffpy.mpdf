@@ -59,9 +59,6 @@ class MagSpecies:
         avgmom (numpy array): three-vector giving the average magnetic moment
             for this species of magnetic atom to generate the spins. Relevant
             to incommensurate structures generated from an mcif.
-        avgmom (numpy array): three-vector giving the average magnetic moment
-            for this species of magnetic atom to generate the spins. Relevant
-            to incommensurate structures generated from an mcif.
         basisvecs (numpy array): nested three-vector(s) giving the basis
             vectors to generate the spins. e.g. np.array([[0, 0, 1]]). Any
             phase factor should be included directly with the basisvecs.
@@ -71,8 +68,19 @@ class MagSpecies:
         S (float): Spin angular momentum quantum number in units of hbar.
         L (float): Orbital angular momentum quantum number in units of hbar.
         J (float): Total angular momentum quantum number in units of hbar.
-        gS (float): spin component of the Lande g-factor (g = gS+gL)
-        gL (float): orbital component of the Lande g-factor
+        gS (float): spin component of the Lande g-factor (g = gS+gL).
+            Calculated automatically from S, L, and J if not specified.
+        gL (float): orbital component of the Lande g-factor. Calculated
+            automatically from S, L, and J if not specified.
+        g (float): Lande g-factor. Calculated automatically as gS+gL if not
+            specified.
+        j2type (string): Specifies the way the j2 integral is included in the
+            magnetic form factor. Must be either 'RE' for rare earth or 'TM' for
+            transition metal. If 'RE', the coefficient on the j2 integral is
+            gL/g; if 'TM', the coefficient is (g-2)/g. Default is 'RE'. Note
+            that for the default values of S, L, and J, we will have gS=2,
+            gL=0, and g=2, and there will be no difference in the form factor
+            calculation for 'RE' or 'TM'.
         ffparamkey (string): gives the appropriate key for getFFparams()
         ffqgrid (numpy array): grid of momentum transfer values used for
             calculating the magnetic form factor.
@@ -102,7 +110,7 @@ class MagSpecies:
     """
     def __init__(self, struc=None, label=None, strucIdxs=None, atoms=None, spins=None,
                  calcIdxs=[0], rmaxAtoms=30.0, avgmom=None, basisvecs=None, kvecs=None, S=0.5,
-                 L=0.0, J=None, gS=None, gL=None, ffparamkey=None,
+                 L=0.0, J=None, gS=None, gL=None, g=None, j2type=None, ffparamkey=None,
                  ffqgrid=None, ff=None, useDiffpyStruc=True, latVecs=None,
                  atomBasis=None, spinBasis=None, origin=None, verbose=False,
                  useOcc=False, occ=None):
@@ -128,6 +136,14 @@ class MagSpecies:
             self.gL = 0.5 + 1.0*(L*(L+1)-S*(S+1))/(2*J*(J+1))
         else:
             self.gL = gL
+        if g is None:
+            self.g = self.gS + self.gL
+        else:
+            self.g = g
+        if j2type is None:
+            self.j2type = 'RE'
+        else:
+            self.j2type = j2type
         self.ffparamkey = ffparamkey
         self.useDiffpyStruc = useDiffpyStruc
         if strucIdxs is None:
@@ -232,10 +248,18 @@ class MagSpecies:
     def makeFF(self):
         """Generate the magnetic form factor.
         """
-        g = self.gS+self.gL
+        # g = self.gS+self.gL # move this up to initialization of MagSpecies
         if getFFparams(self.ffparamkey) != ['none']:
-            self.ff = (self.gS/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
-                       self.gL/g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+            if self.j2type == 'RE':
+                self.ff = (jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
+                           self.gL/self.g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+            elif self.j2type == 'TM':
+                self.ff = (jCalc(self.ffqgrid, getFFparams(self.ffparamkey))+
+                           (self.g-2)/self.g * jCalc(self.ffqgrid, getFFparams(self.ffparamkey), j2=True))
+            else:
+                print("j2type argument must be either 'RE' or 'TM'. Using generic magnetic form factor.")
+                self.ff = jCalc(self.ffqgrid)
+
         else:
             print('Using generic magnetic form factor.')
             self.ff = jCalc(self.ffqgrid)
@@ -485,7 +509,8 @@ class MagStructure:
 
     def makeSpecies(self, label, strucIdxs=None, atoms=None, spins=None,
                     basisvecs=None, kvecs=None, S=0.5, L=0.0, J=None, gS=None,
-                    gL=None, ffparamkey=None,ffqgrid=None, ff=None, occ=None):
+                    gL=None, g=None, j2type=None, ffparamkey=None,ffqgrid=None,
+                    ff=None, occ=None):
         """Create a MagSpecies object and add it to the species dictionary.
 
         Args:
@@ -503,8 +528,19 @@ class MagStructure:
             kvecs (numpy array): nested three-vector(s) giving the propagation
                 vectors for the magnetic structure in r.l.u.,
                 e.g. np.array([[0.5, 0.5, 0.5]])
-            gS (float): spin component of the Lande g-factor (g = gS+gL)
-            gL (float): orbital component of the Lande g-factor
+            gS (float): spin component of the Lande g-factor (g = gS+gL).
+                Calculated automatically from S, L, and J if not specified.
+            gL (float): orbital component of the Lande g-factor. Calculated
+                automatically from S, L, and J if not specified.
+            g (float): Lande g-factor. Calculated automatically as gS+gL if not
+                specified.
+            j2type (string): Specifies the way the j2 integral is included in the
+                magnetic form factor. Must be either 'RE' for rare earth or 'TM' for
+                transition metal. If 'RE', the coefficient on the j2 integral is
+                gL/g; if 'TM', the coefficient is (g-2)/g. Default is 'RE'. Note
+                that for the default values of S, L, and J, we will have gS=2,
+                gL=0, and g=2, and there will be no difference in the form factor
+                calculation for 'RE' or 'TM'.
             ffparamkey (string): gives the appropriate key for getFFparams()
             ffqgrid (numpy array): grid of momentum transfer values used for
                 calculating the magnetic form factor.
@@ -521,7 +557,7 @@ class MagStructure:
                 ffqgrid = np.arange(0, 10.0, 0.01)
             self.species[label] = MagSpecies(self.struc, label, strucIdxs, atoms, spins,
                                              self.rmaxAtoms, basisvecs, kvecs, S, L,
-                                             J, gS, gL, ffparamkey, ffqgrid, ff,
+                                             J, gS, gL, g, j2type, ffparamkey, ffqgrid, ff,
                                              self.verbose, occ)
             # update the list of fractions
             totatoms = 0.0
@@ -685,8 +721,7 @@ class MagStructure:
         """
         K1, K2 = 0, 0        
         for key in self.species:
-            gSa, gLa = self.species[key].gS, self.species[key].gL
-            ga = gSa + gLa
+            ga = self.species[key].g
             Ja = self.species[key].J
             K1 += self.fractions[key]*ga*np.sqrt(Ja*(Ja+1))
             K2 += self.fractions[key]*ga**2*Ja*(Ja+1)
