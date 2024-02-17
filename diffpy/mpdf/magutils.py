@@ -1515,6 +1515,25 @@ def ups(grid):
     """
     g = lambda point: [0,0,0] if np.abs(np.linalg.norm(point)) <1e-6 else  point/np.linalg.norm(point)**4
     return np.apply_along_axis(g,3,grid)
+    
+def calculate_g_factors(S, L, J):
+    """A function to calculate the Lande g factor and the spin and orbital
+    components gS and gL.
+    
+    Args:
+        S (float): Spin angular momentum quantum number in units of hbar.
+        L (float): Orbital angular momentum quantum number in units of hbar.
+        J (float): Total angular momentum quantum number in units of hbar.
+
+    Returns:
+        gS: spin component of Lande g factor
+        gL: orbital component of Lande g factor
+        g: total Lande g factor
+    """
+    gS = 1.0 + 1.0*(S*(S+1)-L*(L+1))/(J*(J+1))
+    gL = 0.5 + 1.0*(L*(L+1)-S*(S+1))/(2*J*(J+1))
+    g = gS + gL
+    return gS, gL, g
 
 
 
