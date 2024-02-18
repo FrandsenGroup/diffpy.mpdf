@@ -62,7 +62,8 @@ from numpy.linalg import det, inv, norm
 from diffpy.mpdf.simpleparser import SimpleParser
 
 
-def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
+def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
+                     J=None, gS=None, gL=None, g=None, j2type=None, occ=None):
     &#34;&#34;&#34;
     Creates a MagStructure object from an MCIF file.
     
@@ -76,12 +77,34 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
             to generate the correct magnetic form factor.
         rmaxAtoms (float): radius to which magnetic atoms should be generated.
             Default is 20 Angstroms.
+        S (float): Spin angular momentum quantum number in units of hbar.
+        L (float): Orbital angular momentum quantum number in units of hbar.
+        J (float): Total angular momentum quantum number in units of hbar.
+        gS (float): spin component of the Lande g-factor (g = gS+gL).
+            Calculated automatically from S, L, and J if not specified.
+        gL (float): orbital component of the Lande g-factor. Calculated
+            automatically from S, L, and J if not specified.
+        g (float): Lande g-factor. Calculated automatically as gS+gL if not
+            specified.
+        j2type (string): Specifies the way the j2 integral is included in the
+            magnetic form factor. Must be either &#39;RE&#39; for rare earth or &#39;TM&#39; for
+            transition metal. If &#39;RE&#39;, the coefficient on the j2 integral is
+            gL/g; if &#39;TM&#39;, the coefficient is (g-2)/g. Default is &#39;RE&#39;. Note
+            that for the default values of S, L, and J, we will have gS=2,
+            gL=0, and g=2, and there will be no difference in the form factor
+            calculation for &#39;RE&#39; or &#39;TM&#39;.
+        occ (scalar): Occupancy of the magnetic atom associated with
+            this MagSpecies. Default is 1.
 
     Returns:
         MagStructure object corresponding to the magnetic structure
             encoded in the MCIF file. Note that the position and spin arrays
             are not automatically populated when using this function, so
             MagStructure.makeAll() will likely need to be called afterward.
+            Also note that variables such as ffparamkey, rmaxAtoms, S, L, J,
+            etc are applied uniformly to all magnetic atoms in the unit cell,
+            so this method cannot create MagSpecies objects for which these
+            attributes are different.
 
     &#34;&#34;&#34;
     # creates an empty MagStructure
@@ -160,11 +183,11 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
                               tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
     
     #Takes the magnetic information to reduced lattice coordinates
-    L = np.diag([1./a,1./b,1./c])
-    mag_mom = dot(mag_mom,L)
+    LL = np.diag([1./a,1./b,1./c])
+    mag_mom = dot(mag_mom,LL)
     if incomm:
-        four_cos = dot(four_cos,L)
-        four_sin = dot(four_sin,L)
+        four_cos = dot(four_cos,LL)
+        four_sin = dot(four_sin,LL)
         
     #Performs the symmetry operations to populate the rest of the unit cell
     all_pos = np.copy(scaled_pos)
@@ -254,7 +277,9 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
 
     #Creates a separate MagSpecies object for each magnetic atom in the unit cell
     for idx in mag_idx:
-        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms)
+        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms,
+                               S=S, L=L, J=J, gS=gS, gL=gL, g=g,
+                               j2type=j2type, occ=occ)
         
         new_mspec.struc = astruc
         new_mspec.label = symbols[idx]
@@ -902,7 +927,7 @@ of the original sample.</p></div>
 </details>
 </dd>
 <dt id="diffpy.mpdf.mciftools.create_from_mcif"><code class="name flex">
-<span>def <span class="ident">create_from_mcif</span></span>(<span>mcif, ffparamkey=None, rmaxAtoms=20)</span>
+<span>def <span class="ident">create_from_mcif</span></span>(<span>mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0, J=None, gS=None, gL=None, g=None, j2type=None, occ=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a MagStructure object from an MCIF file.</p>
@@ -920,17 +945,48 @@ to generate the correct magnetic form factor.</dd>
 <dt><strong><code>rmaxAtoms</code></strong> :&ensp;<code>float</code></dt>
 <dd>radius to which magnetic atoms should be generated.
 Default is 20 Angstroms.</dd>
+<dt><strong><code>S</code></strong> :&ensp;<code>float</code></dt>
+<dd>Spin angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>L</code></strong> :&ensp;<code>float</code></dt>
+<dd>Orbital angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>J</code></strong> :&ensp;<code>float</code></dt>
+<dd>Total angular momentum quantum number in units of hbar.</dd>
+<dt><strong><code>gS</code></strong> :&ensp;<code>float</code></dt>
+<dd>spin component of the Lande g-factor (g = gS+gL).
+Calculated automatically from S, L, and J if not specified.</dd>
+<dt><strong><code>gL</code></strong> :&ensp;<code>float</code></dt>
+<dd>orbital component of the Lande g-factor. Calculated
+automatically from S, L, and J if not specified.</dd>
+<dt><strong><code>g</code></strong> :&ensp;<code>float</code></dt>
+<dd>Lande g-factor. Calculated automatically as gS+gL if not
+specified.</dd>
+<dt><strong><code>j2type</code></strong> :&ensp;<code>string</code></dt>
+<dd>Specifies the way the j2 integral is included in the
+magnetic form factor. Must be either 'RE' for rare earth or 'TM' for
+transition metal. If 'RE', the coefficient on the j2 integral is
+gL/g; if 'TM', the coefficient is (g-2)/g. Default is 'RE'. Note
+that for the default values of S, L, and J, we will have gS=2,
+gL=0, and g=2, and there will be no difference in the form factor
+calculation for 'RE' or 'TM'.</dd>
+<dt><strong><code>occ</code></strong> :&ensp;<code>scalar</code></dt>
+<dd>Occupancy of the magnetic atom associated with
+this MagSpecies. Default is 1.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>MagStructure object corresponding to the magnetic structure
 encoded in the MCIF file. Note that the position and spin arrays
 are not automatically populated when using this function, so
-MagStructure.makeAll() will likely need to be called afterward.</p></div>
+MagStructure.makeAll() will likely need to be called afterward.
+Also note that variables such as ffparamkey, rmaxAtoms, S, L, J,
+etc are applied uniformly to all magnetic atoms in the unit cell,
+so this method cannot create MagSpecies objects for which these
+attributes are different.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20):
+<pre><code class="python">def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
+                     J=None, gS=None, gL=None, g=None, j2type=None, occ=None):
     &#34;&#34;&#34;
     Creates a MagStructure object from an MCIF file.
     
@@ -944,12 +1000,34 @@ MagStructure.makeAll() will likely need to be called afterward.</p></div>
             to generate the correct magnetic form factor.
         rmaxAtoms (float): radius to which magnetic atoms should be generated.
             Default is 20 Angstroms.
+        S (float): Spin angular momentum quantum number in units of hbar.
+        L (float): Orbital angular momentum quantum number in units of hbar.
+        J (float): Total angular momentum quantum number in units of hbar.
+        gS (float): spin component of the Lande g-factor (g = gS+gL).
+            Calculated automatically from S, L, and J if not specified.
+        gL (float): orbital component of the Lande g-factor. Calculated
+            automatically from S, L, and J if not specified.
+        g (float): Lande g-factor. Calculated automatically as gS+gL if not
+            specified.
+        j2type (string): Specifies the way the j2 integral is included in the
+            magnetic form factor. Must be either &#39;RE&#39; for rare earth or &#39;TM&#39; for
+            transition metal. If &#39;RE&#39;, the coefficient on the j2 integral is
+            gL/g; if &#39;TM&#39;, the coefficient is (g-2)/g. Default is &#39;RE&#39;. Note
+            that for the default values of S, L, and J, we will have gS=2,
+            gL=0, and g=2, and there will be no difference in the form factor
+            calculation for &#39;RE&#39; or &#39;TM&#39;.
+        occ (scalar): Occupancy of the magnetic atom associated with
+            this MagSpecies. Default is 1.
 
     Returns:
         MagStructure object corresponding to the magnetic structure
             encoded in the MCIF file. Note that the position and spin arrays
             are not automatically populated when using this function, so
             MagStructure.makeAll() will likely need to be called afterward.
+            Also note that variables such as ffparamkey, rmaxAtoms, S, L, J,
+            etc are applied uniformly to all magnetic atoms in the unit cell,
+            so this method cannot create MagSpecies objects for which these
+            attributes are different.
 
     &#34;&#34;&#34;
     # creates an empty MagStructure
@@ -1028,11 +1106,11 @@ MagStructure.makeAll() will likely need to be called afterward.</p></div>
                               tags[&#39;_atom_site_moment.crystalaxis_z&#39;][mi]]
     
     #Takes the magnetic information to reduced lattice coordinates
-    L = np.diag([1./a,1./b,1./c])
-    mag_mom = dot(mag_mom,L)
+    LL = np.diag([1./a,1./b,1./c])
+    mag_mom = dot(mag_mom,LL)
     if incomm:
-        four_cos = dot(four_cos,L)
-        four_sin = dot(four_sin,L)
+        four_cos = dot(four_cos,LL)
+        four_sin = dot(four_sin,LL)
         
     #Performs the symmetry operations to populate the rest of the unit cell
     all_pos = np.copy(scaled_pos)
@@ -1122,7 +1200,9 @@ MagStructure.makeAll() will likely need to be called afterward.</p></div>
 
     #Creates a separate MagSpecies object for each magnetic atom in the unit cell
     for idx in mag_idx:
-        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms)
+        new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms,
+                               S=S, L=L, J=J, gS=gS, gL=gL, g=g,
+                               j2type=j2type, occ=occ)
         
         new_mspec.struc = astruc
         new_mspec.label = symbols[idx]

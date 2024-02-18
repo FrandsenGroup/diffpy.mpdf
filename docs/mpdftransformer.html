@@ -179,7 +179,14 @@ def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
     # set uncertainties to unity if not provided
     if diq is None:
         diq = np.ones_like(q)
-        
+    if (diq == np.array([0])).all():
+        diq = np.ones_like(q)
+    
+    # set nans and zeros in diq to large numbers so they have limited weight
+    # in the fits
+    diq[diq==0.0] = 1000*np.nanmax(diq)
+    diq = np.nan_to_num(diq, nan=1000*np.nanmax(diq))
+
     mask1 = np.logical_and(q&gt;=qstart, q&lt;=qmaxinst)
     opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
 
@@ -519,7 +526,7 @@ class MPDFtransformer:
         elif type == &#39;normalized&#39;:
             output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
                                         self.qmax, self.qmaxinst, self.rpoly,
-                                        self.diq, self.qstart, self.rmin,
+                                        1.0*self.diq, self.qstart, self.rmin,
                                         self.rmax, self.rstep, self.window,
                                         self.qmaxwindow, self.windowedgewidth)
             self._r = output[&#39;r&#39;]
@@ -540,8 +547,11 @@ class MPDFtransformer:
             self._mask3 = output[&#39;mask3&#39;]
             self._normalized_done = True
 
-    def makePlots(self):
-        &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+    def makePlots(self, showuncertainty=True):
+        &#34;&#34;&#34;Generate plots from the data processing.
+        
+        showuncertainty (boolean): If true, the uncertainty associated with
+            each data point in Q will be displayed.&#34;&#34;&#34;
         w = 6
         h = 3
 
@@ -552,7 +562,7 @@ class MPDFtransformer:
             fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(&#39;Intensity vs. Q&#39;)
-            if len(self.diq) == len(self.iq):
+            if (len(self.diq) == len(self.iq)) and showuncertainty:
                 ax.errorbar(self.q, self.iq, yerr=self.diq,
                             marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
             else:
@@ -572,8 +582,12 @@ class MPDFtransformer:
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._sqm[msk], marker=&#39;.&#39;,
+                        linestyle=&#39;-&#39;, color=&#39;k&#39;)
             ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
             ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
             plt.tight_layout()
@@ -584,8 +598,12 @@ class MPDFtransformer:
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._fqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
             ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
             ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
             ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
@@ -597,8 +615,12 @@ class MPDFtransformer:
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._fqc[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)            
             if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
                 ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
                         np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
@@ -800,7 +822,14 @@ before any window function is applied.
     # set uncertainties to unity if not provided
     if diq is None:
         diq = np.ones_like(q)
-        
+    if (diq == np.array([0])).all():
+        diq = np.ones_like(q)
+    
+    # set nans and zeros in diq to large numbers so they have limited weight
+    # in the fits
+    diq[diq==0.0] = 1000*np.nanmax(diq)
+    diq = np.nan_to_num(diq, nan=1000*np.nanmax(diq))
+
     mask1 = np.logical_and(q&gt;=qstart, q&lt;=qmaxinst)
     opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
 
@@ -1366,7 +1395,7 @@ been generated.</p></div>
         elif type == &#39;normalized&#39;:
             output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
                                         self.qmax, self.qmaxinst, self.rpoly,
-                                        self.diq, self.qstart, self.rmin,
+                                        1.0*self.diq, self.qstart, self.rmin,
                                         self.rmax, self.rstep, self.window,
                                         self.qmaxwindow, self.windowedgewidth)
             self._r = output[&#39;r&#39;]
@@ -1387,8 +1416,11 @@ been generated.</p></div>
             self._mask3 = output[&#39;mask3&#39;]
             self._normalized_done = True
 
-    def makePlots(self):
-        &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+    def makePlots(self, showuncertainty=True):
+        &#34;&#34;&#34;Generate plots from the data processing.
+        
+        showuncertainty (boolean): If true, the uncertainty associated with
+            each data point in Q will be displayed.&#34;&#34;&#34;
         w = 6
         h = 3
 
@@ -1399,7 +1431,7 @@ been generated.</p></div>
             fig = plt.figure(figsize=(w, h))
             ax = fig.add_subplot(111)
             ax.set_title(&#39;Intensity vs. Q&#39;)
-            if len(self.diq) == len(self.iq):
+            if (len(self.diq) == len(self.iq)) and showuncertainty:
                 ax.errorbar(self.q, self.iq, yerr=self.diq,
                             marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
             else:
@@ -1419,8 +1451,12 @@ been generated.</p></div>
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._sqm[msk], marker=&#39;.&#39;,
+                        linestyle=&#39;-&#39;, color=&#39;k&#39;)
             ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
             ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
             plt.tight_layout()
@@ -1431,8 +1467,12 @@ been generated.</p></div>
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._fqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
             ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
             ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
             ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
@@ -1444,8 +1484,12 @@ been generated.</p></div>
             ax = fig.add_subplot(111)
             ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
             msk = self._mask3
-            ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
-                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            if showuncertainty:
+                ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+            else:
+                ax.plot(self.q[msk], self._fqc[msk],
+                            marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)            
             if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
                 ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
                         np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
@@ -1791,7 +1835,7 @@ MPDFtransformer properties.</p></div>
     elif type == &#39;normalized&#39;:
         output = getmPDF_normalized(self.q, self.iq, self.ff, self.qmin,
                                     self.qmax, self.qmaxinst, self.rpoly,
-                                    self.diq, self.qstart, self.rmin,
+                                    1.0*self.diq, self.qstart, self.rmin,
                                     self.rmax, self.rstep, self.window,
                                     self.qmaxwindow, self.windowedgewidth)
         self._r = output[&#39;r&#39;]
@@ -1814,16 +1858,21 @@ MPDFtransformer properties.</p></div>
 </details>
 </dd>
 <dt id="diffpy.mpdf.mpdftransformer.MPDFtransformer.makePlots"><code class="name flex">
-<span>def <span class="ident">makePlots</span></span>(<span>self)</span>
+<span>def <span class="ident">makePlots</span></span>(<span>self, showuncertainty=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generate plots from the data processing.</p></div>
+<div class="desc"><p>Generate plots from the data processing.</p>
+<p>showuncertainty (boolean): If true, the uncertainty associated with
+each data point in Q will be displayed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def makePlots(self):
-    &#34;&#34;&#34;Generate plots from the data processing.&#34;&#34;&#34;
+<pre><code class="python">def makePlots(self, showuncertainty=True):
+    &#34;&#34;&#34;Generate plots from the data processing.
+    
+    showuncertainty (boolean): If true, the uncertainty associated with
+        each data point in Q will be displayed.&#34;&#34;&#34;
     w = 6
     h = 3
 
@@ -1834,7 +1883,7 @@ MPDFtransformer properties.</p></div>
         fig = plt.figure(figsize=(w, h))
         ax = fig.add_subplot(111)
         ax.set_title(&#39;Intensity vs. Q&#39;)
-        if len(self.diq) == len(self.iq):
+        if (len(self.diq) == len(self.iq)) and showuncertainty:
             ax.errorbar(self.q, self.iq, yerr=self.diq,
                         marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
         else:
@@ -1854,8 +1903,12 @@ MPDFtransformer properties.</p></div>
         ax = fig.add_subplot(111)
         ax.set_title(r&#39;S$_{\mathdefault{m}}$ vs. Q&#39;)
         msk = self._mask3
-        ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
-                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        if showuncertainty:
+            ax.errorbar(self.q[msk], self._sqm[msk], yerr=self._dsqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        else:
+            ax.plot(self.q[msk], self._sqm[msk], marker=&#39;.&#39;,
+                    linestyle=&#39;-&#39;, color=&#39;k&#39;)
         ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
         ax.set_ylabel(r&#39;S$_{\mathdefault{m}}$&#39;)
         plt.tight_layout()
@@ -1866,8 +1919,12 @@ MPDFtransformer properties.</p></div>
         ax = fig.add_subplot(111)
         ax.set_title(r&#39;F$_{\mathdefault{m}}$ vs. Q&#39;)
         msk = self._mask3
-        ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
-                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        if showuncertainty:
+            ax.errorbar(self.q[msk], self._fqm[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        else:
+            ax.plot(self.q[msk], self._fqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
         ax.plot(self.q[msk], self._bkg[msk], color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
         ax.set_xlabel(r&#39;Q ($\mathdefault{\AA^{-1}}$)&#39;)
         ax.set_ylabel(r&#39;F$_{\mathdefault{m}}$&#39;)
@@ -1879,8 +1936,12 @@ MPDFtransformer properties.</p></div>
         ax = fig.add_subplot(111)
         ax.set_title(r&#39;F$_{\mathdefault{c}}$ vs. Q&#39;)
         msk = self._mask3
-        ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
-                    marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        if showuncertainty:
+            ax.errorbar(self.q[msk], self._fqc[msk], yerr=self._dfqm[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)
+        else:
+            ax.plot(self.q[msk], self._fqc[msk],
+                        marker=&#39;.&#39;, linestyle=&#39;-&#39;, color=&#39;k&#39;)            
         if self.window in [&#39;FD&#39;, &#39;Lorch&#39;]:
             ax.plot(self.q[msk], self._windowFunc[msk] * 0.8 * \
                     np.max(self._fqc[msk]), color=&#39;Gray&#39;, linestyle=&#39;--&#39;)
