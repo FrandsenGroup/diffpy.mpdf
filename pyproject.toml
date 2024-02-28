@@ -1,0 +1,27 @@
+[project]
+name = "diffpy.mpdf"
+version = "1.0.0"
+authors = [
+  { name="Benjamin Frandsen", email="benfrandsen@byu.edu" },
+]
+readme = "README.md"
+requires-python = ">=3.5"
+description = "Tools for magnetic PDF analysis."
+license = {file = "LICENSE.txt"}
+classifiers = [
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Scientific/Engineering :: Physics',
+]
+
+[project.urls]
+Homepage = "https://github.com/FrandsenGroup/diffpy.mpdf"
+Issues = "https://github.com/FrandsenGroup/diffpy.mpdf/issues"
