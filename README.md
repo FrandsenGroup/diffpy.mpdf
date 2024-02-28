@@ -9,7 +9,7 @@ Please cite: Frandsen _et al._, "diffpy.mpdf: open-source software for magnetic 
 
 ## Requirements
 
-This package requires Python 3.5 or greater and the following software:
+This package requires Python 3.7 and the following software:
 
 numpy, matplotlib, scipy, diffpy.Structure, diffpy.srreal
 
@@ -21,10 +21,10 @@ Current supported platforms are Linux (64- and 32-bit) and MacOS (64-bit). With 
 
 ## Installation
 
-The recommended way to install this package is first to install diffpy-cmi through conda using the Anaconda python distribution, then install diffpy.mpdf from source. See https://www.anaconda.com/distribution for instructions about installing the Anaconda python distribution.
+The recommended way to install this package is first to install diffpy-cmi through conda using the Anaconda python distribution, then install diffpy.mpdf using pip. See https://www.anaconda.com/distribution for instructions about installing the Anaconda python distribution. See also https://www.diffpy.org/products/diffpycmi/index.html for the diffpy-cmi installation instructions (reproduced here for convenience).
 
 #### Step 1 (recommended): Create and activate a conda environment for diffpy + diffpy.mpdf.
-    >>> conda create --name diffpy python=3
+    >>> conda create --name diffpy python=3.7
     >>> conda activate diffpy
 Note that you can name the environment anything you choose by passing it a different name after the --name flag in the first command.
 
@@ -32,8 +32,12 @@ Note that you can name the environment anything you choose by passing it a diffe
     >>> conda install -c diffpy diffpy-cmi
 Make sure you are installing this in the environment you created in the previous step.
 
-#### Step 3: Install diffpy.mpdf
-Clone or download this repository on your local machine. Navigate to the downloaded repository and run the following command (making sure that you are in the environment you created in Step 1).
+#### Step 3: Install diffpy.mpdf with pip
+Making sure you have activated your diffpy environment, run the command:
+
+    >>> pip install diffpy.mpdf
+
+Alternatively, you can install from source by cloning or downloading this repository on your local machine, navigating to the downloaded repository, and running the following command (making sure that you are in the environment you created in Step 1):
 
     >>> python setup.py install
 
