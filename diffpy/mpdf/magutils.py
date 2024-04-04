@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from diffpy.srreal.bondcalculator import BondCalculator
+from diffpy.srreal.pdfcalculator import PDFCalculator
 from scipy.signal import convolve, fftconvolve, correlate
 from scipy.optimize import least_squares
 import periodictable as pt
@@ -1046,6 +1047,37 @@ def calculateAvgB(struc):
     bAvg /= totalOcc
     return bAvg
 
+def calculate_avg_spin_magnitude(magstruc, method='species'):
+    """Calculate average spin magnitude from a MagStructure instance.
+    
+    Args:
+        method (string): must be 'full' or 'species'. If 'full', the
+            mean magnitude of all spins in the MagStructure will be
+            returned. If 'species', then just a single spin from
+            each species will be included in the calculation and weighted
+            according to the species fraction. 'species' is faster and
+            should be used if all spins belonging to a given species
+            have the same magnitude.
+    
+    Returns: Mean magnitude of spins.
+    """
+    if method == 'species':
+        try:
+            magnitude = 0
+            idx_dict = magstruc.getSpeciesIdxs()
+            for key in magstruc.species:
+                frac = magstruc.fractions[key]
+                species_magnitude = np.linalg.norm(magstruc.spins[idx_dict[key]])
+                magnitude += frac * species_magnitude
+            return magnitude
+        except:
+            return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    elif method == 'full':
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    else:
+        print("Please choose either 'species' or 'full' for the method.")
+        print("Using 'full' for now.")
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
 
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
@@ -1413,8 +1445,8 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
     magstruc.calcMagneticAtomRatio()
     ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
     bAvg = calculateAvgB(struc) # average nuclear scattering length
-    g = magstruc.gfactors[0] # g factor for the magnetic structrue
-    vectorMag = np.linalg.norm(magstruc.spins[0]) # magnitude of spin vectors used in calculation
+    g = np.mean(magstruc.gfactors) # g factor for the magnetic structrue
+    vectorMag = calculate_avg_spin_magnitude(magstruc) # magnitude of spin vectors used in calculation
     oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
     if magstruc.corrLength != 0:
         # find correlation length and nearest neighbor distance
@@ -1422,6 +1454,61 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
         rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, magstruc.atoms[1:] - magstruc.atoms[0]))
         oscl *= np.exp(rNN / xi)
     return oscl
+
+def compare_mPDF_nucPDF(mcif, rmin=0, rmax=20, ffparamkey='', qdamp=0.02,
+              uiso=0.005, ordered_moment=-1):
+    """Quick calculation of nuclear PDF and non-deconvoluted mPDF to scale.
+
+    Reads in an mcif to create the corresponding magnetic and atomic structures
+    and calculates the mPDF and nuclear PDF to scale with each other for
+    the purpose of comparing them.
+    
+    Args:
+        mcif (string): file name of mcif containing the magnetic structure.
+        rmin (float): minimum r value to be used in calculation. Default value
+                      is 0.
+        rmax (float): maximum r value to be used in calculation. Default value
+                      is 20.
+        ffparamkey (str): string specifying the magnetic form factor, e.g.
+                          'Mn2' for Mn2+ or 'Fe3' for Fe3+. If left unspecified,
+                          an average magnetic form factor will be used.
+        qdamp (float): instrument resolution parameter. Default value 0.02.
+        uiso (float): isotropic atomic displacement parameter. Default value 0.005.
+        ordered_moment (float): magnitude of ordered moment in Bohr magnetons.
+                                If left as the default -1, the length of the
+                                spin vectors will be assumed to represent the
+                                ordered moment.
+    
+    Returns:
+        Python list containing the MPDFcalculator instance, r grid, deconvoluted
+        mPDF, non-deconvoluted mPDF, and nuclear PDF.
+
+    """
+    from diffpy.mpdf.mciftools import create_from_mcif
+    from diffpy.mpdf.magstructure import MagStructure, MagSpecies
+    from diffpy.mpdf.mpdfcalculator import MPDFcalculator
+    mstruc = create_from_mcif(mcif, ffparamkey=ffparamkey,
+                              rmaxAtoms=rmax)
+    mstruc.Uiso = uiso
+    mstruc.rmaxAtoms = rmax
+    mstruc.makeAll()
+    mstruc.calcNetMag()
+    mstruc.calcAtomicDensity()
+    if ordered_moment == -1:
+        ordered_moment = calculate_avg_spin_magnitude(mstruc)
+    scale = calculate_ordered_scale(mstruc, ordered_moment)
+    mc = MPDFcalculator(mstruc, rmin=rmin, rmax=rmax, qdamp=qdamp,
+                        ordScale=scale, paraScale=scale)
+    r, g_mag, d_mag = mc.calc(both=True)
+
+    struc = mstruc.struc
+    struc.Uisoequiv = uiso
+    pc = PDFCalculator(scatteringfactortable='neutron', rmin=rmin,
+                       rmax=rmax+0.00001, qdamp=qdamp) # fix indexing error
+    r, g_nuc = pc(struc)
+    return_items = [mc, r, g_mag, d_mag, g_nuc]
+
+    return return_items
 
 def generate_damping_matrix(e1, e2, e3, xi1, xi2, xi3):
     """Generate the damping matrix from the eigenvectors and eigenvalues.

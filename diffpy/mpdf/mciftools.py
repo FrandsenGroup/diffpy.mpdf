@@ -64,8 +64,6 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
             that for the default values of S, L, and J, we will have gS=2,
             gL=0, and g=2, and there will be no difference in the form factor
             calculation for 'RE' or 'TM'.
-        occ (scalar): Occupancy of the magnetic atom associated with
-            this MagSpecies. Default is 1.
 
     Returns:
         MagStructure object corresponding to the magnetic structure
@@ -83,12 +81,12 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
 
     #Flags whether the structure is incommensurate
     incomm = False
-    
+
     #Extracts the needed information from the mcif file
     tags = {}
     parser = SimpleParser(tags)
     tags = parser.ReadFile(mcif)
-    
+
     #These are the parameters of the basic or unit magnetic cell
     #'a', 'b', and 'c' are in angstroms, while 'alpha', 'beta', and 'gamma' are in degrees
     a = tags['_cell_length_a'][0]
@@ -98,17 +96,23 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
     beta = tags['_cell_angle_beta'][0]
     gamma = tags['_cell_angle_gamma'][0]
     transform = tags['_parent_space_group.child_transform_Pp_abc'][0]
-    
+
     #symbols = tags['_atom_site_type_symbol']
     symbols = tags['_atom_site_label']
+    symbols0 = 1*symbols # starting list of atom symbols
+    try:
+        occs = tags['_atom_site_occupancy']
+    except KeyError:
+        occs = [1.0] * len(symbols)
+    occs0 = 1*occs # starting list of occupancies
     scaled_pos = np.array([tags['_atom_site_fract_x'],
                            tags['_atom_site_fract_y'],
                            tags['_atom_site_fract_z']]).T
     scaled_pos = np.mod(scaled_pos,1.)
-    
+
     mag_mom = np.zeros_like(scaled_pos)
     mag_idx = []
-    
+
     if '_cell_wave_vector_x' in tags:
         #This is the branch for incommensurate structures
         incomm = True
@@ -130,21 +134,21 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
                 mag_mom[i] = [tags['_atom_site_moment.crystalaxis_x'][mi],
                               tags['_atom_site_moment.crystalaxis_y'][mi],
                               tags['_atom_site_moment.crystalaxis_z'][mi]]
-        
+
                 four_cos[i] = [tags['_atom_site_moment_Fourier_param.cos'][3*mi],
                                tags['_atom_site_moment_Fourier_param.cos'][3*mi + 1],
                                tags['_atom_site_moment_Fourier_param.cos'][3*mi + 2]]
-        
+
                 four_sin[i] = [tags['_atom_site_moment_Fourier_param.sin'][3*mi],
                                tags['_atom_site_moment_Fourier_param.sin'][3*mi + 1],
                                tags['_atom_site_moment_Fourier_param.sin'][3*mi + 2]]
     else:
         #This is the branch for commensurate structures
         k = np.array([0,0,0])
-        
+
         symm_cent = tags['_space_group_symop_magn_centering.xyz']
         symm_ops = tags['_space_group_symop_magn_operation.xyz']
-        
+
         for i, label in enumerate(tags['_atom_site_label']):
             if label in tags['_atom_site_moment.label']:
                 mag_idx.append(i)
@@ -152,23 +156,24 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
                 mag_mom[i] = [tags['_atom_site_moment.crystalaxis_x'][mi],
                               tags['_atom_site_moment.crystalaxis_y'][mi],
                               tags['_atom_site_moment.crystalaxis_z'][mi]]
-    
+
     #Takes the magnetic information to reduced lattice coordinates
     LL = np.diag([1./a,1./b,1./c])
     mag_mom = dot(mag_mom,LL)
     if incomm:
         four_cos = dot(four_cos,LL)
         four_sin = dot(four_sin,LL)
-        
+
     #Performs the symmetry operations to populate the rest of the unit cell
     all_pos = np.copy(scaled_pos)
     all_mom = np.copy(mag_mom)
     if incomm:
         all_cos = np.copy(four_cos)
         all_sin = np.copy(four_sin)
-        
-    tol = 1e-3    
+
+    tol = 1e-3
     for j, pos in enumerate(scaled_pos):
+        pos_subset = np.array([pos])
         eq_site_counter = 1
         for cent in symm_cent:
             #Applies a centering operation
@@ -177,7 +182,7 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
             else:
                 Rc, tc, trc = parse_magn_operation(cent)
             cent_pos = np.mod(dot(Rc,pos) + tc,1.)
-            
+
             for op in symm_ops:
                 #Applies a symmetry operation
                 if incomm:
@@ -185,7 +190,7 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
                 else:
                     R, t, tr = parse_magn_operation(op)
                 eq_site = dot(R,cent_pos) + t
-                
+
                 #Handles the cases where eq_site has coordinate values extremely close to 0 or 1
                 for l, coord in enumerate(eq_site):
                     if abs(1 - coord) < tol:
@@ -193,36 +198,39 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
                     if abs(coord) < tol:
                         eq_site[l] = 0.
                 eq_site = np.mod(eq_site,1.)
+                eq_site = np.round(eq_site, decimals=6)
 
                 #Checks to make sure site hasn't already been occupied
-                for l, pp in enumerate(all_pos):
-                    if np.allclose(eq_site,pp,atol=tol):
+                for l, pp in enumerate(pos_subset):
+                    if np.allclose(eq_site,pp,atol=tol): # and the atom labels are the same (fix this)
                         break
                 else:
                     #Adds the new site found with symmetry
                     if j in mag_idx:
                         mag_idx.append(len(symbols))
-                    symbols.append(symbols[j]+'.'+str(eq_site_counter))
+                    symbols.append(symbols0[j]+'.'+str(eq_site_counter))
+                    occs.append(occs0[j])
                     eq_site_counter += 1
+                    pos_subset = np.append(pos_subset,[eq_site],axis=0)
                     all_pos = np.append(all_pos,[eq_site],axis=0)
-                    
+
                     #Transforms the moment information
                     if incomm:
                         deltc = 2*pi*(t4c + dot(hc,pos))
                         delt = 2*pi*(t4 + dot(h,cent_pos))
-                
+
                         cent_cos = trc*det(Rc)*(cos(deltc)*dot(Rc,four_cos[j]) - r1c*sin(deltc)*dot(Rc,four_sin[j]))
                         cent_sin = trc*det(Rc)*(sin(deltc)*dot(Rc,four_cos[j]) + r1c*cos(deltc)*dot(Rc,four_sin[j]))
-                        
+
                         new_cos = tr*det(R)*(cos(delt)*dot(R,cent_cos) - r1*sin(delt)*dot(R,cent_sin))
                         new_sin = tr*det(R)*(sin(delt)*dot(R,cent_cos) + r1*cos(delt)*dot(R,cent_sin))
-                        
+
                         all_cos = np.append(all_cos,[new_cos],axis=0)
                         all_sin = np.append(all_sin,[new_sin],axis=0)
 
                     new_mom = tr*trc*det(R)*det(Rc)*dot(R,dot(Rc,mag_mom[j]))   
                     all_mom = np.append(all_mom,[new_mom],axis=0)
-    
+
     #Determines the basis vectors of the structure (same as the magnetic moments if commensurate)
     basis_vecs = np.empty(np.shape(all_pos),dtype=complex)
     if incomm:
@@ -233,30 +241,36 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
         basis_vecs = all_mom.astype(complex)
         #for i, pos in enumerate(all_pos):
             #basis_vecs[i] = all_mom[i].astype(complex)
-            
+
     #Converts the basis vectors to Cartesian coordinates
     lat = Lattice(a,b,c,alpha,beta,gamma)
     basis_vecs = dot(basis_vecs,lat.base)
     all_mom = dot(all_mom,lat.base)
-    
+
     #Creates a diffpy Structure object
     atoms = []
     for i, pos in enumerate(all_pos):
-        atoms.append(Atom(atype=symbols[i],xyz=pos))
+        atoms.append(Atom(atype=symbols[i],xyz=pos, occupancy=occs[i]))
     astruc = Structure(atoms=atoms)
     astruc.lattice = lat
+    for atom in astruc: # remove extra numbers from atom names
+        name = atom.element
+        newname = re.findall(r'[a-zA-Z]+', name)[0]
+        atom.element = newname
+
 
     #Creates a separate MagSpecies object for each magnetic atom in the unit cell
     for idx in mag_idx:
         new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms,
                                S=S, L=L, J=J, gS=gS, gL=gL, g=g,
-                               j2type=j2type, occ=occ)
-        
+                               j2type=j2type)
+
         new_mspec.struc = astruc
         new_mspec.label = symbols[idx]
-        
+
         new_mspec.strucIdxs = [idx]
         new_mspec.origin = all_pos[idx]
+        new_mspec.occ = occs[idx]
 
         new_mspec.kvecs = np.array([k])
         new_mspec.basisvecs = np.array([basis_vecs[idx]])
@@ -264,16 +278,13 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
             new_mspec.kvecs = np.append(new_mspec.kvecs,[-k],axis=0)
             new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
         new_mspec.avgmom = all_mom[idx] if incomm else np.array([0, 0, 0])
-        
+
         mstruc.loadSpecies(new_mspec)
 
-    #If different from the magnetic cell, loads the atomic cell information into the MagStructure object  
-    if transform != 'a,b,c;0,0,0':
-        mstruc.atomic_struc = create_atomic_cell(mstruc,transform)
-        mstruc.transform = transform
-
+    mstruc.transform = transform
     print('MagStructure creation from mcif file successful.')
     return mstruc
+
 
    
 def create_atomic_cell(mstruc,transform):
