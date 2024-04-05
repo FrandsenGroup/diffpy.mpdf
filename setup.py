@@ -88,7 +88,7 @@ def getversioncfg():
 setup_args = dict(
         name = "diffpy.mpdf",
         #version = versiondata.get('DEFAULT', 'version'),
-        version = '1.0.1',
+        version = '1.0.2',
         #namespace_packages = ['diffpy'],
         packages = find_packages(),
         #test_suite = 'diffpy.mpdf.tests',
@@ -114,7 +114,7 @@ setup_args = dict(
             'Operating System :: Microsoft :: Windows',
             'Operating System :: POSIX',
             'Operating System :: Unix',
-            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.7',
             'Topic :: Scientific/Engineering :: Physics',
         ],
 )
