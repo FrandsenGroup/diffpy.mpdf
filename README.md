@@ -46,6 +46,8 @@ Complete documentation is available  at [https://frandsengroup.github.io/diffpy.
 
 Several examples to help you get started with mPDF analysis are available as jupyter notebooks at [https://github.com/FrandsenGroup/mPDF-tutorial](https://github.com/FrandsenGroup/mPDF-tutorial).
 
+You may also check out [https://addie.ornl.gov/simulating_mpdf](https://addie.ornl.gov/simulating_mpdf) for a web-based tool to calculate mPDF patterns from magnetic CIF (mCIF) files. 
+
 ## Contributors
 
 Benjamin Frandsen, Parker Hamilton, Jacob Christensen, Eric Stubben, Victor Velasco, Pavol Juhas, Xiaohao Yang, and Simon Billinge.
