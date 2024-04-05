@@ -51,6 +51,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from diffpy.srreal.bondcalculator import BondCalculator
+from diffpy.srreal.pdfcalculator import PDFCalculator
 from scipy.signal import convolve, fftconvolve, correlate
 from scipy.optimize import least_squares
 import periodictable as pt
@@ -1075,6 +1076,37 @@ def calculateAvgB(struc):
     bAvg /= totalOcc
     return bAvg
 
+def calculate_avg_spin_magnitude(magstruc, method=&#39;species&#39;):
+    &#34;&#34;&#34;Calculate average spin magnitude from a MagStructure instance.
+    
+    Args:
+        method (string): must be &#39;full&#39; or &#39;species&#39;. If &#39;full&#39;, the
+            mean magnitude of all spins in the MagStructure will be
+            returned. If &#39;species&#39;, then just a single spin from
+            each species will be included in the calculation and weighted
+            according to the species fraction. &#39;species&#39; is faster and
+            should be used if all spins belonging to a given species
+            have the same magnitude.
+    
+    Returns: Mean magnitude of spins.
+    &#34;&#34;&#34;
+    if method == &#39;species&#39;:
+        try:
+            magnitude = 0
+            idx_dict = magstruc.getSpeciesIdxs()
+            for key in magstruc.species:
+                frac = magstruc.fractions[key]
+                species_magnitude = np.linalg.norm(magstruc.spins[idx_dict[key]])
+                magnitude += frac * species_magnitude
+            return magnitude
+        except:
+            return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    elif method == &#39;full&#39;:
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    else:
+        print(&#34;Please choose either &#39;species&#39; or &#39;full&#39; for the method.&#34;)
+        print(&#34;Using &#39;full&#39; for now.&#34;)
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
 
 def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
@@ -1442,8 +1474,8 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
     magstruc.calcMagneticAtomRatio()
     ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
     bAvg = calculateAvgB(struc) # average nuclear scattering length
-    g = magstruc.gfactors[0] # g factor for the magnetic structrue
-    vectorMag = np.linalg.norm(magstruc.spins[0]) # magnitude of spin vectors used in calculation
+    g = np.mean(magstruc.gfactors) # g factor for the magnetic structrue
+    vectorMag = calculate_avg_spin_magnitude(magstruc) # magnitude of spin vectors used in calculation
     oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
     if magstruc.corrLength != 0:
         # find correlation length and nearest neighbor distance
@@ -1451,6 +1483,61 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
         rNN = np.min(np.apply_along_axis(np.linalg.norm, 1, magstruc.atoms[1:] - magstruc.atoms[0]))
         oscl *= np.exp(rNN / xi)
     return oscl
+
+def compare_mPDF_nucPDF(mcif, rmin=0, rmax=20, ffparamkey=&#39;&#39;, qdamp=0.02,
+              uiso=0.005, ordered_moment=-1):
+    &#34;&#34;&#34;Quick calculation of nuclear PDF and non-deconvoluted mPDF to scale.
+
+    Reads in an mcif to create the corresponding magnetic and atomic structures
+    and calculates the mPDF and nuclear PDF to scale with each other for
+    the purpose of comparing them.
+    
+    Args:
+        mcif (string): file name of mcif containing the magnetic structure.
+        rmin (float): minimum r value to be used in calculation. Default value
+                      is 0.
+        rmax (float): maximum r value to be used in calculation. Default value
+                      is 20.
+        ffparamkey (str): string specifying the magnetic form factor, e.g.
+                          &#39;Mn2&#39; for Mn2+ or &#39;Fe3&#39; for Fe3+. If left unspecified,
+                          an average magnetic form factor will be used.
+        qdamp (float): instrument resolution parameter. Default value 0.02.
+        uiso (float): isotropic atomic displacement parameter. Default value 0.005.
+        ordered_moment (float): magnitude of ordered moment in Bohr magnetons.
+                                If left as the default -1, the length of the
+                                spin vectors will be assumed to represent the
+                                ordered moment.
+    
+    Returns:
+        Python list containing the MPDFcalculator instance, r grid, deconvoluted
+        mPDF, non-deconvoluted mPDF, and nuclear PDF.
+
+    &#34;&#34;&#34;
+    from diffpy.mpdf.mciftools import create_from_mcif
+    from diffpy.mpdf.magstructure import MagStructure, MagSpecies
+    from diffpy.mpdf.mpdfcalculator import MPDFcalculator
+    mstruc = create_from_mcif(mcif, ffparamkey=ffparamkey,
+                              rmaxAtoms=rmax)
+    mstruc.Uiso = uiso
+    mstruc.rmaxAtoms = rmax
+    mstruc.makeAll()
+    mstruc.calcNetMag()
+    mstruc.calcAtomicDensity()
+    if ordered_moment == -1:
+        ordered_moment = calculate_avg_spin_magnitude(mstruc)
+    scale = calculate_ordered_scale(mstruc, ordered_moment)
+    mc = MPDFcalculator(mstruc, rmin=rmin, rmax=rmax, qdamp=qdamp,
+                        ordScale=scale, paraScale=scale)
+    r, g_mag, d_mag = mc.calc(both=True)
+
+    struc = mstruc.struc
+    struc.Uisoequiv = uiso
+    pc = PDFCalculator(scatteringfactortable=&#39;neutron&#39;, rmin=rmin,
+                       rmax=rmax+0.00001, qdamp=qdamp) # fix indexing error
+    r, g_nuc = pc(struc)
+    return_items = [mc, r, g_mag, d_mag, g_nuc]
+
+    return return_items
 
 def generate_damping_matrix(e1, e2, e3, xi1, xi2, xi3):
     &#34;&#34;&#34;Generate the damping matrix from the eigenvectors and eigenvalues.
@@ -1870,6 +1957,60 @@ provide the unnormalized mPDF.</dd>
         return 0 * r, 0 * fr</code></pre>
 </details>
 </dd>
+<dt id="diffpy.mpdf.magutils.calculate_avg_spin_magnitude"><code class="name flex">
+<span>def <span class="ident">calculate_avg_spin_magnitude</span></span>(<span>magstruc, method='species')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate average spin magnitude from a MagStructure instance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong> :&ensp;<code>string</code></dt>
+<dd>must be 'full' or 'species'. If 'full', the
+mean magnitude of all spins in the MagStructure will be
+returned. If 'species', then just a single spin from
+each species will be included in the calculation and weighted
+according to the species fraction. 'species' is faster and
+should be used if all spins belonging to a given species
+have the same magnitude.</dd>
+</dl>
+<p>Returns: Mean magnitude of spins.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_avg_spin_magnitude(magstruc, method=&#39;species&#39;):
+    &#34;&#34;&#34;Calculate average spin magnitude from a MagStructure instance.
+    
+    Args:
+        method (string): must be &#39;full&#39; or &#39;species&#39;. If &#39;full&#39;, the
+            mean magnitude of all spins in the MagStructure will be
+            returned. If &#39;species&#39;, then just a single spin from
+            each species will be included in the calculation and weighted
+            according to the species fraction. &#39;species&#39; is faster and
+            should be used if all spins belonging to a given species
+            have the same magnitude.
+    
+    Returns: Mean magnitude of spins.
+    &#34;&#34;&#34;
+    if method == &#39;species&#39;:
+        try:
+            magnitude = 0
+            idx_dict = magstruc.getSpeciesIdxs()
+            for key in magstruc.species:
+                frac = magstruc.fractions[key]
+                species_magnitude = np.linalg.norm(magstruc.spins[idx_dict[key]])
+                magnitude += frac * species_magnitude
+            return magnitude
+        except:
+            return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    elif method == &#39;full&#39;:
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))
+    else:
+        print(&#34;Please choose either &#39;species&#39; or &#39;full&#39; for the method.&#34;)
+        print(&#34;Using &#39;full&#39; for now.&#34;)
+        return np.mean(np.apply_along_axis(np.linalg.norm, 1, magstruc.spins))</code></pre>
+</details>
+</dd>
 <dt id="diffpy.mpdf.magutils.calculate_g_factors"><code class="name flex">
 <span>def <span class="ident">calculate_g_factors</span></span>(<span>S, L, J)</span>
 </code></dt>
@@ -2033,8 +2174,8 @@ ordered moment at the nearest neighbor level.</p></div>
     magstruc.calcMagneticAtomRatio()
     ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
     bAvg = calculateAvgB(struc) # average nuclear scattering length
-    g = magstruc.gfactors[0] # g factor for the magnetic structrue
-    vectorMag = np.linalg.norm(magstruc.spins[0]) # magnitude of spin vectors used in calculation
+    g = np.mean(magstruc.gfactors) # g factor for the magnetic structrue
+    vectorMag = calculate_avg_spin_magnitude(magstruc) # magnitude of spin vectors used in calculation
     oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
     if magstruc.corrLength != 0:
         # find correlation length and nearest neighbor distance
@@ -2337,6 +2478,101 @@ defined.</dd>
         rcv, frcv = r, fr
 
     return rcv, frcv</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.magutils.compare_mPDF_nucPDF"><code class="name flex">
+<span>def <span class="ident">compare_mPDF_nucPDF</span></span>(<span>mcif, rmin=0, rmax=20, ffparamkey='', qdamp=0.02, uiso=0.005, ordered_moment=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Quick calculation of nuclear PDF and non-deconvoluted mPDF to scale.</p>
+<p>Reads in an mcif to create the corresponding magnetic and atomic structures
+and calculates the mPDF and nuclear PDF to scale with each other for
+the purpose of comparing them.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mcif</code></strong> :&ensp;<code>string</code></dt>
+<dd>file name of mcif containing the magnetic structure.</dd>
+<dt><strong><code>rmin</code></strong> :&ensp;<code>float</code></dt>
+<dd>minimum r value to be used in calculation. Default value
+is 0.</dd>
+<dt><strong><code>rmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>maximum r value to be used in calculation. Default value
+is 20.</dd>
+<dt><strong><code>ffparamkey</code></strong> :&ensp;<code>str</code></dt>
+<dd>string specifying the magnetic form factor, e.g.
+'Mn2' for Mn2+ or 'Fe3' for Fe3+. If left unspecified,
+an average magnetic form factor will be used.</dd>
+<dt><strong><code>qdamp</code></strong> :&ensp;<code>float</code></dt>
+<dd>instrument resolution parameter. Default value 0.02.</dd>
+<dt><strong><code>uiso</code></strong> :&ensp;<code>float</code></dt>
+<dd>isotropic atomic displacement parameter. Default value 0.005.</dd>
+<dt><strong><code>ordered_moment</code></strong> :&ensp;<code>float</code></dt>
+<dd>magnitude of ordered moment in Bohr magnetons.
+If left as the default -1, the length of the
+spin vectors will be assumed to represent the
+ordered moment.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Python list containing the MPDFcalculator instance, r grid, deconvoluted
+mPDF, non-deconvoluted mPDF, and nuclear PDF.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compare_mPDF_nucPDF(mcif, rmin=0, rmax=20, ffparamkey=&#39;&#39;, qdamp=0.02,
+              uiso=0.005, ordered_moment=-1):
+    &#34;&#34;&#34;Quick calculation of nuclear PDF and non-deconvoluted mPDF to scale.
+
+    Reads in an mcif to create the corresponding magnetic and atomic structures
+    and calculates the mPDF and nuclear PDF to scale with each other for
+    the purpose of comparing them.
+    
+    Args:
+        mcif (string): file name of mcif containing the magnetic structure.
+        rmin (float): minimum r value to be used in calculation. Default value
+                      is 0.
+        rmax (float): maximum r value to be used in calculation. Default value
+                      is 20.
+        ffparamkey (str): string specifying the magnetic form factor, e.g.
+                          &#39;Mn2&#39; for Mn2+ or &#39;Fe3&#39; for Fe3+. If left unspecified,
+                          an average magnetic form factor will be used.
+        qdamp (float): instrument resolution parameter. Default value 0.02.
+        uiso (float): isotropic atomic displacement parameter. Default value 0.005.
+        ordered_moment (float): magnitude of ordered moment in Bohr magnetons.
+                                If left as the default -1, the length of the
+                                spin vectors will be assumed to represent the
+                                ordered moment.
+    
+    Returns:
+        Python list containing the MPDFcalculator instance, r grid, deconvoluted
+        mPDF, non-deconvoluted mPDF, and nuclear PDF.
+
+    &#34;&#34;&#34;
+    from diffpy.mpdf.mciftools import create_from_mcif
+    from diffpy.mpdf.magstructure import MagStructure, MagSpecies
+    from diffpy.mpdf.mpdfcalculator import MPDFcalculator
+    mstruc = create_from_mcif(mcif, ffparamkey=ffparamkey,
+                              rmaxAtoms=rmax)
+    mstruc.Uiso = uiso
+    mstruc.rmaxAtoms = rmax
+    mstruc.makeAll()
+    mstruc.calcNetMag()
+    mstruc.calcAtomicDensity()
+    if ordered_moment == -1:
+        ordered_moment = calculate_avg_spin_magnitude(mstruc)
+    scale = calculate_ordered_scale(mstruc, ordered_moment)
+    mc = MPDFcalculator(mstruc, rmin=rmin, rmax=rmax, qdamp=qdamp,
+                        ordScale=scale, paraScale=scale)
+    r, g_mag, d_mag = mc.calc(both=True)
+
+    struc = mstruc.struc
+    struc.Uisoequiv = uiso
+    pc = PDFCalculator(scatteringfactortable=&#39;neutron&#39;, rmin=rmin,
+                       rmax=rmax+0.00001, qdamp=qdamp) # fix indexing error
+    r, g_nuc = pc(struc)
+    return_items = [mc, r, g_mag, d_mag, g_nuc]
+
+    return return_items</code></pre>
 </details>
 </dd>
 <dt id="diffpy.mpdf.magutils.cosTransform"><code class="name flex">
@@ -4090,10 +4326,12 @@ visualized.</dd>
 <li><code><a title="diffpy.mpdf.magutils.calculateAvgB" href="#diffpy.mpdf.magutils.calculateAvgB">calculateAvgB</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculateDr" href="#diffpy.mpdf.magutils.calculateDr">calculateDr</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculateMagScatt" href="#diffpy.mpdf.magutils.calculateMagScatt">calculateMagScatt</a></code></li>
+<li><code><a title="diffpy.mpdf.magutils.calculate_avg_spin_magnitude" href="#diffpy.mpdf.magutils.calculate_avg_spin_magnitude">calculate_avg_spin_magnitude</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculate_g_factors" href="#diffpy.mpdf.magutils.calculate_g_factors">calculate_g_factors</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculate_ordered_moment" href="#diffpy.mpdf.magutils.calculate_ordered_moment">calculate_ordered_moment</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculate_ordered_scale" href="#diffpy.mpdf.magutils.calculate_ordered_scale">calculate_ordered_scale</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.calculatemPDF" href="#diffpy.mpdf.magutils.calculatemPDF">calculatemPDF</a></code></li>
+<li><code><a title="diffpy.mpdf.magutils.compare_mPDF_nucPDF" href="#diffpy.mpdf.magutils.compare_mPDF_nucPDF">compare_mPDF_nucPDF</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.cosTransform" href="#diffpy.mpdf.magutils.cosTransform">cosTransform</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.cosTransformDirectIntegration" href="#diffpy.mpdf.magutils.cosTransformDirectIntegration">cosTransformDirectIntegration</a></code></li>
 <li><code><a title="diffpy.mpdf.magutils.cv" href="#diffpy.mpdf.magutils.cv">cv</a></code></li>
