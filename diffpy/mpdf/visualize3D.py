@@ -163,7 +163,8 @@ class Visualizer:
             amin, amax = min(self.a), max(self.a)
             bmin, bmax = min(self.b), max(self.b)
             im = ax.imshow(self.slice,
-                           extent=[amin, amax, bmin, bmax])
+                           extent=[amin, amax, bmin, bmax],
+                           cmap='bwr')
             colorbar(im)
             plt.tight_layout()
             plt.show()
