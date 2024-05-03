@@ -29,15 +29,13 @@ class Visualizer:
         y (numpy array): y-dimension coordinates (1D)
         z (numpy array): z-dimension coordinates (1D)
     """
-    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
+    def __init__(self, m=None, x=None, y=None, z=None):
             
         self.m = m
         self.x = x
         self.y = y
         self.z = z
-        self.a = None # these two instance attributes will construct an arbitrary grid
-        self.b = None
-        self.slice = None # this will become the data slice
+        self.dataslice = None # this will become the data slice
         if m is None:
             self.m = np.array([])
         if x is None:
@@ -46,8 +44,25 @@ class Visualizer:
             self.y = np.array([])
         if z is None:
             self.z = np.array([])
-        self.sliceAvailable = sliceAvailable
+        self._sliceAvailable = False
+        self._a = None # these two instance attributes will construct an arbitrary grid
+        self._b = None
+    
+    @property
+    def sliceAvailable(self):
+        """whether or not a data slice has been made"""
+        return self._sliceAvailable
+
+    @property
+    def a(self):
+        """internally used grid coordinate"""
+        return self._a
         
+    @property
+    def b(self):
+        """internally used grid coordinate"""
+        return self._b
+
     def three_points(self, p1, p2, p3):
         """find normal vector to the plane created by the three given points
         """
@@ -128,16 +143,16 @@ class Visualizer:
         # we now have 2 vectors to form our plane
     
         # now create and normalize Q, which will rotate an arbitrary 
-            # slice to the orientation we desire
+        # slice to the orientation we desire
         Q = np.column_stack((v1, v2, np.zeros_like(v1)))
         Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
     
         # now create an arbitrary slice
-        self.a = np.arange(-len_a / 2, len_a / 2, dr)
-        self.b = np.arange(-len_b / 2, len_b / 2, dr)
-        self.a = np.append(self.a, len_a / 2)
-        self.b = np.append(self.b, len_b / 2)
-        A,B = np.meshgrid(self.a, self.b)
+        self._a = np.arange(-len_a / 2, len_a / 2, dr)
+        self._b = np.arange(-len_b / 2, len_b / 2, dr)
+        self._a = np.append(self._a, len_a / 2)
+        self._b = np.append(self._b, len_b / 2)
+        A,B = np.meshgrid(self._a, self._b)
         locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
         # now move locations onto our two vectors, and add cen_pt to move slice into position
         locations = Q.dot(locations).T + (cen_pt)
@@ -145,26 +160,33 @@ class Visualizer:
         # now we need to interpolate our 3Dmpdf function over this slice
         points = (self.x, self.y, self.z)
         interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
-        self.slice = interp.reshape(len(self.b),len(self.a))
+        self.dataslice = interp.reshape(len(self._b),len(self._a))
         
-        self.sliceAvailable = True
+        self._sliceAvailable = True
         
         if returnSlice:
-            return self.slice, self.a, self.b
+            return self.dataslice, self._a, self._b
         
-    def visualize(self):
+    def visualize(self, cmap='bwr'):
         """Visualize the current slice.
+        
+        Args:
+            cmap (str): Name of matplotlib colormap to be used for visualization.
+                See https://matplotlib.org/stable/users/explain/colors/colormaps.html
+                for complete list. Default is 'bwr', which works well for
+                3D-PDF data.
+
         """
         if self.sliceAvailable:
             fig = plt.figure()
             ax = fig.add_subplot(111)
             ax.set_xlabel(r'$\mathdefault{\AA}$')
             ax.set_ylabel(r'$\mathdefault{\AA}$')
-            amin, amax = min(self.a), max(self.a)
-            bmin, bmax = min(self.b), max(self.b)
-            im = ax.imshow(self.slice,
+            amin, amax = min(self._a), max(self._a)
+            bmin, bmax = min(self._b), max(self._b)
+            im = ax.imshow(self.dataslice,
                            extent=[amin, amax, bmin, bmax],
-                           cmap='bwr')
+                           cmap=cmap)
             colorbar(im)
             plt.tight_layout()
             plt.show()
