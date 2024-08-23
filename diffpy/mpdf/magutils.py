@@ -869,7 +869,7 @@ def getStdUnc(fitResult, data, dataErr=None, numConstraints=0):
     return pUnc, chisq
 
 
-def optimizedSubtraction(rhigh, dhigh, rlow, dlow):
+def optimizedSubtraction(rhigh, dhigh, rlow, dlow, p0=[0.999, 0.1], print_output=False):
     '''
     This routine stretches and broadens a low-temperature atomic PDF fit residual
     to match a high-temperature fit residual as closely as possible. The idea is
@@ -880,6 +880,10 @@ def optimizedSubtraction(rhigh, dhigh, rlow, dlow):
     dhigh = high-temperature atomic PDF fit residual
     rlow = r array for low-temperature atomic PDF fit residual
     dlow = low-temperature atomic PDF fit residual
+    p0 = initial guesses for stretching and broadening factors; [0.999, 0.1]
+        by default.
+    print_output (bool): True if the optimized stretching and broadening factors
+        should be printed. False by default.
     Note: the high- and low-temperature fits should be over the same r range
     '''
 
@@ -900,9 +904,9 @@ def optimizedSubtraction(rhigh, dhigh, rlow, dlow):
         msk = (x <= x.max() / stretch)
         return ycomp[msk] - newy[msk]
 
-    p0 = [0.999, 0.1]  # typical starting guesses
     opt = least_squares(residual, p0, args=(rlow, dlow, dhigh))
-    print(opt.x)
+    if print_output:
+        print(opt.x)
     stretch = opt.x[0]
     msk = (rlow <= rlow.max() / stretch)
     newdllow = dhigh[msk] - residual(opt.x, rlow, dlow, dhigh)
