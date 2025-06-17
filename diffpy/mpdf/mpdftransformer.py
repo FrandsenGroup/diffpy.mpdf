@@ -26,7 +26,7 @@ from diffpy.mpdf.magutils import sinTransformDirectIntegration
 
 def resid1(p, ff, iq, diq):
     """Scale the magnetic form factor to the data."""
-    return (iq - (p[0] * ff)**2)/diq
+    return (iq - p[0] * ff**2)/diq
 
 def bkgfunc(p, q):
     """Generate polynomial to fit to F(Q)."""
@@ -84,11 +84,14 @@ def getmPDF_unnormalized(q, iq, qmin, qmax, rmin=0.05, rmax=100, rstep=0.01):
     iq = iq[mask]
     r, dmag = sinTransformDirectIntegration(q, q*iq, rmin=rmin, rmax=rmax,
                                             rstep=rstep)
+    dmag *= np.sqrt(2.0/np.pi) # sinTransformDirectIntegration carries factor of sqrt(2/pi), but need 2/pi for mPDF
+
     return r, dmag
 
 def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
                   diq=None, qstart=3.0, rmin=0.05, rmax=100, rstep=0.01,
-                  window='None', qmaxwindow=0, windowedgewidth=0.1):
+                  window='None', qmaxwindow=0, windowedgewidth=0.1,
+                  ff2scale=0.0):
     """PDFgetX3-style processing to produce the normalized mPDF.
     
     This function is called by an instance of MPDFtransformer to generate
@@ -122,6 +125,12 @@ def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
         qmaxwindow (float): Sets the q value where the window goes to 0.
         windowedgewidth (float): approximate width of Fermi-Dirac window.
             Not applicable to 'Lorch' or 'None' window options.
+        ff2scale (float): scale factor applied to the squared form factor
+            before normalizing. If left as 0.0 by default, the scale factor
+            is determined via least-squares fit to data over the interval
+            from qstart to qmaxinst. Ideally, this scale factor should be
+            equal to (2/3)(gamma_n r_0 / 2)^2 g^2 J(J+1),
+            where (gamma_n r_0 / 2)^2 = 0.07265 in units of barns.
 
     Returns:
         Dictionary with the following keys and values:
@@ -136,6 +145,7 @@ def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
         'fqm': measured (i.e. uncorrected) reduced magnetic structure function.
         'dfqm': estimated uncertainties for fqm.
         'windowFunc': the window function used.
+        'ffscale': the scale factor applied to the form factor.
         'ff2': the scaled, squared magnetic form factor.
         'bkg': the final polynomial background used.
         'bkga': the lower-degree polynomial background.
@@ -159,15 +169,18 @@ def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
     diq = np.nan_to_num(diq, nan=1000*np.nanmax(diq))
 
     mask1 = np.logical_and(q>=qstart, q<=qmaxinst)
-    opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
+    
+    if ff2scale == 0.0:
+        opt1 = least_squares(resid1, [1], args=(ff[mask1], iq[mask1], diq[mask1]))
 
-    scl = opt1.x[0]
+        ff2scale = opt1.x[0]
 
-    ff = scl * ff
+    ff = np.sqrt(ff2scale) * ff
 
     # create a dictionary containing the items to be returned and add the
     # scaled squared form factor and initial mask to it.
     rv = {}
+    rv['ff2scale'] = ff2scale
     rv['ff2'] = ff**2
     rv['mask1'] = mask1
 
@@ -236,6 +249,7 @@ def getmPDF_normalized(q, iq, ff, qmin, qmax, qmaxinst, rpoly,
 
     # normalized mPDF
     r, gmag = sinTransformDirectIntegration(q[mask3], fqc[mask3], rmin=rmin, rmax=rmax, rstep=rstep)
+    gmag *= np.sqrt(2.0/np.pi) # sinTransformDirectIntegration carries factor of sqrt(2/pi), but need 2/pi for mPDF
 
     rv['r'] = r
     rv['gmag'] = gmag
@@ -311,7 +325,7 @@ class MPDFtransformer:
     def __init__(self, q=None, iq=None, ff=None, qmin=0.0, qmax=10.0,
                  qmaxinst=None, rpoly=1.8, diq=None, qstart=3.0, rmin=0.05,
                  rmax=100.0, rstep=0.01, window=None, qmaxwindow=None,
-                 windowedgewidth=0.1):
+                 windowedgewidth=0.1, ff2scale=0.0):
         if q is None:
             self.q = np.array([0])
         else:
@@ -348,6 +362,7 @@ class MPDFtransformer:
         else:
             self.qmaxwindow = qmaxwindow
         self.windowedgewidth = windowedgewidth
+        self.ff2scale = ff2scale
         self._r = np.array([])
         self._dmag = np.array([])
         self._gmag = np.array([])
@@ -499,7 +514,8 @@ class MPDFtransformer:
                                         self.qmax, self.qmaxinst, self.rpoly,
                                         1.0*self.diq, self.qstart, self.rmin,
                                         self.rmax, self.rstep, self.window,
-                                        self.qmaxwindow, self.windowedgewidth)
+                                        self.qmaxwindow, self.windowedgewidth,
+                                        1.0*self.ff2scale)
             self._r = output['r']
             self._gmag = output['gmag']
             self._sqm = output['sqm']
@@ -516,6 +532,7 @@ class MPDFtransformer:
             self._mask1 = output['mask1']
             self._mask2 = output['mask2']
             self._mask3 = output['mask3']
+            self.ff2scale = output['ff2scale']
             self._normalized_done = True
 
     def makePlots(self, showuncertainty=True):

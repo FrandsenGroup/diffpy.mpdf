@@ -24,6 +24,12 @@ from diffpy.mpdf.magutils import generateAtomsXYZ, generateFromUnitCell, \
     generateSpinsXYZ, getFFparams, jCalc, spinsFromAtoms, atomsFromSpins, \
     findAtomIndices, visualizeSpins
 
+# neutron magnetic moment in nuclear magnetons
+GAMMA = 1.913
+
+# classical electron radius in units of 10^-14 m so square is in barns
+r_0 = 0.281794
+
 class MagSpecies:
     """Store information for a single species of magnetic atom.
 
@@ -478,7 +484,7 @@ class MagStructure:
         else:
             self.ff = ff
         if K1 is None:
-            self.K1 = 0.66667*(1.913*2.81794/2.0)**2*2.0**2*0.5*(0.5+1)
+            self.K1 = 0.66667*(GAMMA * r_0/2.0)**2*2.0**2*0.5*(0.5+1)
         else:
             self.K1 = K1
         if K2 is None:
@@ -726,8 +732,8 @@ class MagStructure:
             K1 += self.fractions[key]*ga*np.sqrt(Ja*(Ja+1))
             K2 += self.fractions[key]*ga**2*Ja*(Ja+1)
         K1 = K1**2
-        K1 *= (1.913*2.81794/2.0)**2*2.0/3.0
-        K2 *= (1.913*2.81794/2.0)**2*2.0/3.0
+        K1 *= (GAMMA * r_0/2.0)**2*2.0/3.0
+        K2 *= (GAMMA * r_0/2.0)**2*2.0/3.0
         self.K1 = K1
         self.K2 = K2
 

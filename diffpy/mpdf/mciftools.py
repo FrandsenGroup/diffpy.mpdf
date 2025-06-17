@@ -39,7 +39,7 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
     Creates a MagStructure object from an MCIF file.
     
     Note: The only acceptable incommensurate structures at the moment are 1-k
-    structures with no     Fourier harmonics (i.e. only coefficients for
+    structures with no Fourier harmonics (i.e. only coefficients for
     n = 1) and no atoms with nonzero average magnetic moment.
 
     Args:
@@ -259,7 +259,17 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
         atom.element = newname
 
 
-    #Creates a separate MagSpecies object for each magnetic atom in the unit cell
+    # Determine Lande g factor to convert the moment size (stored in mcif) to momentum size
+    if J is None:
+        J = S + L
+    if gS is None:
+        gS = 1.0 + 1.0*(S*(S+1)-L*(L+1))/(J*(J+1))
+    if gL is None:
+        gL = 0.5 + 1.0*(L*(L+1)-S*(S+1))/(2*J*(J+1))
+    if g is None:
+        g = gS + gL
+    
+    # Creates a separate MagSpecies object for each magnetic atom in the unit cell
     for idx in mag_idx:
         new_mspec = MagSpecies(ffparamkey=ffparamkey, rmaxAtoms=rmaxAtoms,
                                S=S, L=L, J=J, gS=gS, gL=gL, g=g,
@@ -277,7 +287,11 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
         if incomm:
             new_mspec.kvecs = np.append(new_mspec.kvecs,[-k],axis=0)
             new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
-        new_mspec.avgmom = all_mom[idx] if incomm else np.array([0, 0, 0])
+        new_mspec.basisvecs /= g # convert to angular momentum rather than magnetic moment
+        new_mspec.avgmom = np.array(all_mom[idx]) if incomm else np.array([0, 0, 0])
+        print(new_mspec.avgmom)
+        print(g)
+        new_mspec.avgmom = np.array(new_mspec.avgmom) / g
 
         mstruc.loadSpecies(new_mspec)
 

@@ -27,6 +27,12 @@ from scipy.signal import convolve, fftconvolve, correlate
 from scipy.optimize import least_squares
 import periodictable as pt
 
+# neutron magnetic moment in nuclear magnetons
+GAMMA = 1.913
+
+# classical electron radius in units of 10^-14 m so square is in barns
+r_0 = 0.281794
+
 def generateAtomsXYZ(struc, rmax=30.0, strucIdxs=[0], square=False):
     """Generate array of atomic Cartesian coordinates from a given structure.
 
@@ -1087,7 +1093,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
                   rstep=0.01, rmin=0.0, rmax=20.0, psigma=0.1, qmin=0,
                   qmax=-1, qdamp=0.0, extendedrmin=4.0, extendedrmax=4.0,
                   orderedScale=1.0,
-                  K1=0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
+                  K1=0.66667 * (GAMMA * r_0 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1),
                   rho0=0, netMag=0, corrLength=0, linearTermMethod='exact',
                   applyEnvelope=False, qwindow=np.array([0]),
                   qgrid=np.array([0])):
@@ -1233,7 +1239,7 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
         fr = s1 / r + r * (ss2[-1] - ss2)
 
     ### prefactor
-    fr /= len(calcIdxs) * K1 / (1.913 * 2.81794 / 2.0) ** 2
+    fr /= len(calcIdxs) * K1 / (GAMMA * r_0 / 2.0) ** 2
     if applyEnvelope and (corrLength != 0):
         fr *= np.exp(-r/corrLength)
 
@@ -1257,10 +1263,10 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     else:
         if corrLength == 0:
             linearTerm = 4 * np.pi * r * rho0 * (2.0/3.0) * netMag**2  \
-                         / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
+                         / ( K1 / (GAMMA * r_0 / 2.0) ** 2)
         else:
             linearTerm = 4 * np.pi * r * rho0 * (2.0 / 3.0) * netMag ** 2 * np.exp(-r/corrLength) \
-                          / ( K1 / (1.913 * 2.81794 / 2.0) ** 2)
+                          / ( K1 / (GAMMA * r_0 / 2.0) ** 2)
     fr -= linearTerm
 
 
@@ -1317,7 +1323,7 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     Returns: numpy array for the unnormalized mPDF Dr.
     """
     if K1 is None:
-        K1 = 0.66667 * (1.913 * 2.81794 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1)
+        K1 = 0.66667 * (GAMMA * r_0 / 2.0) ** 2 * 2.0 ** 2 * 0.5 * (0.5 + 1)
     if K2 is None:
         K2 = K1
     rsr, sr = cosTransform(q, ff, rmintr, rmaxtr, drtr)
@@ -1406,7 +1412,8 @@ def calculate_ordered_moment(mc,nucScale,returnUncertainty=False,inputUnc=[]):
     struc = mstr.struc
     mstr.calcMagneticAtomRatio()
     ns = mstr.magneticAtomRatio # fraction of total atoms that are magnetic
-    bAvg = calculateAvgB(struc) # average nuclear scattering length
+    bAvg = calculateAvgB(struc) # average nuclear scattering length in fm
+    bAvg /= 10.0 # convert to units of 10^-14 m
     g = mstr.gfactors[0] # g factor for the magnetic structrue
     vectorMag = np.linalg.norm(mstr.spins[0]) # magnitude of spin vectors used in calculation
     m = g * np.sqrt(mc.ordScale * bAvg**2 / (nucScale * ns)) * vectorMag
@@ -1449,6 +1456,7 @@ def calculate_ordered_scale(magstruc,orderedMoment,nucScale=1.0):
     magstruc.calcMagneticAtomRatio()
     ns = magstruc.magneticAtomRatio # fraction of total atoms that are magnetic
     bAvg = calculateAvgB(struc) # average nuclear scattering length
+    bAvg /= 10.0 # convert to units of 10^-14 m
     g = np.mean(magstruc.gfactors) # g factor for the magnetic structrue
     vectorMag = calculate_avg_spin_magnitude(magstruc) # magnitude of spin vectors used in calculation
     oscl = (orderedMoment / g / vectorMag)**2 * nucScale * ns / bAvg**2 # ordered scale factor
