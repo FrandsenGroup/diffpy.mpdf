@@ -58,15 +58,13 @@ class Visualizer:
         y (numpy array): y-dimension coordinates (1D)
         z (numpy array): z-dimension coordinates (1D)
     &#34;&#34;&#34;
-    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
+    def __init__(self, m=None, x=None, y=None, z=None):
             
         self.m = m
         self.x = x
         self.y = y
         self.z = z
-        self.a = None # these two instance attributes will construct an arbitrary grid
-        self.b = None
-        self.slice = None # this will become the data slice
+        self.dataslice = None # this will become the data slice
         if m is None:
             self.m = np.array([])
         if x is None:
@@ -75,8 +73,25 @@ class Visualizer:
             self.y = np.array([])
         if z is None:
             self.z = np.array([])
-        self.sliceAvailable = sliceAvailable
+        self._sliceAvailable = False
+        self._a = None # these two instance attributes will construct an arbitrary grid
+        self._b = None
+    
+    @property
+    def sliceAvailable(self):
+        &#34;&#34;&#34;whether or not a data slice has been made&#34;&#34;&#34;
+        return self._sliceAvailable
+
+    @property
+    def a(self):
+        &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+        return self._a
         
+    @property
+    def b(self):
+        &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+        return self._b
+
     def three_points(self, p1, p2, p3):
         &#34;&#34;&#34;find normal vector to the plane created by the three given points
         &#34;&#34;&#34;
@@ -157,16 +172,16 @@ class Visualizer:
         # we now have 2 vectors to form our plane
     
         # now create and normalize Q, which will rotate an arbitrary 
-            # slice to the orientation we desire
+        # slice to the orientation we desire
         Q = np.column_stack((v1, v2, np.zeros_like(v1)))
         Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
     
         # now create an arbitrary slice
-        self.a = np.arange(-len_a / 2, len_a / 2, dr)
-        self.b = np.arange(-len_b / 2, len_b / 2, dr)
-        self.a = np.append(self.a, len_a / 2)
-        self.b = np.append(self.b, len_b / 2)
-        A,B = np.meshgrid(self.a, self.b)
+        self._a = np.arange(-len_a / 2, len_a / 2, dr)
+        self._b = np.arange(-len_b / 2, len_b / 2, dr)
+        self._a = np.append(self._a, len_a / 2)
+        self._b = np.append(self._b, len_b / 2)
+        A,B = np.meshgrid(self._a, self._b)
         locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
         # now move locations onto our two vectors, and add cen_pt to move slice into position
         locations = Q.dot(locations).T + (cen_pt)
@@ -174,25 +189,33 @@ class Visualizer:
         # now we need to interpolate our 3Dmpdf function over this slice
         points = (self.x, self.y, self.z)
         interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
-        self.slice = interp.reshape(len(self.b),len(self.a))
+        self.dataslice = interp.reshape(len(self._b),len(self._a))
         
-        self.sliceAvailable = True
+        self._sliceAvailable = True
         
         if returnSlice:
-            return self.slice, self.a, self.b
+            return self.dataslice, self._a, self._b
         
-    def visualize(self):
+    def visualize(self, cmap=&#39;bwr&#39;):
         &#34;&#34;&#34;Visualize the current slice.
+        
+        Args:
+            cmap (str): Name of matplotlib colormap to be used for visualization.
+                See https://matplotlib.org/stable/users/explain/colors/colormaps.html
+                for complete list. Default is &#39;bwr&#39;, which works well for
+                3D-PDF data.
+
         &#34;&#34;&#34;
         if self.sliceAvailable:
             fig = plt.figure()
             ax = fig.add_subplot(111)
             ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
             ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
-            amin, amax = min(self.a), max(self.a)
-            bmin, bmax = min(self.b), max(self.b)
-            im = ax.imshow(self.slice,
-                           extent=[amin, amax, bmin, bmax])
+            amin, amax = min(self._a), max(self._a)
+            bmin, bmax = min(self._b), max(self._b)
+            im = ax.imshow(self.dataslice,
+                           extent=[amin, amax, bmin, bmax],
+                           cmap=cmap)
             colorbar(im)
             plt.tight_layout()
             plt.show()
@@ -213,7 +236,7 @@ class Visualizer:
 <dl>
 <dt id="diffpy.mpdf.visualize3D.Visualizer"><code class="flex name class">
 <span>class <span class="ident">Visualizer</span></span>
-<span>(</span><span>m=None, x=None, y=None, z=None, sliceAvailable=False)</span>
+<span>(</span><span>m=None, x=None, y=None, z=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Store and visualize three-dimensional data.</p>
@@ -241,15 +264,13 @@ class Visualizer:
         y (numpy array): y-dimension coordinates (1D)
         z (numpy array): z-dimension coordinates (1D)
     &#34;&#34;&#34;
-    def __init__(self, m=None, x=None, y=None, z=None, sliceAvailable=False):
+    def __init__(self, m=None, x=None, y=None, z=None):
             
         self.m = m
         self.x = x
         self.y = y
         self.z = z
-        self.a = None # these two instance attributes will construct an arbitrary grid
-        self.b = None
-        self.slice = None # this will become the data slice
+        self.dataslice = None # this will become the data slice
         if m is None:
             self.m = np.array([])
         if x is None:
@@ -258,8 +279,25 @@ class Visualizer:
             self.y = np.array([])
         if z is None:
             self.z = np.array([])
-        self.sliceAvailable = sliceAvailable
+        self._sliceAvailable = False
+        self._a = None # these two instance attributes will construct an arbitrary grid
+        self._b = None
+    
+    @property
+    def sliceAvailable(self):
+        &#34;&#34;&#34;whether or not a data slice has been made&#34;&#34;&#34;
+        return self._sliceAvailable
+
+    @property
+    def a(self):
+        &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+        return self._a
         
+    @property
+    def b(self):
+        &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+        return self._b
+
     def three_points(self, p1, p2, p3):
         &#34;&#34;&#34;find normal vector to the plane created by the three given points
         &#34;&#34;&#34;
@@ -340,16 +378,16 @@ class Visualizer:
         # we now have 2 vectors to form our plane
     
         # now create and normalize Q, which will rotate an arbitrary 
-            # slice to the orientation we desire
+        # slice to the orientation we desire
         Q = np.column_stack((v1, v2, np.zeros_like(v1)))
         Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
     
         # now create an arbitrary slice
-        self.a = np.arange(-len_a / 2, len_a / 2, dr)
-        self.b = np.arange(-len_b / 2, len_b / 2, dr)
-        self.a = np.append(self.a, len_a / 2)
-        self.b = np.append(self.b, len_b / 2)
-        A,B = np.meshgrid(self.a, self.b)
+        self._a = np.arange(-len_a / 2, len_a / 2, dr)
+        self._b = np.arange(-len_b / 2, len_b / 2, dr)
+        self._a = np.append(self._a, len_a / 2)
+        self._b = np.append(self._b, len_b / 2)
+        A,B = np.meshgrid(self._a, self._b)
         locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
         # now move locations onto our two vectors, and add cen_pt to move slice into position
         locations = Q.dot(locations).T + (cen_pt)
@@ -357,25 +395,33 @@ class Visualizer:
         # now we need to interpolate our 3Dmpdf function over this slice
         points = (self.x, self.y, self.z)
         interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
-        self.slice = interp.reshape(len(self.b),len(self.a))
+        self.dataslice = interp.reshape(len(self._b),len(self._a))
         
-        self.sliceAvailable = True
+        self._sliceAvailable = True
         
         if returnSlice:
-            return self.slice, self.a, self.b
+            return self.dataslice, self._a, self._b
         
-    def visualize(self):
+    def visualize(self, cmap=&#39;bwr&#39;):
         &#34;&#34;&#34;Visualize the current slice.
+        
+        Args:
+            cmap (str): Name of matplotlib colormap to be used for visualization.
+                See https://matplotlib.org/stable/users/explain/colors/colormaps.html
+                for complete list. Default is &#39;bwr&#39;, which works well for
+                3D-PDF data.
+
         &#34;&#34;&#34;
         if self.sliceAvailable:
             fig = plt.figure()
             ax = fig.add_subplot(111)
             ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
             ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
-            amin, amax = min(self.a), max(self.a)
-            bmin, bmax = min(self.b), max(self.b)
-            im = ax.imshow(self.slice,
-                           extent=[amin, amax, bmin, bmax])
+            amin, amax = min(self._a), max(self._a)
+            bmin, bmax = min(self._b), max(self._b)
+            im = ax.imshow(self.dataslice,
+                           extent=[amin, amax, bmin, bmax],
+                           cmap=cmap)
             colorbar(im)
             plt.tight_layout()
             plt.show()
@@ -384,6 +430,48 @@ class Visualizer:
             print(&#39;No data slice available for visualization.&#39;)
             print(&#39;Please generate a slice using the makeSlice method.&#39;)</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.a"><code class="name">var <span class="ident">a</span></code></dt>
+<dd>
+<div class="desc"><p>internally used grid coordinate</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def a(self):
+    &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+    return self._a</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.b"><code class="name">var <span class="ident">b</span></code></dt>
+<dd>
+<div class="desc"><p>internally used grid coordinate</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def b(self):
+    &#34;&#34;&#34;internally used grid coordinate&#34;&#34;&#34;
+    return self._b</code></pre>
+</details>
+</dd>
+<dt id="diffpy.mpdf.visualize3D.Visualizer.sliceAvailable"><code class="name">var <span class="ident">sliceAvailable</span></code></dt>
+<dd>
+<div class="desc"><p>whether or not a data slice has been made</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def sliceAvailable(self):
+    &#34;&#34;&#34;whether or not a data slice has been made&#34;&#34;&#34;
+    return self._sliceAvailable</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="diffpy.mpdf.visualize3D.Visualizer.make_slice"><code class="name flex">
@@ -476,16 +564,16 @@ False, will create slice from three points</dd>
     # we now have 2 vectors to form our plane
 
     # now create and normalize Q, which will rotate an arbitrary 
-        # slice to the orientation we desire
+    # slice to the orientation we desire
     Q = np.column_stack((v1, v2, np.zeros_like(v1)))
     Q[:,:2] /= np.linalg.norm(Q[:,:2], axis = 0)
 
     # now create an arbitrary slice
-    self.a = np.arange(-len_a / 2, len_a / 2, dr)
-    self.b = np.arange(-len_b / 2, len_b / 2, dr)
-    self.a = np.append(self.a, len_a / 2)
-    self.b = np.append(self.b, len_b / 2)
-    A,B = np.meshgrid(self.a, self.b)
+    self._a = np.arange(-len_a / 2, len_a / 2, dr)
+    self._b = np.arange(-len_b / 2, len_b / 2, dr)
+    self._a = np.append(self._a, len_a / 2)
+    self._b = np.append(self._b, len_b / 2)
+    A,B = np.meshgrid(self._a, self._b)
     locations = np.array([A.reshape(-1), B.reshape(-1), np.zeros(A.size)])  # the slice starts on the x-y plane
     # now move locations onto our two vectors, and add cen_pt to move slice into position
     locations = Q.dot(locations).T + (cen_pt)
@@ -493,12 +581,12 @@ False, will create slice from three points</dd>
     # now we need to interpolate our 3Dmpdf function over this slice
     points = (self.x, self.y, self.z)
     interp = interpn(points, self.m, locations)  # list of values of 3Dmpdf at locations
-    self.slice = interp.reshape(len(self.b),len(self.a))
+    self.dataslice = interp.reshape(len(self._b),len(self._a))
     
-    self.sliceAvailable = True
+    self._sliceAvailable = True
     
     if returnSlice:
-        return self.slice, self.a, self.b</code></pre>
+        return self.dataslice, self._a, self._b</code></pre>
 </details>
 </dd>
 <dt id="diffpy.mpdf.visualize3D.Visualizer.three_points"><code class="name flex">
@@ -531,26 +619,42 @@ False, will create slice from three points</dd>
 </details>
 </dd>
 <dt id="diffpy.mpdf.visualize3D.Visualizer.visualize"><code class="name flex">
-<span>def <span class="ident">visualize</span></span>(<span>self)</span>
+<span>def <span class="ident">visualize</span></span>(<span>self, cmap='bwr')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Visualize the current slice.</p></div>
+<div class="desc"><p>Visualize the current slice.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of matplotlib colormap to be used for visualization.
+See <a href="https://matplotlib.org/stable/users/explain/colors/colormaps.html">https://matplotlib.org/stable/users/explain/colors/colormaps.html</a>
+for complete list. Default is 'bwr', which works well for
+3D-PDF data.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def visualize(self):
+<pre><code class="python">def visualize(self, cmap=&#39;bwr&#39;):
     &#34;&#34;&#34;Visualize the current slice.
+    
+    Args:
+        cmap (str): Name of matplotlib colormap to be used for visualization.
+            See https://matplotlib.org/stable/users/explain/colors/colormaps.html
+            for complete list. Default is &#39;bwr&#39;, which works well for
+            3D-PDF data.
+
     &#34;&#34;&#34;
     if self.sliceAvailable:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.set_xlabel(r&#39;$\mathdefault{\AA}$&#39;)
         ax.set_ylabel(r&#39;$\mathdefault{\AA}$&#39;)
-        amin, amax = min(self.a), max(self.a)
-        bmin, bmax = min(self.b), max(self.b)
-        im = ax.imshow(self.slice,
-                       extent=[amin, amax, bmin, bmax])
+        amin, amax = min(self._a), max(self._a)
+        bmin, bmax = min(self._b), max(self._b)
+        im = ax.imshow(self.dataslice,
+                       extent=[amin, amax, bmin, bmax],
+                       cmap=cmap)
         colorbar(im)
         plt.tight_layout()
         plt.show()
@@ -580,8 +684,11 @@ False, will create slice from three points</dd>
 <ul>
 <li>
 <h4><code><a title="diffpy.mpdf.visualize3D.Visualizer" href="#diffpy.mpdf.visualize3D.Visualizer">Visualizer</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.a" href="#diffpy.mpdf.visualize3D.Visualizer.a">a</a></code></li>
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.b" href="#diffpy.mpdf.visualize3D.Visualizer.b">b</a></code></li>
 <li><code><a title="diffpy.mpdf.visualize3D.Visualizer.make_slice" href="#diffpy.mpdf.visualize3D.Visualizer.make_slice">make_slice</a></code></li>
+<li><code><a title="diffpy.mpdf.visualize3D.Visualizer.sliceAvailable" href="#diffpy.mpdf.visualize3D.Visualizer.sliceAvailable">sliceAvailable</a></code></li>
 <li><code><a title="diffpy.mpdf.visualize3D.Visualizer.three_points" href="#diffpy.mpdf.visualize3D.Visualizer.three_points">three_points</a></code></li>
 <li><code><a title="diffpy.mpdf.visualize3D.Visualizer.visualize" href="#diffpy.mpdf.visualize3D.Visualizer.visualize">visualize</a></code></li>
 </ul>
