@@ -39,7 +39,7 @@ Making sure you have activated your diffpy environment, run the command:
 
 Alternatively, you can install from source by cloning or downloading the github repository https://github.com/FrandsenGroup/diffpy.mpdf on your local machine, navigating to the downloaded repository, and running the following command (making sure that you are in the environment you created in Step 1):
 
-    >>> python setup.py install
+    >>> pip install .
 
 ## Documentation and Helpful Examples
 Complete documentation is available  at [https://frandsengroup.github.io/diffpy.mpdf/index.html](https://frandsengroup.github.io/diffpy.mpdf/index.html).
