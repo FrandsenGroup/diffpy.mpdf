@@ -318,8 +318,6 @@ def create_from_mcif(mcif, ffparamkey=None, rmaxAtoms=20, S=0.5, L=0.0,
             new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
         new_mspec.basisvecs /= g # convert to angular momentum rather than magnetic moment
         new_mspec.avgmom = np.array(all_mom[idx]) if incomm else np.array([0, 0, 0])
-        print(new_mspec.avgmom)
-        print(g)
         new_mspec.avgmom = np.array(new_mspec.avgmom) / g
 
         mstruc.loadSpecies(new_mspec)
@@ -1262,8 +1260,6 @@ attributes are different.</p></div>
             new_mspec.basisvecs = np.append(new_mspec.basisvecs,[np.conjugate(basis_vecs[idx])],axis=0)
         new_mspec.basisvecs /= g # convert to angular momentum rather than magnetic moment
         new_mspec.avgmom = np.array(all_mom[idx]) if incomm else np.array([0, 0, 0])
-        print(new_mspec.avgmom)
-        print(g)
         new_mspec.avgmom = np.array(new_mspec.avgmom) / g
 
         mstruc.loadSpecies(new_mspec)
