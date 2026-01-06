@@ -677,7 +677,10 @@ def cv(x1, y1, x2, y2, align=False, normalize=False):
         ycv = ycv[mask]
         xcv = xcv[mask]
     if normalize: # normalize y1 to its original scale
-        ycv /= np.trapz(y2, x2) 
+        try:
+            ycv /= np.trapz(y2, x2)
+        except AttributeError: # flexibility for different numpy versions
+            ycv /= np.trapezoid(y2, x2) 
     return xcv, ycv
 
 
@@ -813,7 +816,10 @@ def cosTransformDirectIntegration(q, fq, rmin=0.0, rmax=50.0, rstep=0.1):  # doe
     r = np.arange(lostep, histep) * rstep
     qrmat = np.outer(r, q)
     integrand = fq * np.cos(qrmat)
-    fr = np.sqrt(2.0 / np.pi) * np.trapz(integrand, q)
+    try:
+        fr = np.sqrt(2.0 / np.pi) * np.trapz(integrand, q)
+    except AttributeError: # flexibility for different numpy versions
+        fr = np.sqrt(2.0 / np.pi) * np.trapezoid(integrand, q)
     return r, fr
 
 
@@ -843,7 +849,10 @@ def sinTransformDirectIntegration(q, fq, rmin=0.0, rmax=50.0, rstep=0.1):  # doe
     r = np.arange(lostep, histep) * rstep
     qrmat = np.outer(r, q)
     integrand = fq * np.sin(qrmat)
-    fr = np.sqrt(2.0 / np.pi) * np.trapz(integrand, q)
+    try:
+        fr = np.sqrt(2.0 / np.pi) * np.trapz(integrand, q)
+    except AttributeError: # flexibility for different numpy versions
+        fr = np.sqrt(2.0 / np.pi) * np.trapezoid(integrand, q)
     return r, fr
 
 
@@ -898,7 +907,10 @@ def optimizedSubtraction(rhigh, dhigh, rlow, dlow, p0=[0.999, 0.1], print_output
         rs = np.arange(-10, 10, dr)
         s = np.exp(-rs ** 2 / 2.0 / sig ** 2)
         xsmooth, ysmooth = cv(x, y, rs, s)
-        ysmooth /= np.trapz(s, rs)
+        try:
+            ysmooth /= np.trapz(s, rs)
+        except AttributeError: # flexibility for different numpy versions
+            ysmooth /= np.trapezoid(s, rs)
         msk = np.logical_and(xsmooth > (x.min() - 0.5 * dr), xsmooth < (x.max() + 0.5 * dr))
         return ysmooth[msk]
 
