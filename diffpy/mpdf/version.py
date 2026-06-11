@@ -16,8 +16,7 @@
 
 """Definition of __version__, __date__, __gitsha__.
 """
-
-from pkg_resources import resource_filename
+import os
 try:
     from configparser import RawConfigParser
 except:
@@ -25,7 +24,8 @@ except:
 
 # obtain version information from the version.cfg file
 cp = RawConfigParser(dict(version='', date='', commit='', timestamp=0))
-if not cp.read(resource_filename(__name__, 'version.cfg')):
+_version_cfg = os.path.join(os.path.dirname(__file__), 'version.cfg')
+if not cp.read(_version_cfg):
     from warnings import warn
     warn('Package metadata not found, execute "./setup.py egg_info".')
 

@@ -188,7 +188,7 @@ class Visualizer:
                            extent=[amin, amax, bmin, bmax],
                            cmap=cmap)
             colorbar(im)
-            plt.tight_layout()
+            #plt.tight_layout()
             plt.show()
             
         else:
