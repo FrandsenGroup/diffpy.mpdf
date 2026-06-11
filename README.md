@@ -33,6 +33,11 @@ Alternatively, you can install from source by installing diffpy.structure and di
 
     >>> pip install .
 
+#### Step 3 (recommended): Install jupyter notebook and interactive plotting tools
+To use the jupyter notebook tutorials mentioned below, install the notebook and ipympl packages as follows:
+
+    >>> pip install notebook ipympl
+
 ## Documentation and Helpful Examples
 Complete documentation is available  at [https://frandsengroup.github.io/diffpy.mpdf/index.html](https://frandsengroup.github.io/diffpy.mpdf/index.html).
 
