@@ -180,8 +180,8 @@ class Visualizer:
         if self.sliceAvailable:
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.set_xlabel(r'$\mathdefault{\AA}$')
-            ax.set_ylabel(r'$\mathdefault{\AA}$')
+            ax.set_xlabel(r"$\mathdefault{\AA}$")
+            ax.set_ylabel(r"$\mathdefault{\AA}$")
             amin, amax = min(self._a), max(self._a)
             bmin, bmax = min(self._b), max(self._b)
             im = ax.imshow(self.dataslice,
