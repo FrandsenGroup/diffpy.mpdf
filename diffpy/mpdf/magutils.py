@@ -680,8 +680,42 @@ def cv(x1, y1, x2, y2, align=False, normalize=False):
         try:
             ycv /= np.trapz(y2, x2)
         except AttributeError: # flexibility for different numpy versions
-            ycv /= np.trapezoid(y2, x2) 
+            ycv /= np.trapezoid(y2, x2)
     return xcv, ycv
+
+
+def cv_odd(r, fr, rk, kernel):
+    """Convolve an mPDF-like function with an even real-space kernel, treating
+    the function as odd in r.
+
+    The mPDF is related to the scattering by a sine Fourier transform, which
+    implicitly defines f(-r) = -f(r). Convolutions representing Q-space
+    operations (finite qmin/qmax, window functions) must therefore act on the
+    odd extension of f(r); treating f as zero for r < 0 gives errors of several
+    percent at low r, larger for long-range kernels (small qmin).
+
+    Args:
+        r (numpy array): uniform r grid with r >= 0.
+        fr (numpy array): function on the r grid.
+        rk (numpy array): uniform grid of the kernel, same spacing as r.
+        kernel (numpy array): even kernel on rk.
+
+    Returns:
+        numpy arrays r and the convolved function on the same grid. If r does
+        not start at exactly 0, the odd extension is not possible on a uniform
+        grid; f is then taken as zero below r[0] (the previous behavior).
+    """
+    dr = r[1] - r[0]
+    if abs(r[0]) > 1e-6 * dr:
+        return cv(r, fr, rk, kernel, align=True, normalize=False)
+    rodd = np.concatenate((-r[:0:-1], r))
+    fodd = np.concatenate((-fr[:0:-1], fr))
+    fodd[len(fr) - 1] = 0.0  # an odd function vanishes at r = 0
+    rcv, frcv = cv(rodd, fodd, rk, kernel, align=True, normalize=False)
+    keep = rcv > -0.5 * dr
+    if keep.sum() == len(r):
+        return r, frcv[keep]  # return the input grid exactly
+    return rcv[keep], frcv[keep]
 
 
 def fourierTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1):  # requires even q-grid
@@ -1289,15 +1323,20 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     # already correctly scaled, so it must NOT be renormalized by its integral:
     # that integral equals W(0), which is zero whenever qmin > 0 (or the window
     # vanishes at q = 0), and dividing by it gives an arbitrary scale and sign.
+    # f(r) is extended to negative r as an odd function, as implied by the sine
+    # Fourier transform relating the mPDF to the scattering (see cv_odd). The
+    # odd extension spans [-R, R] with R = r[-1], so the kernel must extend to
+    # +-2R for the convolution to be complete everywhere on [0, R].
+    kmax = 2.0 * r[-1]
     if qmin >= 0 and qmax > qmin and len(qgrid) == 1: # no window function
-        rth = np.arange(-rmax - extendedrmax, rmax + extendedrmax + rstep, rstep)
+        rth = np.arange(-kmax, kmax + rstep, rstep)
         th = (qmax/np.pi) * np.sinc(qmax * rth / np.pi) - (qmin / np.pi) * np.sinc(qmin * rth / np.pi)
-        rcv, frcv = cv(r, fr, rth, th, align=True, normalize=False)
+        rcv, frcv = cv_odd(r, fr, rth, th)
     elif len(qgrid) > 1: # use the window function
-        rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-rmax, rmax=rmax, rstep=rstep)
+        rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-kmax, rmax=kmax, rstep=rstep)
         # fourierTransform carries a factor sqrt(2/pi); K(r) needs 1/pi
         windowFT = np.real(windowFT) / np.sqrt(2.0 * np.pi)
-        rcv, frcv = cv(r, fr, rFT, windowFT, align=True, normalize=False)
+        rcv, frcv = cv_odd(r, fr, rFT, windowFT)
     else:
         rcv, frcv = r, fr
 
@@ -1305,7 +1344,8 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
 
 
 def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
-                drtr=0.01, qmin=0, qmax=-1, K1=None, K2=None):
+                drtr=0.01, qmin=0, qmax=-1, K1=None, K2=None, qwindow=None,
+                qgrid=None):
     """Calculate the unnormalized mPDF quantity D(r).
 
     This module requires a normalized mPDF as an input, as well as a magnetic
@@ -1326,15 +1366,19 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
         drtr (float): step size for r-grid used for calculating Fourier
             transform of magnetic form mactor.
         qmin (float): minimum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
+            for simulating termination ripples in the paramagnetic term). If
+            <0, no termination effects are included. The input fr should
+            already carry the same termination (as from calculatemPDF).
         qmax (float): maximum experimentally accessible q-value (to be used
-            for simulating termination ripples). If <0, no termination effects
-            are included.
+            for simulating termination ripples in the paramagnetic term). If
+            <0, no termination effects are included.
         K1 (float): a constant used for calculating Dr; should be averaged
             over all magnetic species. Important if physical information is
             to be extracted from mPDF scale factors, e.g. moment size.
         K2 (float): another constant used for calculating Dr.
+        qwindow (numpy array): Q-space window function applied to the
+            paramagnetic term (instead of qmin/qmax), defined on qgrid.
+        qgrid (numpy array): uniform Q grid on which qwindow is defined.
 
     Returns: numpy array for the unnormalized mPDF Dr.
     """
@@ -1348,20 +1392,28 @@ def calculateDr(r, fr, q, ff, paraScale=1.0, rmintr=-5.0, rmaxtr=5.0,
     # sr /= norm
     # sr = np.sqrt(np.pi/2.0)*sr ### I don't think we should multiply by sqrt(pi/2)
     rSr, Sr = cv(rsr, sr, rsr, sr)
-    rDr, Dr = cv(r, K1 / (2.0 * np.pi) * fr, rSr, Sr)
+    rDr, Dr = cv_odd(r, K1 / (2.0 * np.pi) * fr, rSr, Sr)  # f(r) is odd in r
     para = -K2 / np.pi * np.gradient(Sr, rSr[1] - rSr[0])  ### paramagnetic term in d(r)
     rpara, para = rSr, para
-    # The code below is used to apply the termination convolution to the paramagnetic peak.
-    # I don't think it's actually necessary.
-#    if qmin >= 0 and qmax > qmin:
-#        rstep = r[1] - r[0]
-#        rth = np.arange(0.0, r.max() + rstep, rstep)
-#        rth[0] = 1e-4 * rstep  # avoid infinities at r = 0
-#        th = (np.sin(qmax * rth) - np.sin(qmin * rth)) / np.pi / rth
-#        rth[0] = 0.0
-#        rpara, para = cv(rSr, para, rth, th)
-#    else:
-#        rpara, para = rSr, para
+    # Apply the same Q-space termination (or window) to the paramagnetic term
+    # as to the data; the f(r) part is already terminated in calculatemPDF.
+    # The paramagnetic term is odd in r and given on a symmetric grid, so it is
+    # convolved directly after zero-padding to the full r-range (termination
+    # spreads the narrow low-r peak into ripples extending to large r).
+    useWindow = qgrid is not None and len(qgrid) > 1
+    if useWindow or (qmin >= 0 and qmax > qmin):
+        dp = rSr[1] - rSr[0]
+        nR = int(np.ceil(max(r.max(), rSr.max()) / dp)) + 1
+        rext = np.arange(-nR, nR + 1) * dp
+        pext = np.interp(rext, rSr, para, left=0.0, right=0.0)
+        kmax = 2.0 * rext[-1]
+        if useWindow:
+            rk, kern = fourierTransform(qgrid, qwindow, rmin=-kmax, rmax=kmax, rstep=dp)
+            kern = np.real(kern) / np.sqrt(2.0 * np.pi)
+        else:
+            rk = np.arange(-kmax, kmax + dp, dp)
+            kern = (qmax / np.pi) * np.sinc(qmax * rk / np.pi) - (qmin / np.pi) * np.sinc(qmin * rk / np.pi)
+        rpara, para = cv(rext, pext, rk, kern, align=True, normalize=False)
     # make sure para and Dr match up in shape
     dr = r[2] - r[1]
     goodslice = np.logical_and(rDr >= r.min() - 0.5 * dr, rDr <= r.max() + 0.5 * dr)
