@@ -210,13 +210,15 @@ class MPDFcalculator:
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
                                  self.rmaxtr, self.rstep, self.qmin, self.qmax,
-                                 self.magstruc.K1, self.magstruc.K2)
+                                 self.magstruc.K1, self.magstruc.K2,
+                                 self.qwindow, self.qgrid)
             return rcalc[mask], Drcalc[mask]
         else:
             Drcalc = calculateDr(rcalc, frcalc, self.magstruc.ffqgrid,
                                  self.magstruc.ff, self.paraScale, self.rmintr,
                                  self.rmaxtr, self.rstep, self.qmin, self.qmax,
-                                 self.magstruc.K1, self.magstruc.K2)
+                                 self.magstruc.K1, self.magstruc.K2,
+                                 self.qwindow, self.qgrid)
             return rcalc[mask], frcalc[mask], Drcalc[mask]
 
     def plot(self, normalized=True, both=False, scaled=True,

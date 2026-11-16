@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 from diffpy.structure import Structure, Atom, Lattice
 from diffpy.mpdf import MagSpecies, MagStructure, MPDFcalculator
-from diffpy.mpdf.magutils import calculatemPDF
+from diffpy.mpdf.magutils import calculatemPDF, calculateDr, jCalc, getFFparams
 
 trapezoid = getattr(np, 'trapezoid', None) or np.trapz  # numpy < 2.0
 
@@ -54,10 +54,14 @@ class terminationTest(unittest.TestCase):
 
     def test_qmin_does_not_change_scale_unnormalized(self):
         """Same check for the unnormalized mPDF D(r), which is built from the
-        terminated f(r) in calculateDr and therefore inherited the error."""
+        terminated f(r) in calculateDr and therefore inherited the error.
+        The paramagnetic self-term is switched off here: once terminated it
+        legitimately develops long-period ripples (~2 pi / qmin) that change
+        the shape of D(r). Its termination is checked against an exact
+        reference in terminationExactTest."""
         def calcD(qmin):
             mc = MPDFcalculator(magstruc=self.mstruc, rmin=0.1, rmax=20,
-                                qmin=qmin, qmax=6.0)
+                                qmin=qmin, qmax=6.0, paraScale=0.0)
             r, fr, dr = mc.calc(both=True)
             return r, dr
         r, d0 = calcD(0.0)
@@ -133,6 +137,34 @@ class terminationExactTest(unittest.TestCase):
             self.assertTrue(np.allclose(r, self.r, rtol=0, atol=1e-8))
             err = np.abs(f - ref).max() / np.abs(ref).max()
             self.assertLess(err, 0.005, msg='qmin=%.1f: rel. err %.4f' % (qmin, err))
+
+    def test_unnormalized_matches_exact(self):
+        """D(r) including the paramagnetic self-term must carry exactly the
+        termination of the untruncated D(r) (the self-term was previously
+        left unterminated: 3-8% errors)."""
+        qff = np.arange(0, 20, 0.01)
+        ff = jCalc(qff, getFFparams('Mn2'))
+        K = 1.695
+        _, f0 = calculatemPDF(self.xyz, self.sxyz, qmin=-1, qmax=-1, **self.kw)
+        D0 = calculateDr(self.r, f0, qff, ff, paraScale=1.0, K1=K, K2=K)
+        FD = trapezoid(D0[None, :] * np.sin(np.outer(self.Q, self.r)), self.r, axis=1)
+        qgrid = np.arange(0, self.qmax + 1e-9, 0.005)
+        mask = self.r < 18.0
+        for qmin in [0.0, 0.4, 0.7]:
+            m = (self.Q >= qmin) & (self.Q <= self.qmax)
+            ref = (2 / np.pi) * trapezoid(FD[m][None, :] * np.sin(np.outer(self.r, self.Q[m])),
+                                          self.Q[m], axis=1)
+            _, ft = calculatemPDF(self.xyz, self.sxyz, qmin=qmin, qmax=self.qmax, **self.kw)
+            D = calculateDr(self.r, ft, qff, ff, paraScale=1.0, K1=K, K2=K,
+                            qmin=qmin, qmax=self.qmax)
+            err = np.abs(D - ref)[mask].max() / np.abs(ref[mask]).max()
+            self.assertLess(err, 0.005, msg='qmin=%.1f: D(r) rel. err %.4f' % (qmin, err))
+            W = ((qgrid >= qmin) & (qgrid <= self.qmax)).astype(float)
+            _, fw = calculatemPDF(self.xyz, self.sxyz, qwindow=W, qgrid=qgrid, **self.kw)
+            Dw = calculateDr(self.r, fw, qff, ff, paraScale=1.0, K1=K, K2=K,
+                             qwindow=W, qgrid=qgrid)
+            err = np.abs(Dw - ref)[mask].max() / np.abs(ref[mask]).max()
+            self.assertLess(err, 0.005, msg='qmin=%.1f: windowed D(r) rel. err %.4f' % (qmin, err))
 
 # End of class terminationExactTest
 
