@@ -680,8 +680,42 @@ def cv(x1, y1, x2, y2, align=False, normalize=False):
         try:
             ycv /= np.trapz(y2, x2)
         except AttributeError: # flexibility for different numpy versions
-            ycv /= np.trapezoid(y2, x2) 
+            ycv /= np.trapezoid(y2, x2)
     return xcv, ycv
+
+
+def cv_odd(r, fr, rk, kernel):
+    """Convolve an mPDF-like function with an even real-space kernel, treating
+    the function as odd in r.
+
+    The mPDF is related to the scattering by a sine Fourier transform, which
+    implicitly defines f(-r) = -f(r). Convolutions representing Q-space
+    operations (finite qmin/qmax, window functions) must therefore act on the
+    odd extension of f(r); treating f as zero for r < 0 gives errors of several
+    percent at low r, larger for long-range kernels (small qmin).
+
+    Args:
+        r (numpy array): uniform r grid with r >= 0.
+        fr (numpy array): function on the r grid.
+        rk (numpy array): uniform grid of the kernel, same spacing as r.
+        kernel (numpy array): even kernel on rk.
+
+    Returns:
+        numpy arrays r and the convolved function on the same grid. If r does
+        not start at exactly 0, the odd extension is not possible on a uniform
+        grid; f is then taken as zero below r[0] (the previous behavior).
+    """
+    dr = r[1] - r[0]
+    if abs(r[0]) > 1e-6 * dr:
+        return cv(r, fr, rk, kernel, align=True, normalize=False)
+    rodd = np.concatenate((-r[:0:-1], r))
+    fodd = np.concatenate((-fr[:0:-1], fr))
+    fodd[len(fr) - 1] = 0.0  # an odd function vanishes at r = 0
+    rcv, frcv = cv(rodd, fodd, rk, kernel, align=True, normalize=False)
+    keep = rcv > -0.5 * dr
+    if keep.sum() == len(r):
+        return r, frcv[keep]  # return the input grid exactly
+    return rcv[keep], frcv[keep]
 
 
 def fourierTransform(q, fq, rmin=0.0, rmax=50.0, rstep=0.1):  # requires even q-grid
@@ -1289,15 +1323,20 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     # already correctly scaled, so it must NOT be renormalized by its integral:
     # that integral equals W(0), which is zero whenever qmin > 0 (or the window
     # vanishes at q = 0), and dividing by it gives an arbitrary scale and sign.
+    # f(r) is extended to negative r as an odd function, as implied by the sine
+    # Fourier transform relating the mPDF to the scattering (see cv_odd). The
+    # odd extension spans [-R, R] with R = r[-1], so the kernel must extend to
+    # +-2R for the convolution to be complete everywhere on [0, R].
+    kmax = 2.0 * r[-1]
     if qmin >= 0 and qmax > qmin and len(qgrid) == 1: # no window function
-        rth = np.arange(-rmax - extendedrmax, rmax + extendedrmax + rstep, rstep)
+        rth = np.arange(-kmax, kmax + rstep, rstep)
         th = (qmax/np.pi) * np.sinc(qmax * rth / np.pi) - (qmin / np.pi) * np.sinc(qmin * rth / np.pi)
-        rcv, frcv = cv(r, fr, rth, th, align=True, normalize=False)
+        rcv, frcv = cv_odd(r, fr, rth, th)
     elif len(qgrid) > 1: # use the window function
-        rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-rmax, rmax=rmax, rstep=rstep)
+        rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-kmax, rmax=kmax, rstep=rstep)
         # fourierTransform carries a factor sqrt(2/pi); K(r) needs 1/pi
         windowFT = np.real(windowFT) / np.sqrt(2.0 * np.pi)
-        rcv, frcv = cv(r, fr, rFT, windowFT, align=True, normalize=False)
+        rcv, frcv = cv_odd(r, fr, rFT, windowFT)
     else:
         rcv, frcv = r, fr
 

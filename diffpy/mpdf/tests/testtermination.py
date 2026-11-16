@@ -9,6 +9,9 @@ import unittest
 import numpy as np
 from diffpy.structure import Structure, Atom, Lattice
 from diffpy.mpdf import MagSpecies, MagStructure, MPDFcalculator
+from diffpy.mpdf.magutils import calculatemPDF
+
+trapezoid = getattr(np, 'trapezoid', None) or np.trapz  # numpy < 2.0
 
 ##############################################################################
 def makeMagStructure():
@@ -87,6 +90,51 @@ class terminationTest(unittest.TestCase):
         self.assertLess(err, 0.05, msg='rel. diff %.3f' % err)
 
 # End of class terminationTest
+
+
+class terminationExactTest(unittest.TestCase):
+    """Compare the terminated mPDF of an isolated spin cluster with an exact
+    reference. For a finite cluster f(r) vanishes beyond a few Angstroms, so
+    the effect of a finite Q-range can be computed directly: sine-transform
+    f(r) to F(Q), then transform back over [qmin, qmax] only. This checks the
+    odd extension of f(r) and the kernel range (previously off by 4-8%)."""
+
+    @classmethod
+    def setUpClass(cls):
+        d = 3.5
+        cls.xyz = np.array([[0, 0, 0], [d, 0, 0], [d / 2, d * np.sqrt(3) / 2, 0],
+                            [d / 2, d * np.sqrt(3) / 6, d * np.sqrt(2.0 / 3.0)]])
+        cls.sxyz = np.array([[0, 0, 1.], [0, 0, -1.], [0, 1., 0], [1., 0, 0]])
+        cls.kw = dict(calcIdxs=[0, 1, 2, 3], rstep=0.01, rmin=0.0, rmax=20.0)
+        cls.r, f0 = calculatemPDF(cls.xyz, cls.sxyz, qmin=-1, qmax=-1, **cls.kw)
+        cls.Q = np.arange(0, 30, 0.002)
+        cls.FQ = trapezoid(f0[None, :] * np.sin(np.outer(cls.Q, cls.r)), cls.r, axis=1)
+        cls.qmax = 6.0
+
+    def reference(self, qmin):
+        m = (self.Q >= qmin) & (self.Q <= self.qmax)
+        return (2 / np.pi) * trapezoid(self.FQ[m][None, :] * np.sin(np.outer(self.r, self.Q[m])),
+                                          self.Q[m], axis=1)
+
+    def test_qmin_qmax_matches_exact(self):
+        for qmin in [0.0, 0.4, 0.7, 1.0]:
+            ref = self.reference(qmin)
+            r, f = calculatemPDF(self.xyz, self.sxyz, qmin=qmin, qmax=self.qmax, **self.kw)
+            self.assertTrue(np.allclose(r, self.r, rtol=0, atol=1e-8))
+            err = np.abs(f - ref).max() / np.abs(ref).max()
+            self.assertLess(err, 0.005, msg='qmin=%.1f: rel. err %.4f' % (qmin, err))
+
+    def test_window_matches_exact(self):
+        qgrid = np.arange(0, self.qmax + 1e-9, 0.005)
+        for qmin in [0.0, 0.4, 0.7, 1.0]:
+            ref = self.reference(qmin)
+            W = ((qgrid >= qmin) & (qgrid <= self.qmax)).astype(float)
+            r, f = calculatemPDF(self.xyz, self.sxyz, qwindow=W, qgrid=qgrid, **self.kw)
+            self.assertTrue(np.allclose(r, self.r, rtol=0, atol=1e-8))
+            err = np.abs(f - ref).max() / np.abs(ref).max()
+            self.assertLess(err, 0.005, msg='qmin=%.1f: rel. err %.4f' % (qmin, err))
+
+# End of class terminationExactTest
 
 if __name__ == '__main__':
     unittest.main()
