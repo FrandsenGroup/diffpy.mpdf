@@ -49,6 +49,24 @@ class terminationTest(unittest.TestCase):
             corr = np.corrcoef(f[mask], self.f0[mask])[0, 1]
             self.assertGreater(corr, 0.9, msg='qmin=%.1f: corr %.3f' % (qmin, corr))
 
+    def test_qmin_does_not_change_scale_unnormalized(self):
+        """Same check for the unnormalized mPDF D(r), which is built from the
+        terminated f(r) in calculateDr and therefore inherited the error."""
+        def calcD(qmin):
+            mc = MPDFcalculator(magstruc=self.mstruc, rmin=0.1, rmax=20,
+                                qmin=qmin, qmax=6.0)
+            r, fr, dr = mc.calc(both=True)
+            return r, dr
+        r, d0 = calcD(0.0)
+        mask = r > 2.0
+        for qmin in [0.3, 0.7, 1.0]:
+            _, d = calcD(qmin)
+            ratio = np.abs(d[mask]).max() / np.abs(d0[mask]).max()
+            self.assertTrue(0.8 < ratio < 1.25,
+                            msg='qmin=%.1f: D(r) amplitude ratio %.3f' % (qmin, ratio))
+            corr = np.corrcoef(d[mask], d0[mask])[0, 1]
+            self.assertGreater(corr, 0.9, msg='qmin=%.1f: D(r) corr %.3f' % (qmin, corr))
+
     def test_window_matches_qmin_qmax(self):
         """A box window on [qmin, qmax] must reproduce the qmin/qmax path."""
         q = np.arange(0, 6.0 + 1e-9, 0.005)
