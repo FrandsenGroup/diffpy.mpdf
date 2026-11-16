@@ -38,6 +38,7 @@ def testsuite():
         diffpy.mpdf.tests.testformfactor
         diffpy.mpdf.tests.testgetdiffdata
         diffpy.mpdf.tests.testspinsatoms
+        diffpy.mpdf.tests.testtermination
     '''.split()
     suite = unittest.TestSuite()
     loader = unittest.defaultTestLoader

@@ -1285,15 +1285,19 @@ def calculatemPDF(xyz, sxyz, gfactors=np.array([2.0]), calcIdxs=np.array([0]),
     ### apply the scale factor and qdamp
     fr *= orderedScale * np.exp((-1.0 * (qdamp * r) ** 2) / 2)
     # Do the convolution with the termination function if qmin/qmax or a window
-    # function have been given
+    # function have been given. The kernel K(r) = (1/pi) int W(q) cos(qr) dq is
+    # already correctly scaled, so it must NOT be renormalized by its integral:
+    # that integral equals W(0), which is zero whenever qmin > 0 (or the window
+    # vanishes at q = 0), and dividing by it gives an arbitrary scale and sign.
     if qmin >= 0 and qmax > qmin and len(qgrid) == 1: # no window function
         rth = np.arange(-rmax - extendedrmax, rmax + extendedrmax + rstep, rstep)
         th = (qmax/np.pi) * np.sinc(qmax * rth / np.pi) - (qmin / np.pi) * np.sinc(qmin * rth / np.pi)
-        rcv, frcv = cv(r, fr, rth, th, align=True, normalize=True)
+        rcv, frcv = cv(r, fr, rth, th, align=True, normalize=False)
     elif len(qgrid) > 1: # use the window function
         rFT, windowFT = fourierTransform(qgrid, qwindow, rmin=-rmax, rmax=rmax, rstep=rstep)
-        windowFT = np.real(windowFT)
-        rcv, frcv = cv(r, fr, rFT, windowFT, align=True, normalize=True)
+        # fourierTransform carries a factor sqrt(2/pi); K(r) needs 1/pi
+        windowFT = np.real(windowFT) / np.sqrt(2.0 * np.pi)
+        rcv, frcv = cv(r, fr, rFT, windowFT, align=True, normalize=False)
     else:
         rcv, frcv = r, fr
 
